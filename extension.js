@@ -17,7 +17,7 @@ function activate(context) {
     });
     
      console.log(taskbar);
-    vscode.window.onDidChangeActiveTextEditor(taskbar.update(context), this);
+    vscode.window.onDidChangeActiveTextEditor(taskbar.update, this);
     context.subscriptions.push(taskbar); //For Disposables
     context.subscriptions.push(disposable);
 }
