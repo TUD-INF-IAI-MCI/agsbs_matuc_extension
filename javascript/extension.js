@@ -1,11 +1,13 @@
 
 const vscode = require('vscode');
 
-const Taskbar = require( "./lib/taskbar");
-let taskbar = new Taskbar();
+//const Taskbar = require( "./lib/taskbar");
+const Startup = require( "./lib/startup");
+//let taskbar = new Taskbar();
+
 
 function activate(context) {
-
+    let startup = new Startup();
     console.log('Congratulations, your extension "agsbs" is now active!');
     vscode.window.showInformationMessage('AGSBS is Active!');
     // The command has been defined in the package.json file
@@ -16,9 +18,9 @@ function activate(context) {
        main(context);
     });
     
-     console.log(taskbar);
-    vscode.window.onDidChangeActiveTextEditor(taskbar.update, this);
-    context.subscriptions.push(taskbar); //For Disposables
+     console.log(startup);
+    vscode.window.onDidChangeActiveTextEditor(startup.update, this);
+    context.subscriptions.push(startup); //For Disposables
     context.subscriptions.push(disposable);
 }
 

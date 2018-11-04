@@ -7,9 +7,10 @@ var Taskbar = /** @class */ (function () {
     function Taskbar() {
         this.panelIsVisible = false;
         this.mediaDirectory = 'media';
-        this.update();
+        // this.update();
+        //return this;
     }
-    Taskbar.prototype._showTaskbar = function () {
+    Taskbar.prototype.showTaskbar = function () {
         var _this = this;
         //vscode.window.showInformationMessage('show');
         if (this.panelIsVisible == true) { //if webView is already visible
@@ -42,8 +43,9 @@ var Taskbar = /** @class */ (function () {
                     return;
             }
         }, undefined);
+        //return panel;
     };
-    Taskbar.prototype._hideTaskbar = function (panel) {
+    Taskbar.prototype.hideTaskbar = function () {
         //vscode.window.showInformationMessage('hide');
         //vscode.window.showInformationMessage('AGSBS Deactivated!');
         if (this.panelIsVisible == true) {
@@ -52,21 +54,20 @@ var Taskbar = /** @class */ (function () {
         }
         this.panelIsVisible = false;
     };
-    Taskbar.prototype.update = function () {
-        //Taskbar.prototype.ls();
-        var editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-        }
-        var doc = editor.document;
-        if (doc.languageId === "markdown") {
-            Taskbar.prototype._showTaskbar();
-            console.log(this.panel);
-        }
-        else {
-            Taskbar.prototype._hideTaskbar(this.panel);
-        }
-    };
+    // public update() {
+    //     //Taskbar.prototype.ls();
+    //     let editor = vscode.window.activeTextEditor;
+    //     if (!editor) {
+    //         return;
+    //     }
+    //     let doc = editor.document;
+    //     if (doc.languageId === "markdown") {
+    //         Taskbar.prototype.showTaskbar();
+    //         console.log(this.panel);
+    //     } else {
+    //         Taskbar.prototype.hideTaskbar();
+    //     }
+    // }
     Taskbar.prototype.ls = function () {
         var ls = spawn('matuc_js', ['version']); //var ls = spawn( 'ls', [ '-lh', '/usr' ] );
         ls.stdout.on('data', function (data) {
@@ -80,7 +81,7 @@ var Taskbar = /** @class */ (function () {
         });
     };
     Taskbar.prototype.getWebviewContent = function () {
-        return "<!DOCTYPE html>\n    <html lang=\"en\">\n    <head>\n        <meta charset=\"UTF-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>Cat Coding</title>\n    </head>\n    <body>\n        <button onclick=\"sendMessage('testbutton')\">Test</button>\n        <h1 id=\"output\">Unloaded</h1>\n        <script>\n        const output = document.getElementById('output');\n        output.innerHTML= \"Loaded\";\n        \n            const vscode = acquireVsCodeApi();\n\n            function sendMessage(message){\n                vscode.postMessage({\n                    command: 'button',\n                    text: message\n                })\n            }\n            \n    </script>\n    </body>\n    </html>";
+        return "<!DOCTYPE html>\n    <html lang=\"en\">\n    <head>\n        <meta charset=\"UTF-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>AGSBS</title>\n    </head>\n    <body>\n        <a href='#' onclick=\"sendMessage('testbutton')\">Test</a>\n        <h1 id=\"output\">Unloaded</h1>\n        <script>\n        const output = document.getElementById('output');\n        output.innerHTML= \"Loaded\";\n        \n            const vscode = acquireVsCodeApi();\n\n            function sendMessage(message){\n                vscode.postMessage({\n                    command: 'button',\n                    text: message\n                })\n            }\n            \n    </script>\n    </body>\n    </html>";
     };
     return Taskbar;
 }());

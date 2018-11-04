@@ -1,0 +1,10 @@
+{
+	"folders": [
+		{
+			"path": "agsbs"
+		}
+	],
+	"settings": {
+		"typescript.tsc.autoDetect": "off"
+	}
+}

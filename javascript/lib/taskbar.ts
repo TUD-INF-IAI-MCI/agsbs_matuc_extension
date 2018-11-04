@@ -4,15 +4,16 @@ const { spawn } = require( 'child_process' );
 
 export class Taskbar {
      panel;
+     sidebar;
      panelIsVisible=false;
      mediaDirectory = 'media'
 
     constructor() { 
-       this.update();
-        
+      // this.update();
+        //return this;
     }
 
-    _showTaskbar() {
+    public showTaskbar() {
         //vscode.window.showInformationMessage('show');
         if(this.panelIsVisible==true){ //if webView is already visible
             return;
@@ -49,8 +50,9 @@ export class Taskbar {
                     return;
             }
         }, undefined);
+        //return panel;
     }
-    _hideTaskbar(panel) {
+    public hideTaskbar() {
         //vscode.window.showInformationMessage('hide');
         //vscode.window.showInformationMessage('AGSBS Deactivated!');
         if(this.panelIsVisible==true){
@@ -60,20 +62,20 @@ export class Taskbar {
         this.panelIsVisible =false;
     }
     
-    update() {
-        //Taskbar.prototype.ls();
-        let editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-        }
-        let doc = editor.document;
-        if (doc.languageId === "markdown") {
-            Taskbar.prototype._showTaskbar();
-            console.log(this.panel);
-        } else {
-            Taskbar.prototype._hideTaskbar(this.panel);
-        }
-    }
+    // public update() {
+    //     //Taskbar.prototype.ls();
+    //     let editor = vscode.window.activeTextEditor;
+    //     if (!editor) {
+    //         return;
+    //     }
+    //     let doc = editor.document;
+    //     if (doc.languageId === "markdown") {
+    //         Taskbar.prototype.showTaskbar();
+    //         console.log(this.panel);
+    //     } else {
+    //         Taskbar.prototype.hideTaskbar();
+    //     }
+    // }
     ls() {    
             var ls = spawn( 'matuc_js', [ 'version' ] );//var ls = spawn( 'ls', [ '-lh', '/usr' ] );
             ls.stdout.on( 'data', data => {
@@ -98,10 +100,10 @@ export class Taskbar {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Cat Coding</title>
+        <title>AGSBS</title>
     </head>
     <body>
-        <button onclick="sendMessage('testbutton')">Test</button>
+        <a href='#' onclick="sendMessage('testbutton')">Test</a>
         <h1 id="output">Unloaded</h1>
         <script>
         const output = document.getElementById('output');
