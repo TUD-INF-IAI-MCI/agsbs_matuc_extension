@@ -1,6 +1,6 @@
-'use strict';
+// 'use strict';
 
-import * as vscode from 'vscode';
+ import * as vscode from 'vscode';
 import Helper from './helper';
 import Taskbar from './taskbar';
 import Sidebar from './sidebar';
@@ -79,22 +79,38 @@ class ExtensionController {
         }
         let doc = editor.document;
         if (doc.languageId === "markdown") {//This gets executed if a Markdown File gets opened
-            
-            if(this._taskbar.isVisible() === false){
-                this._taskbarPanel = await this._taskbar.show();
+            //First, reset Workspace
+            if(this._sidebar.isVisible()===false && this._taskbar.isVisible()===true){
+                //If Sidebar is closed but Taskbar is open, close Taskbar to reset
+                await this._taskbar.hide(this._taskbarPanel);
             }
+            if(this._sidebar.isVisible()===true && this._taskbar.isVisible()===false){
+                //If Sidebar is open but Taskbar is closed, close Sidebar to reset
+                await this._sidebar.hide(this._sidebarPanel);
+            }
+
+
             if(this._sidebar.isVisible() === false){
                 this._sidebarPanel = await this._sidebar.show();
             }
+            if(this._taskbar.isVisible() === false){
+                this._taskbarPanel = await this._taskbar.show();
+            }
+            
             this._helper.setEditorLayout(this._layout);
             
             
         } else { 
-            //await this._taskbar.hide(this._taskbarPanel); //TODO: Possible Bug 
+            
+            
             console.log("PANELS");
-             //console.log(this._taskbarPanel);
-            // console.log(this._sidebarPanel);
-            //await this._sidebar.hide(this._sidebarPanel);
+             console.log(this._taskbarPanel);
+             console.log(this._sidebarPanel);
+             //TODO: BUG when closing both panels, this should be reported as an Issue to VSCODE because an error is thrown in the core
+             //This will crash the Extension debugging Host forever and will force you to reinstall VSCODE from scratch. Seriously.
+
+             //await this._sidebar.hide(this._sidebarPanel);
+            //await this._taskbar.hide(this._taskbarPanel); 
 
         }
         //vscode.window.showInformationMessage('UPDATE');
