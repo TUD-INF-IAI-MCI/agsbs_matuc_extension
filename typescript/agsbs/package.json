@@ -12,7 +12,8 @@
     ],
     "activationEvents": [
         "onCommand:extension.agsbs",
-        "onLanguage:markdown"
+        "onLanguage:markdown",
+        "onLanguage:multimarkdown"
     ],
     "main": "./out/extension",
     "contributes": {

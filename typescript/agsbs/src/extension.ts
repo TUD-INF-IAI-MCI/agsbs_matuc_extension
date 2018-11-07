@@ -78,7 +78,7 @@ class ExtensionController {
             return;
         }
         let doc = editor.document;
-        if (doc.languageId === "markdown") {//This gets executed if a Markdown File gets opened
+        if (doc.languageId === "markdown" || doc.languageId==="multimarkdown") {//This gets executed if a Markdown File gets opened
             //First, reset Workspace
             if(this._sidebar.isVisible()===false && this._taskbar.isVisible()===true){
                 //If Sidebar is closed but Taskbar is open, close Taskbar to reset

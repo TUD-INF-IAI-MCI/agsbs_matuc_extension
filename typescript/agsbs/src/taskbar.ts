@@ -40,7 +40,7 @@ export default class Taskbar {
             switch (message.text) {
                 case 'testbutton':
                     //vscode.window.showErrorMessage(message.text);
-                    this.ls();
+                    this.insertTest();
                     return;
             }
         }, undefined);
@@ -68,7 +68,7 @@ export default class Taskbar {
              <title>AGSBS</title>
          </head>
          <body>
-             <a href='#' onclick="sendMessage('testbutton')">Test</a>
+             <a href='#' onclick="sendMessage('testbutton')" title='Test Title Tooltip'>Test</a>
              <h1 id="output">Unloaded</h1>
              <script>
              const output = document.getElementById('output');
@@ -89,7 +89,7 @@ export default class Taskbar {
         return  html;
     }
     
-    public async ls(){
+    public async insertTest(){
         vscode.window.showInformationMessage('BUTTON');
         // const files = await vscode.workspace.findFiles(
         //     '**/*.{js,ts,jsx}',
@@ -122,6 +122,7 @@ export default class Taskbar {
                 newPosition,
                 `TEST\n`
             )
+            
             await vscode.workspace.applyEdit(workSpaceEdit);
         }
     }
