@@ -12,12 +12,9 @@ import Sidebar from './sidebar';
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('AGSBS is now active!');
-     let taskbar = new Taskbar();
-     let sidebar = new Sidebar();
-     let helper = new Helper();
-     let extensionController = new ExtensionController(context,helper, taskbar, sidebar);
+     let extensionController = new ExtensionController(context);
 
-    console.log('AGSBS is now active!');
+
     let disposable = vscode.commands.registerCommand('extension.agsbs', () => {
         vscode.window.showInformationMessage('AGSBS is active.');
     });
@@ -35,6 +32,8 @@ export function deactivate() {
  */
 class ExtensionController {
 
+    
+
     private _layout: Object;
     private _helper: Helper;
 
@@ -45,10 +44,18 @@ class ExtensionController {
      private _sidebarPanel: vscode.WebviewPanel;
 
      private _disposable: vscode.Disposable;
-    
+     public getSidebarPanel(params){
+        console.log("RETURN PANEL"+params);
+        return this._sidebarPanel;
+    }
 
-    constructor(context: vscode.ExtensionContext,helper:Helper, taskbar: Taskbar, sidebar: Sidebar) {
+    constructor(context: vscode.ExtensionContext) {
 
+        
+        
+        let sidebar = new Sidebar();
+        let taskbar = new Taskbar(sidebar.taskbarCallback,context);
+        let helper = new Helper();
         this._layout= { orientation: 1, groups: [{groups:[{size:0.8},{  size: 0.2 }], size:0.85}, {  size: 0.15 }] };
 
         this._helper = helper;
@@ -68,6 +75,8 @@ class ExtensionController {
     dispose() {
         this._disposable.dispose();
     }
+    
+    
     /**
      * Gets triggered when the Layout of the Editor changes. 
      */

@@ -1,9 +1,17 @@
 import *as vscode from 'vscode'
+import Helper from './helper'
 
 export default class Taskbar {
     private _taskbarIsVisible:Boolean;
-    constructor() {
+    private _sidebarCallback;
+    private _helper:Helper;
+    private _context:vscode.ExtensionContext;
+    constructor(sidebarCallback,context) {
+        this._context=context;
         this._taskbarIsVisible=false;
+        this._sidebarCallback=sidebarCallback;
+        this._helper =new Helper;
+    
     }
 
     /**
@@ -42,6 +50,10 @@ export default class Taskbar {
                     //vscode.window.showErrorMessage(message.text);
                     this.insertTest();
                     return;
+                case 'sidebarTest':
+                vscode.window.showInformationMessage('SIDEBAR');
+                this._sidebarCallback("showTestSidebar");
+
             }
         }, undefined);
 
@@ -58,18 +70,40 @@ export default class Taskbar {
         this._taskbarIsVisible=false;
     }
 
+    public addButton = (name)=>{
+        //console.log(this._helper.getWebviewResourceIconURI(name,this._context));
+    }
+
+
 
     private _getHTML():string{
+        var de = this._helper.getWebviewResourceIconURI("de.svg",this._context);
+        var fontAwesomeFont = this._helper.getWebviewResourceURI("fontawesome-webfont.woff2","style/fonts",this._context);
+        var fontAwesome = this._helper.getWebviewResourceURI("fontawesome.css","style",this._context);
          var html = `<!DOCTYPE html>
          <html lang="en">
          <head>
              <meta charset="UTF-8">
              <meta name="viewport" content="width=device-width, initial-scale=1.0">
              <title>AGSBS</title>
+             <style>
+             @font-face {
+                font-family: 'Font Awesome 5 Free';
+                font-weight: normal;
+                font-style: normal;
+                src: url('${fontAwesomeFont}') format("woff2");
+              }
+              
+             </style>
+             <link rel="stylesheet" href="${fontAwesome}">
          </head>
          <body>
+         <i class="fas fa-bold"></i>
              <a href='#' onclick="sendMessage('testbutton')" title='Test Title Tooltip'>Test</a>
+             <br/>
+             <a href='#' onclick="sendMessage('sidebarTest')" title='Test Title Tooltip'>Sidebar</a>
              <h1 id="output">Unloaded</h1>
+             <img src='${de}' alt='icon' style='width:20px'/>
              <script>
              const output = document.getElementById('output');
              output.innerHTML= "Loaded";
@@ -90,41 +124,34 @@ export default class Taskbar {
     }
     
     public async insertTest(){
+        
         vscode.window.showInformationMessage('BUTTON');
         // const files = await vscode.workspace.findFiles(
         //     '**/*.{js,ts,jsx}',
         //     '**/node_modules/**'
         // )
-        const textEditors = await vscode.window.visibleTextEditors;
-        console.log("GGG");
-        //console.log(textEditors);
-        if(textEditors!==undefined){
-            if(textEditors.length<1){
-                vscode.window.showErrorMessage("No open editors.");
-                return;
-            }
-            if(textEditors.length>1){
-                vscode.window.showErrorMessage("Too many open editors. Please just open one File and without a Split View.");
-                return;
-            }
-            var currentTextEditor = textEditors[0];
-            if(currentTextEditor.document.languageId!=="markdown"){
-                vscode.window.showErrorMessage("The current File is not a Markdown file and the current Action cannot be executed. Please open a Markdown File.");
-                return;
-            }
-            console.log(currentTextEditor.selection);
-            console.log(currentTextEditor.document.uri);
-            var newPosition = new vscode.Position(currentTextEditor.selection.active.line,0);
-            console.log(newPosition);
-            const workSpaceEdit = new vscode.WorkspaceEdit();
-            workSpaceEdit.insert(
-                currentTextEditor.document.uri,
-                newPosition,
-                `TEST\n`
-            )
+
+        //this.addButton("de.svg");
+
+            var currentTextEditor = await this._helper.getCurrentTextEditor();
+            var selection = this._helper.getWordsSelection(currentTextEditor);
+            //console.log(selection);
+            await this._helper.toggleCharactersAtStartAndEnd(currentTextEditor,selection,"__","__");
+
             
-            await vscode.workspace.applyEdit(workSpaceEdit);
+
+
+            //var newPosition = new vscode.Position(this._helper.getPrimarySelection(currentTextEditor).active.line,0);
+            // console.log(newPosition);
+            // const workSpaceEdit = new vscode.WorkspaceEdit();
+            // workSpaceEdit.insert(
+            //     currentTextEditor.document.uri,
+            //     newPosition,
+            //     `TEST\n`
+            // )
+            
+            // await vscode.workspace.applyEdit(workSpaceEdit);
         }
-    }
+    
 
 }

@@ -1,9 +1,12 @@
 import * as vscode from 'vscode';
 
+//declare var globalSidebarPanel:any;
 export default class Sidebar {
     private _sidebarIsVisible:Boolean;
+    private _sidebarPanel:any;
     constructor() {
         this._sidebarIsVisible=false;
+        this._sidebarPanel=null;
     }
 
     /**
@@ -30,13 +33,35 @@ export default class Sidebar {
                 enableScripts: true
             } // Webview options. More on these later.
         );
-        panel.webview.html = "Test";
-
+        //globalSidebarPanel = panel;
+        this._setPanelHTML(panel, "Test");
+        this._sidebarPanel=panel;
         panel.onDidDispose(() => {
             this._sidebarIsVisible =false; //When panel is closed
-        }, null);
+            this._sidebarPanel=null;
 
+        }, null);
+        
         return panel;
+    }
+
+    private _setPanelHTML(panel, html){
+        panel.webview.html = html;
+    }
+
+    /**
+     * Gets called from the taskbar class to add and show Elements
+     * @param params: Informations on what should be done.
+     */
+    public taskbarCallback = (params)=>{ //Arrow function, otherwise the context of "this" will change, and is needed for this._sidebarPanel
+        
+        if(params =="showTestSidebar"){
+            vscode.window.showInformationMessage(params);
+            console.log("getPanel");
+            console.log(this._sidebarPanel);
+            console.log("_____")
+            this._setPanelHTML(this._sidebarPanel,"<h2>CLICK</h2>");
+        }
     }
 
     /**
@@ -47,6 +72,8 @@ export default class Sidebar {
         vscode.window.showInformationMessage('HIDE Sidebar');
         panel.dispose();
         this._sidebarIsVisible=false;
+        this._sidebarPanel=null;
+        //globalSidebarPanel= null;
     }
     
 }
