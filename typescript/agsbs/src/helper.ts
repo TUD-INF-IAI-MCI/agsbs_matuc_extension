@@ -142,26 +142,49 @@ export default class Helper{
         if(startCharacters.length==0){
             return false;
         }
+
         if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,selection,startCharacters,endCharacters)==true){
             //If they match immediately
             await this.deleteCharactersInSelection(currentTextEditor,selection,startCharacters.length,endCharacters.length);
-        } else {
-            //If they don't match
-            if(selection.start.character>=startCharacters.length){
-                var extendedSelection = new vscode.Selection( selection.start.translate(0,-1*startCharacters.length),selection.end);
-                if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,extendedSelection,startCharacters,endCharacters)==true){
-                    //Extended Selection, if the beginning was not selected
-                    await this.deleteCharactersInSelection(currentTextEditor,extendedSelection,startCharacters.length,endCharacters.length);
-                } else {
-                    //If they are still different in the extended selection
-                    await this.wrapCharactersAroundSelection(currentTextEditor,selection,startCharacters,endCharacters);
-                }
-            } else {
-                //If they are different and the selection is not longer than the length of the startCharacters
-                await this.wrapCharactersAroundSelection(currentTextEditor,selection,startCharacters,endCharacters);
-            }
+            return true;
+        } 
+
+        //If they don't match
+        if(selection.start.character>=startCharacters.length){
+            //Extend selection to the Left if it is possible
+            var extendedSelection = new vscode.Selection( selection.start.translate(0,-1*startCharacters.length),selection.end);
+            if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,extendedSelection,startCharacters,endCharacters)==true){
+                //Extended Selection, if the beginning was not selected
+                await this.deleteCharactersInSelection(currentTextEditor,extendedSelection,startCharacters.length,endCharacters.length);
+                return true;
+            } 
+        } 
+        var lineLength = currentTextEditor.document.lineAt(selection.end.line).range.end.character;
+        if(selection.end.character<=lineLength-endCharacters.length){
+            //Extend selection to the Right if it is possible
+            var extendedSelection = new vscode.Selection( selection.start,selection.end.translate(0,endCharacters.length));
+            if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,extendedSelection,startCharacters,endCharacters)==true){
+                //Extended Selection, if the beginning was not selected
+                await this.deleteCharactersInSelection(currentTextEditor,extendedSelection,startCharacters.length,endCharacters.length);
+                return true;
+            } 
+        } 
+        if(selection.start.character>=startCharacters.length &&selection.end.character<=lineLength-endCharacters.length){
+            //Extend selection in both directions if it is possible
+            var extendedSelection = new vscode.Selection( selection.start.translate(0,-1*startCharacters.length),selection.end.translate(0,endCharacters.length));
+            if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,extendedSelection,startCharacters,endCharacters)==true){
+                //Extended Selection, if the beginning was not selected
+                await this.deleteCharactersInSelection(currentTextEditor,extendedSelection,startCharacters.length,endCharacters.length);
+                return true;
+            } 
+        } 
+
+            //If they are different and the selection is not longer than the length of the startCharacters
+            await this.wrapCharactersAroundSelection(currentTextEditor,selection,startCharacters,endCharacters);
+            return true;
+        
             
-        }
+        
     }
     /**
      * Creates a custom File Resource URI that can be used in the Webview
@@ -187,4 +210,13 @@ export default class Helper{
         const ressource = onDiskPath.with({ scheme: 'vscode-resource' });
         return ressource;
     }
+    /** Generates a semi random UUID.
+     * @returns a UUID.
+     */
+    public generateUuid(){
+    return 'xxxx-xxxx-xxx-yxxx-xxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+}
 }
