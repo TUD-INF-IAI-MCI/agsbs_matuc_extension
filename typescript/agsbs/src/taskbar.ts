@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import Helper from './helper'
-import Language from './languages'
+
 import EditorFunctions from './editorFunctions';
 
 export default class Taskbar {
@@ -88,11 +88,18 @@ export default class Taskbar {
      * @param name Displayname of the Icon
      * @param section optional section the button is displayed in
      */
-    public addButton = (iconName:string,name:string,callback:any,section?:string)=>{
+    public addButton = (iconName:string,name:string,callback:any,section:string)=>{
         var id = this._helper.generateUuid();
-        var newSection="default";
+        var newSection="";
         if(section!=undefined){
             newSection=section;
+        }
+        
+        if(this._sectionIsInWebview(newSection)==false){
+            console.log("NOT SECTION",newSection);
+            var newSectionHTML = this._generateSectionHTML(section);
+            console.log(newSectionHTML);
+            this._addToHTML("BODY_END",newSectionHTML);
         }
         var icon = this._helper.getWebviewResourceIconURI(iconName,this._context);
         var html = `<button name="${name}" title="${name}" style="width:50px;height:50px;boder:1px solid white;" onclick="sendMessage('${id}')">
@@ -100,12 +107,13 @@ export default class Taskbar {
                         <label for="${name}">${name}</label>
                     </button>`;
         this._callbacks[id] = callback;
-        this._addToHTML("SECTION-"+newSection,html);
+        newSection = "SECTION-"+newSection;
+        this._addToHTML(newSection,html);
     }
 
 
-    private _addToHTML= (place:string,html:string)=>{
-        var marker = "<!--"+place+"-->";
+    private _addToHTML= (section:string,html:string)=>{
+        var marker = "<!--"+section+"-->";
         var oldHTML = this._panel.webview.html;
         html = html + marker;
         var newHTML = oldHTML.replace(marker,html);
@@ -114,24 +122,35 @@ export default class Taskbar {
     }
 
     private _generateSectionHTML= (name:string)=>{
-        return `<div name="${name}"><label for="${name}">${name}</label><!--SECTION-${name}--></div>`;
+        return `<fieldset name="${name}"><legend>${name}</legend><!--SECTION-${name}--></fieldset>`;
+    }
+    private _sectionIsInWebview(section:string){
+        var webViewHTML = this._panel.webview.html;
+        var sectionIndicator = "<!--SECTION-"+section+"-->";
+        if(webViewHTML.includes(sectionIndicator)){
+            return true;
+        } else{
+            return false;
+        }
     }
 
     private _getBaseHTML():string{
         // var fontAwesomeFont = this._helper.getWebviewResourceURI("fontawesome-webfont.woff2","style/fonts",this._context);
         // var fontAwesome = this._helper.getWebviewResourceURI("fontawesome.css","style",this._context);
-        var defaultSection = this._generateSectionHTML("default");
+        var style = this._helper.getWebviewResourceURI("taskbar.css","style",this._context);
+        //var defaultSection = this._generateSectionHTML("");
          var html = `<!DOCTYPE html>
          <html lang="en">
          <head>
              <meta charset="UTF-8">
              <meta name="viewport" content="width=device-width, initial-scale=1.0">
              <title>AGSBS</title>
+             <link rel="stylesheet" href="${style}">
              <!--HEAD_END-->
          </head>
          <body>
             <!--BODY_START-->
-           ${defaultSection}
+           
             <!--BODY_END-->
           <script>
              //const output = document.getElementById('output');
@@ -148,6 +167,7 @@ export default class Taskbar {
         return  html;
 
         /**
+         * ${defaultSection}
          * <style>
              @font-face {
                 font-family: 'Font Awesome 5 Free';

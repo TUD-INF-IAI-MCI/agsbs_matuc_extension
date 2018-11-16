@@ -1,21 +1,21 @@
 //import * as vscode from 'vscode'
 import Helper from './helper'
+import Language from './languages'
 
 export default class EditorFunctions {
     private _helper:Helper;
-    private _sidebarCallback;
-    private _taskbarCallback;
-    //private _context:vscode.ExtensionContext;
+    private _sidebarCallback:any;
+    private _taskbarCallback:any;
+    private _language:Language;
     constructor(taskbarCallback,sidebarCallback, context) {
         this._helper = new Helper;
         this._sidebarCallback = sidebarCallback;
         this._taskbarCallback = taskbarCallback;
-        
-        
-        //this._context= context;
+        this._language = new Language;
     }
     public setup =()=>{
-        this._taskbarCallback.addButton("clone.svg","Bold",this.bold);
+        this._taskbarCallback.addButton("clone.svg",this._language.get("bold"),this.bold,this._language.get("emphasis"));
+        this._taskbarCallback.addButton("h.svg",this._language.get("italic"),this.italic,this._language.get("emphasis"));
     }
 
     public bold = async ()=>{

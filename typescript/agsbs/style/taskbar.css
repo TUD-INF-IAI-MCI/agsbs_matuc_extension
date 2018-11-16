@@ -1,0 +1,33 @@
+body {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+fieldset {
+  border: 1px solid;
+  border-left-width: 0px;
+  border-right-width: 0px;
+  border-bottom-width: 0px;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  width: auto;
+  position: relative;
+}
+
+legend {
+  margin: 0px auto;
+}
+
+button {
+  display: inline-block;
+  margin: 4px;
+  background-color: none;
+}
+/*# sourceMappingURL=taskbar.css.map */

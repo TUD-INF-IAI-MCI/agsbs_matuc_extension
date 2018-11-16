@@ -2,10 +2,10 @@
 
 export default class en {
  
-        public d=[];
+        public d:any;
 
     constructor() {
-        
+        this.d=[];
         this.d['yes'] =  'Yes';
 		this.d['no'] =  'No';
 		this.d['SelectedWrongFileErrorDetail'] =  'Please select a .md or .html file.';
@@ -253,8 +253,12 @@ export default class en {
         this.d['checkLine'] =  'Check line: ';
     }
 
-    public get(varname){
-        return this.d[varname];
+    public get = (varname)=>{
+		var result = this.d[varname];
+		if(result==undefined){
+			return varname;
+		}
+        return result;
     }
 
 }

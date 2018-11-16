@@ -11,11 +11,12 @@ export default class Language {
     private getVscodeLanguage ():string{
         return vscode.env.language;
     }
-    private async _loadLanguageFile(language){
-        console.log(language);
+    private  _loadLanguageFile = async (language)=>{
+        console.log("Language: "+language);
         switch(language){
             case "en":
                 this.languageClass =  new en();
+
                 break;
             default:
             this.languageClass =  new en();
@@ -23,8 +24,8 @@ export default class Language {
         }
         
     }
-    public get(name){
-        this.languageClass.get(name)
+    public get = (name)=>{
+        return this.languageClass.get(name);
     }
     
 }

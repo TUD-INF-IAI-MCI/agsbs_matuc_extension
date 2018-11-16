@@ -1,0 +1,23 @@
+body{
+    box-sizing: border-box;
+}
+fieldset {
+    border: 1px solid;// #9da5b4
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width:auto;
+    position: relative;
+
+}
+legend {
+    margin: 0px auto;
+}
+button{
+    display: inline-block;
+    margin: 4px;
+    background-color: none;
+}
