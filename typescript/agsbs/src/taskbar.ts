@@ -28,6 +28,13 @@ export default class Taskbar {
     public isVisible(){
         return this._taskbarIsVisible;
     }
+    /** this Function gets called from the Webview when a button is clicked. 
+     * It calls one of the callbacks from EditorFunctions.
+     * @param message The content of the message from the Webview
+     */
+    private _messageFromWebviewHandler = (message)=>{
+        this._callbacks[message.text]();
+    }
 
     /**
      * Opens a Taskbar Webview
@@ -111,7 +118,11 @@ export default class Taskbar {
         this._addToHTML(newSection,html);
     }
 
-
+    /** This adds HTML to the taskbars Webview, at the given point. 
+     * This point is predefined in the _getBaseHTML-Function and _generateSectionHTML, for example SECTION-*, HEAD_END, BODY_START or BODY_END
+     * @param section section Name, see examples above
+     * @param html html to insert 
+     */
     private _addToHTML= (section:string,html:string)=>{
         var marker = "<!--"+section+"-->";
         var oldHTML = this._panel.webview.html;
@@ -121,9 +132,18 @@ export default class Taskbar {
         this._panel.webview.html= newHTML;
     }
 
+    /** Generate a HTML snippet to insert into the Webview for a given Name
+     * @param name Name of the section
+     * @returns a HTML snippet
+     */
     private _generateSectionHTML= (name:string)=>{
         return `<fieldset name="${name}"><legend>${name}</legend><!--SECTION-${name}--></fieldset>`;
     }
+
+    /** Checks if a section is in the Webview HTML
+     * @param section name of the sectiton 
+     * @returns Boolean, true if the section is already in the WebView
+     */
     private _sectionIsInWebview(section:string){
         var webViewHTML = this._panel.webview.html;
         var sectionIndicator = "<!--SECTION-"+section+"-->";
@@ -133,7 +153,10 @@ export default class Taskbar {
             return false;
         }
     }
-
+    
+    /**
+     * Returns the base Frame HTML for the Webview
+     */
     private _getBaseHTML():string{
         // var fontAwesomeFont = this._helper.getWebviewResourceURI("fontawesome-webfont.woff2","style/fonts",this._context);
         // var fontAwesome = this._helper.getWebviewResourceURI("fontawesome.css","style",this._context);
@@ -181,12 +204,7 @@ export default class Taskbar {
     }
 
 
-    private _messageFromWebviewHandler = (message)=>{
-        console.log("message");
-        console.log(message);
-        console.log(this._callbacks);
-        this._callbacks[message.text]();
-    }
+
 
     
 
