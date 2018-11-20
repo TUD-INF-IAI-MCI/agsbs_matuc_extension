@@ -1,5 +1,5 @@
-import * as vscode from 'vscode'
-import en from './languages/en'
+import * as vscode from 'vscode';
+import En from './languages/en';
 
 export default class Language {
     private language:string; 
@@ -15,11 +15,11 @@ export default class Language {
         console.log("Language: "+language);
         switch(language){
             case "en":
-                this.languageClass =  new en();
+                this.languageClass =  new En();
 
                 break;
             default:
-            this.languageClass =  new en();
+            this.languageClass =  new En();
             break;
         }
         

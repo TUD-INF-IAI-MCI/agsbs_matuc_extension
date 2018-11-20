@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AGSBS Sidebar</title>
+        <link rel="stylesheet" href="${style}">
+    </head>
+    <body>  
+        <form id="inputForm">
+       <!--FORM-START-->
+       <!--FORM-END-->
+        </form>
+        <!--SCRIPT-->
+        <button onclick="validate()"><!--BUTTON-TEXT--></button>
+        
+        <script>
+            function validate () {
+                var form = document.forms["inputForm"];
+                var returnObject = {};
+                for (var i = 0; i<form.length; i++){
+                    var element = form[i];
+                    var name = "";
+                    var value=null;
+                    var checked = null;
+                    if(element.hasAttribute("name")){
+                        name = element.name;
+                    }
+                    if(element.hasAttribute("type")){
+                        if(element.type === "checkbox" || element.type === "Checkbox" || element.type === "CHECKBOX"){
+                            value = element.checked;
+                            checked = element.checked;
+                        } else {
+                            value = element.value;
+                            if(element.checked !== undefined){
+                                checked = element.checked;
+                            }
+                        }
+                    } if(name !="" && (value !== null && checked !== null)){
+                    thisElement = {name:name,type:element.type, value:value, checked:checked};
+                    returnObject[name] = thisElement;
+                    }
+                }
+                sendMessage( JSON.stringify(returnObject));
+            }
+            const vscode = acquireVsCodeApi();
+                 function sendMessage(message){
+                     vscode.postMessage({
+                         text: message
+                     })
+                 }
+        </script>
+    </body>
+</html>

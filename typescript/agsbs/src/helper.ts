@@ -1,5 +1,7 @@
-import * as vscode from 'vscode'
-import * as path from 'path'
+import * as vscode from 'vscode';
+import * as path from 'path';
+
+
 
 export default class Helper{
     /**
@@ -71,12 +73,12 @@ export default class Helper{
             currentTextEditor.document.uri,
             selection.start,
             startCharacters
-        )
+        );
         workSpaceEdit.insert(
             currentTextEditor.document.uri,
             selection.end,
             endCharacters
-        )
+        );
         await vscode.workspace.applyEdit(workSpaceEdit);
 
     }
@@ -100,11 +102,11 @@ export default class Helper{
         workSpaceEdit.delete(
             currentTextEditor.document.uri,
             start
-        )
+        );
         workSpaceEdit.delete(
             currentTextEditor.document.uri,
             end
-        )
+        );
         await vscode.workspace.applyEdit(workSpaceEdit);
     }
     /**
@@ -116,7 +118,7 @@ export default class Helper{
      */
     public async checkStringForMarkersAtBeginningAndEnd (currentTextEditor:vscode.TextEditor,selection:vscode.Range,startCharacters:string,endCharacters:string){
         var selectedText = currentTextEditor.document.getText(selection);
-        if(selectedText==undefined){
+        if(selectedText === undefined){
             return false;
         }
         if((startCharacters.length + endCharacters.length)>selectedText.length){
@@ -125,7 +127,7 @@ export default class Helper{
         var textlength= selectedText.length;
         var startSubstring = selectedText.substr(0,startCharacters.length);
         var endSubstring = selectedText.substr((textlength-endCharacters.length),textlength);
-        if(startCharacters===startSubstring && endCharacters==endSubstring){
+        if(startCharacters === startSubstring && endCharacters === endSubstring){
             console.log("true");
             return true;
         }
@@ -139,21 +141,22 @@ export default class Helper{
      * @param endCharacters Characters at the end of the selection that will be added or removed
      */
     public async toggleCharactersAtStartAndEnd (currentTextEditor:vscode.TextEditor,selection:vscode.Range,startCharacters:string,endCharacters:string){
-        if(startCharacters.length==0){
+        if(startCharacters.length === 0){
             return false;
         }
 
-        if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,selection,startCharacters,endCharacters)==true){
+        if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,selection,startCharacters,endCharacters) === true){
             //If they match immediately
             await this.deleteCharactersInSelection(currentTextEditor,selection,startCharacters.length,endCharacters.length);
             return true;
         } 
 
         //If they don't match
+        var extendedSelection:vscode.Selection;
         if(selection.start.character>=startCharacters.length){
             //Extend selection to the Left if it is possible
-            var extendedSelection = new vscode.Selection( selection.start.translate(0,-1*startCharacters.length),selection.end);
-            if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,extendedSelection,startCharacters,endCharacters)==true){
+            extendedSelection = new vscode.Selection( selection.start.translate(0,-1*startCharacters.length),selection.end);
+            if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,extendedSelection,startCharacters,endCharacters) === true){
                 //Extended Selection, if the beginning was not selected
                 await this.deleteCharactersInSelection(currentTextEditor,extendedSelection,startCharacters.length,endCharacters.length);
                 return true;
@@ -162,8 +165,8 @@ export default class Helper{
         var lineLength = currentTextEditor.document.lineAt(selection.end.line).range.end.character;
         if(selection.end.character<=lineLength-endCharacters.length){
             //Extend selection to the Right if it is possible
-            var extendedSelection = new vscode.Selection( selection.start,selection.end.translate(0,endCharacters.length));
-            if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,extendedSelection,startCharacters,endCharacters)==true){
+            extendedSelection = new vscode.Selection( selection.start,selection.end.translate(0,endCharacters.length));
+            if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,extendedSelection,startCharacters,endCharacters) === true){
                 //Extended Selection, if the beginning was not selected
                 await this.deleteCharactersInSelection(currentTextEditor,extendedSelection,startCharacters.length,endCharacters.length);
                 return true;
@@ -171,8 +174,8 @@ export default class Helper{
         } 
         if(selection.start.character>=startCharacters.length &&selection.end.character<=lineLength-endCharacters.length){
             //Extend selection in both directions if it is possible
-            var extendedSelection = new vscode.Selection( selection.start.translate(0,-1*startCharacters.length),selection.end.translate(0,endCharacters.length));
-            if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,extendedSelection,startCharacters,endCharacters)==true){
+            extendedSelection = new vscode.Selection( selection.start.translate(0,-1*startCharacters.length),selection.end.translate(0,endCharacters.length));
+            if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,extendedSelection,startCharacters,endCharacters) === true){
                 //Extended Selection, if the beginning was not selected
                 await this.deleteCharactersInSelection(currentTextEditor,extendedSelection,startCharacters.length,endCharacters.length);
                 return true;
@@ -192,7 +195,7 @@ export default class Helper{
      * @param context Context of the Extension
      * @returns resource from type vscode.Uri
      */
-    public getWebviewResourceIconURI (name,context):vscode.Uri{
+    public getWebviewResourceIconURI (name,context):vscode.Uri {
         var ressource = this.getWebviewResourceURI(name,"icons",context);
         return ressource;
     }
@@ -203,7 +206,7 @@ export default class Helper{
      * @param context Context of the Webview
      * @returns vscode URI for use in a WebView
      */
-    public getWebviewResourceURI (name,folder,context):vscode.Uri{
+    public getWebviewResourceURI (name,folder,context):vscode.Uri {
         const onDiskPath = vscode.Uri.file(path.join(context.extensionPath, folder, name));
 
         // And get the special URI to use with the webview

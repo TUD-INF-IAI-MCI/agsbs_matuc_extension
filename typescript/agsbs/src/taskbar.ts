@@ -1,12 +1,12 @@
-import * as vscode from 'vscode'
-import Helper from './helper'
+import * as vscode from 'vscode';
+import Helper from './helper';
 
 import EditorFunctions from './editorFunctions';
 
 export default class Taskbar {
     private _taskbarIsVisible:Boolean;
     private _panel:vscode.WebviewPanel;
-    private _sidebarCallback;
+    private _sidebarCallback:any;
     private _helper:Helper;
     private _context:vscode.ExtensionContext;
     private _editorFunctions:EditorFunctions;
@@ -42,7 +42,6 @@ export default class Taskbar {
      */
     public async show() {
         this._taskbarIsVisible=true;
-        vscode.window.showInformationMessage('UPDATE');
         var panel = vscode.window.createWebviewPanel(
             'agsbstaskbar', // Identifies the type of the webview. Used internally
             "AGSBS Toolbar", // Title of the panel displayed to the user
@@ -62,18 +61,7 @@ export default class Taskbar {
         }, null);
 
         panel.webview.onDidReceiveMessage(message => {
-            console.log("got message");
             this._messageFromWebviewHandler(message);
-            // switch (message.text) {
-            //     case 'testbutton':
-            //         //vscode.window.showErrorMessage(message.text);
-            //         this.insertTest();
-            //         return;
-            //     case 'sidebarTest':
-            //     vscode.window.showInformationMessage('SIDEBAR');
-            //     this._sidebarCallback("showTestSidebar");
-
-            // }
         }, undefined);
         this._editorFunctions.setup();
         return panel;
@@ -98,14 +86,12 @@ export default class Taskbar {
     public addButton = (iconName:string,name:string,callback:any,section:string)=>{
         var id = this._helper.generateUuid();
         var newSection="";
-        if(section!=undefined){
+        if(section !== undefined){
             newSection=section;
         }
         
-        if(this._sectionIsInWebview(newSection)==false){
-            console.log("NOT SECTION",newSection);
+        if(this._sectionIsInWebview(newSection) === false){
             var newSectionHTML = this._generateSectionHTML(section);
-            console.log(newSectionHTML);
             this._addToHTML("BODY_END",newSectionHTML);
         }
         var icon = this._helper.getWebviewResourceIconURI(iconName,this._context);
@@ -136,7 +122,7 @@ export default class Taskbar {
      * @param name Name of the section
      * @returns a HTML snippet
      */
-    private _generateSectionHTML= (name:string)=>{
+    private _generateSectionHTML = (name:string) => {
         return `<fieldset name="${name}"><legend>${name}</legend><!--SECTION-${name}--></fieldset>`;
     }
 

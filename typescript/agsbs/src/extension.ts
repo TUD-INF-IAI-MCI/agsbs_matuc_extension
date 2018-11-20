@@ -53,8 +53,8 @@ class ExtensionController {
 
         
         
-        let sidebar = new Sidebar();
-        let taskbar = new Taskbar(sidebar.taskbarCallback,context);
+        let sidebar = new Sidebar(context);
+        let taskbar = new Taskbar(sidebar,context);
         let helper = new Helper();
         this._layout= { orientation: 1, groups: [{groups:[{size:0.8},{  size: 0.2 }], size:0.85}, {  size: 0.15 }] };
 
