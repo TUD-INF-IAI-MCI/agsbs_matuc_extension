@@ -93,14 +93,18 @@ export default class Sidebar {
      * @param css optional. Custom CSS for the form
      * @param script optional. Custom javascript for the form
      */
-    public addToSidebar = async (html:string, callback:any,buttonText?:string,css?:string,script?:string) =>{
+    public addToSidebar = async (html:string,headline:string, callback:any,buttonText?:string,css?:string,script?:string) =>{
+        this._panel.webview.html = this._getBaseHTML();
         this._sidebarCallback = callback;
         this._addToHTML("FORM_END",html);
+        if(headline !== undefined && headline !== ""){
+            this._addToHTML("HEADLINE",`<h2>${headline}</h2>`);
+        }
         if(buttonText !== undefined){
-        this._addToHTML("BUTTON",`<button onclick="validate()">${buttonText}</button>`);
+        this._addToHTML("BUTTON",`<input type="submit" value="${buttonText}">`);
         } else {
             var standardButtonText = this._language.get("ok");
-            this._addToHTML("BUTTON",`<button onclick="validate()">${standardButtonText}</button>`);
+            this._addToHTML("BUTTON",`<input type="submit" value="${standardButtonText}">`);
         }
         if(script !== undefined){
             this._addToHTML("SCRIPT",script);
@@ -136,14 +140,23 @@ export default class Sidebar {
                 <link rel="stylesheet" href="${style}">
             </head>
             <body>  
+                <!--HEADLINE-->
                 <form id="inputForm">
                <!--FORM_START-->
                <!--FORM_END-->
+               <!--BUTTON-->
                 </form>
                 <!--SCRIPT-->
-                <!--BUTTON-->
+                
                 
                 <script>
+                var form = document.forms["inputForm"];
+                form.onsubmit = function(event) {
+                    event.preventDefault();
+                    validate();
+                    return false;
+                    
+                }
                     function validate () {
                         var form = document.forms["inputForm"];
                         var returnObject = {};

@@ -184,11 +184,11 @@ export default class En {
 		// this.d['importTableFromCsvErrorDetail'] =  'Can not replace text by table from CSV.';
 		// this.d['AddPageNumberError'] =  'Error during the generation of the page number. Matuc-Message is';
 
-		// //insert link dialog
-		// this.d['linkText'] =  'Link text';
-		// this.d['linkTitle'] =  'Link title (optional)';
-		// this.d['link'] =  'URL';
-		// this.d['insertLinkDialog'] =  'Insert';
+		 //insert link dialog
+		 this.d['linkText'] =  'Link text';
+		 this.d['linkTitle'] =  'Link title (optional)';
+		 this.d['link'] =  'URL';
+		 this.d['insertLinkDialog'] =  'Insert';
 
 		// //insert table dialog
 		// this.d['tableHeadCheckbox'] =  'Add a head to the table';

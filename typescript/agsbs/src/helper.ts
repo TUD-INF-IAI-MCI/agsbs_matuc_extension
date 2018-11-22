@@ -17,7 +17,6 @@ export default class Helper{
      */
     public async getCurrentTextEditor(){
         const textEditors = await vscode.window.visibleTextEditors;
-        //console.log(textEditors);
         if(textEditors!==undefined){
             if(textEditors.length<1){
                 vscode.window.showErrorMessage("No open editors.");
@@ -44,21 +43,40 @@ export default class Helper{
         return textEditor.selection;
     }
     public getWordsSelection(textEditor:vscode.TextEditor){
+        
         var selection = this.getPrimarySelection(textEditor);
         var newSelection:vscode.Selection;
 
         if(selection.isEmpty){
             var wordRange = textEditor.document.getWordRangeAtPosition(selection.active);
-
-            newSelection = new vscode.Selection(wordRange.start,wordRange.end);
-        } else {
+            if(wordRange !== undefined){ //if there is no actual selection, but a marked word
+                newSelection = new vscode.Selection(wordRange.start,wordRange.end);
+            } else { //if there is no actual selection and also no marked word
+                newSelection = new vscode.Selection(selection.start,selection.end);
+            }
+        } else { //if there is a selection
             newSelection = new vscode.Selection(selection.start,selection.end);
             
         }
-        console.log(newSelection);
         return newSelection;
 
     }
+    /**
+     * Inserts a given string at the start of a selection
+     * @param currentTextEditor the current text editor
+     * @param selection the current selection
+     * @param charactersToInsert string that will be inserted 
+     */
+    public async insertStringAtStartOfSelection(currentTextEditor:vscode.TextEditor,selection:vscode.Range,charactersToInsert:any) {
+        const workSpaceEdit = new vscode.WorkspaceEdit();
+        workSpaceEdit.insert(
+            currentTextEditor.document.uri,
+            selection.start,
+            charactersToInsert
+        );
+        await vscode.workspace.applyEdit(workSpaceEdit);
+    }
+
     /**
      * Wraps Characters around the current selected Area.
      * @param currentTextEditor The TextEditor the Document is housed in
@@ -68,7 +86,6 @@ export default class Helper{
      */
     public async wrapCharactersAroundSelection(currentTextEditor:vscode.TextEditor, selection:vscode.Range,startCharacters:string,endCharacters:string){
         const workSpaceEdit = new vscode.WorkspaceEdit();
-        console.log(selection);
         workSpaceEdit.insert(
             currentTextEditor.document.uri,
             selection.start,
@@ -98,7 +115,6 @@ export default class Helper{
        var end = new vscode.Range(endPointStart,endPointEnd);
 
        const workSpaceEdit = new vscode.WorkspaceEdit();
-        console.log(selection);
         workSpaceEdit.delete(
             currentTextEditor.document.uri,
             start
@@ -128,7 +144,6 @@ export default class Helper{
         var startSubstring = selectedText.substr(0,startCharacters.length);
         var endSubstring = selectedText.substr((textlength-endCharacters.length),textlength);
         if(startCharacters === startSubstring && endCharacters === endSubstring){
-            console.log("true");
             return true;
         }
         
@@ -153,8 +168,8 @@ export default class Helper{
 
         //If they don't match
         var extendedSelection:vscode.Selection;
-        if(selection.start.character>=startCharacters.length){
-            //Extend selection to the Left if it is possible
+        if(selection.start.character>=startCharacters.length){//Extend selection to the Left if it is possible
+            
             extendedSelection = new vscode.Selection( selection.start.translate(0,-1*startCharacters.length),selection.end);
             if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,extendedSelection,startCharacters,endCharacters) === true){
                 //Extended Selection, if the beginning was not selected
@@ -162,9 +177,18 @@ export default class Helper{
                 return true;
             } 
         } 
+        if(selection.start.character>=(startCharacters.length+endCharacters.length)){//Extend selection to the Left (stadt + endcharacters) if it is possible
+            //reason: if there is nothing selected, and the button gets pressed, the cursor will jump at the end after the characters
+            extendedSelection = new vscode.Selection( selection.start.translate(0,(-1*startCharacters.length + -1*endCharacters.length)),selection.end);
+            if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,extendedSelection,startCharacters,endCharacters) === true){
+                //Extended Selection, if the beginning was not selected
+                await this.deleteCharactersInSelection(currentTextEditor,extendedSelection,startCharacters.length,endCharacters.length);
+                return true;
+            } 
+        } 
         var lineLength = currentTextEditor.document.lineAt(selection.end.line).range.end.character;
-        if(selection.end.character<=lineLength-endCharacters.length){
-            //Extend selection to the Right if it is possible
+        if(selection.end.character<=lineLength-endCharacters.length){//Extend selection to the Right if it is possible
+            
             extendedSelection = new vscode.Selection( selection.start,selection.end.translate(0,endCharacters.length));
             if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,extendedSelection,startCharacters,endCharacters) === true){
                 //Extended Selection, if the beginning was not selected
@@ -172,9 +196,19 @@ export default class Helper{
                 return true;
             } 
         } 
-        if(selection.start.character>=startCharacters.length &&selection.end.character<=lineLength-endCharacters.length){
-            //Extend selection in both directions if it is possible
+        if(selection.start.character>=startCharacters.length &&selection.end.character<=lineLength-endCharacters.length){//Extend selection in both directions if it is possible
+            
             extendedSelection = new vscode.Selection( selection.start.translate(0,-1*startCharacters.length),selection.end.translate(0,endCharacters.length));
+            if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,extendedSelection,startCharacters,endCharacters) === true){
+                //Extended Selection, if the beginning was not selected
+                await this.deleteCharactersInSelection(currentTextEditor,extendedSelection,startCharacters.length,endCharacters.length);
+                return true;
+            } 
+        } 
+        if(selection.start.character>=startCharacters.length &&selection.end.character<=lineLength-endCharacters.length){//Extend selection to the full length of the line
+            var newStartPositionAtLineStart = new vscode.Position(selection.start.line,0);
+            var newStartPositionAtLineEnd = new vscode.Position(selection.end.line,lineLength);
+            extendedSelection = new vscode.Selection( newStartPositionAtLineStart,newStartPositionAtLineEnd);
             if(await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor,extendedSelection,startCharacters,endCharacters) === true){
                 //Extended Selection, if the beginning was not selected
                 await this.deleteCharactersInSelection(currentTextEditor,extendedSelection,startCharacters.length,endCharacters.length);
