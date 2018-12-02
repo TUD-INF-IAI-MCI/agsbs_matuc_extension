@@ -101,10 +101,10 @@ export default class Sidebar {
             this._addToHTML("HEADLINE",`<h2>${headline}</h2>`);
         }
         if(buttonText !== undefined){
-        this._addToHTML("BUTTON",`<input type="submit" value="${buttonText}">`);
+        this._addToHTML("BUTTON",`<br><input type="submit" value="${buttonText}">`);
         } else {
             var standardButtonText = this._language.get("ok");
-            this._addToHTML("BUTTON",`<input type="submit" value="${standardButtonText}">`);
+            this._addToHTML("BUTTON",`<br><input type="submit" value="${standardButtonText}">`);
         }
         if(script !== undefined){
             this._addToHTML("SCRIPT",script);
@@ -130,7 +130,7 @@ export default class Sidebar {
      * @returns base HTML
      */
     private _getBaseHTML = () => {
-        var style = this._helper.getWebviewResourceURI("taskbar.css","style",this._context);
+        var style = this._helper.getWebviewResourceURI("sidebar.css","style",this._context);
         return `<!DOCTYPE html>
         <html>
             <head>
@@ -157,40 +157,28 @@ export default class Sidebar {
                     return false;
                     
                 }
-                    function validate () {
-                        var form = document.forms["inputForm"];
-                        var returnObject = {};
-                        for (var i = 0; i<form.length; i++){
-                            var element = form[i];
-                            var name = "";
-                            var value=null;
-                            var checked = null;
-                            if(element.hasAttribute("name")){
-                                name = element.name;
+                function validate () {
+                    var form = document.forms["inputForm"];
+                    var returnObject = {};
+                    for (var i = 0; i<form.length; i++){
+                        var element = form[i];
+                        if(element.hasAttribute("name")){
+                            var name = element.name;
+                            var elementPropertyObject = {};
+                            for (var property in element) {
+                                elementPropertyObject [property] = element[property];
                             }
-                            if(element.hasAttribute("type")){
-                                if(element.type === "checkbox" || element.type === "Checkbox" || element.type === "CHECKBOX"){
-                                    value = element.checked;
-                                    checked = element.checked;
-                                } else {
-                                    value = element.value;
-                                    if(element.checked !== undefined){
-                                        checked = element.checked;
-                                    }
-                                }
-                            } if(name !="" && (value !== null && checked !== null)){
-                            thisElement = {name:name,type:element.type, value:value, checked:checked};
-                            returnObject[name] = thisElement;
-                            }
+                            returnObject[name] = elementPropertyObject;
                         }
-                        sendMessage( JSON.stringify(returnObject));
                     }
-                    const vscode = acquireVsCodeApi();
-                         function sendMessage(message){
-                             vscode.postMessage({
-                                 text: message
-                             })
-                         }
+                    sendMessage( JSON.stringify(returnObject));
+                }
+                const vscode = acquireVsCodeApi();
+                     function sendMessage(message){
+                         vscode.postMessage({
+                             text: message
+                         })
+                     }
                 </script>
             </body>
         </html>

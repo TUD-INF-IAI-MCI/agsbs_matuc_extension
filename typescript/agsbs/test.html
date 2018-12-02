@@ -9,38 +9,57 @@
     <body>  
         <form id="inputForm">
        <!--FORM-START-->
+       <input type='text' name='textinput'>
+       <input id="file-input" type="file" name="file" />
+       <select name="selections">
+           <option value="test">TESt</option>
+       </select>
+       <select name'selectPictureFromHere'>
+        <option selected="true" disabled="disabled" value=''>Select the Image here</option> 
+        <option value='/Users/lucas/Desktop/AGSBS/pictures/b1.png'>b1.png</option>
+        </select>
        <!--FORM-END-->
         </form>
         <!--SCRIPT-->
-        <button onclick="validate()"><!--BUTTON-TEXT--></button>
+        <button onclick="validate()"><!--BUTTON-TEXT-->TT</button>
         
         <script>
             function validate () {
                 var form = document.forms["inputForm"];
+                form.onsubmit = function(event) {
+                    event.preventDefault();
+                    validate();
+                    return false;
+                    
+                }
                 var returnObject = {};
                 for (var i = 0; i<form.length; i++){
                     var element = form[i];
-                    var name = "";
-                    var value=null;
-                    var checked = null;
                     if(element.hasAttribute("name")){
-                        name = element.name;
-                    }
-                    if(element.hasAttribute("type")){
-                        if(element.type === "checkbox" || element.type === "Checkbox" || element.type === "CHECKBOX"){
-                            value = element.checked;
-                            checked = element.checked;
-                        } else {
-                            value = element.value;
-                            if(element.checked !== undefined){
-                                checked = element.checked;
-                            }
+                        var name = element.name;
+                        //returnObject[name] = JSON.stringify(element);
+                        var elementPropertyObject = {};
+                        for (var property in element) {
+                            elementPropertyObject [property] = element[property];
                         }
-                    } if(name !="" && (value !== null && checked !== null)){
-                    thisElement = {name:name,type:element.type, value:value, checked:checked};
-                    returnObject[name] = thisElement;
+                        returnObject[name] = elementPropertyObject;
                     }
+                    // if(element.hasAttribute("type")){
+                    //     if(element.type === "checkbox" || element.type === "Checkbox" || element.type === "CHECKBOX"){
+                    //         value = element.checked;
+                    //         checked = element.checked;
+                    //     } else {
+                    //         value = element.value;
+                    //         if(element.checked !== undefined){
+                    //             checked = element.checked;
+                    //         }
+                    //     }
+                    // } if(name !="" && (value !== null && checked !== null)){
+                    // thisElement = {name:name,type:element.type, value:value, checked:checked};
+                    // returnObject[name] = element;
+                    // }
                 }
+                console.log(returnObject);
                 sendMessage( JSON.stringify(returnObject));
             }
             const vscode = acquireVsCodeApi();

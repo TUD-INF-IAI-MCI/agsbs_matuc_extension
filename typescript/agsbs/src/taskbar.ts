@@ -3,6 +3,7 @@ import Helper from './helper';
 
 import EditorFunctions from './editorFunctions';
 
+
 export default class Taskbar {
     private _taskbarIsVisible:Boolean;
     private _panel:vscode.WebviewPanel;
@@ -114,7 +115,6 @@ export default class Taskbar {
         var oldHTML = this._panel.webview.html;
         html = html + marker;
         var newHTML = oldHTML.replace(marker,html);
-        //console.log(newHTML);
         this._panel.webview.html= newHTML;
     }
 

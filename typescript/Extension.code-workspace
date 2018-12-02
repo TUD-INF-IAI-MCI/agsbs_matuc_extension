@@ -5,6 +5,7 @@
 		}
 	],
 	"settings": {
-		"typescript.tsc.autoDetect": "off"
+		"typescript.tsc.autoDetect": "off",
+		"python.pythonPath": "/usr/local/bin/python3"
 	}
 }

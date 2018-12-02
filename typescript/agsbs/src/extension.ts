@@ -31,9 +31,6 @@ export function deactivate() {
  * Orchestrates Updates and all open Panels
  */
 class ExtensionController {
-
-    
-
     private _layout: Object;
     private _helper: Helper;
 

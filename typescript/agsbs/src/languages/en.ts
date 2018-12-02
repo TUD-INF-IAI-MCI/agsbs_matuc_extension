@@ -5,14 +5,22 @@ export default class En {
         public d:any;
 
     constructor() {
-        this.d=[];
+		this.d=[];
+
+		// Default folder name for this language. Don't add Spaces at start and end
+		this.d['picuteFolderName'] = 'pictures';
+
         this.d['yes'] =  'Yes';
 		this.d['no'] =  'No';
 		this.d['ok'] = 'Ok';
 
+		this.d['noOpenEditors'] = 'No open Editors.';
+		this.d['tooManyOpenEditors'] = 'Too many open editors. Please just open one file and without a split view.';
+		this.d['ActionErrorNotMarkdown'] = 'The current File is not a Markdown file and the current Action cannot be executed. Please open a Markdown File.';
+
 		// this.d['SelectedWrongFileErrorDetail'] =  'Please select a .md or .html file.';
 		// this.d['changesFromEditProjectDialogSaved'] =  'Your changes has been saved.';
-		// this.d['error'] =  'A error occurs';
+		 this.d['error'] =  'A error occurs';
 		// this.d['wrongMatucVersion'] =  "You have to install the latest Matuc version. Latest version is ${version}.";
 		// this.d['checkFile'] =  'Check file ';
 		// this.d['begin'] =  "Begin";
@@ -188,7 +196,7 @@ export default class En {
 		 this.d['linkText'] =  'Link text';
 		 this.d['linkTitle'] =  'Link title (optional)';
 		 this.d['link'] =  'URL';
-		 this.d['insertLinkDialog'] =  'Insert';
+		 this.d['insertLinkSubmit'] =  'Insert';
 
 		// //insert table dialog
 		// this.d['tableHeadCheckbox'] =  'Add a head to the table';
@@ -211,24 +219,25 @@ export default class En {
 		// this.d['importTableError'] =  "Error during table import";
 		// this.d['importTableErrorText'] =  "Check the csv table";
 		// //insert graphic dialog
-		// this.d['selectImageFile'] =  'Select the Image here';
+		 this.d['selectImageFile'] =  'Select the Image here';
 		// this.d['selectMdFile'] =  'Open .md file';
 		// this.d['selectPicture'] =  'Found picture';
-		// this.d['altText'] =  'Alt text';
-		// this.d['outsourceCheckbox'] =  'outsource Description';
+		 this.d['altText'] =  'Alt text';
+		 this.d['outsourceCheckbox'] =  'outsource Description';
 		// this.d['graphicFile'] =  'Pick a file';
-		// this.d['thereAreNoPicturesInFolder'] =  "No pictures found in folder or the file names contain spaces.";
+		 this.d['thereAreNoPicturesInFolder'] =  "No pictures found in folder: ";
 		// this.d['thereAreNoCsvFileInFolder'] =  "No csv-file found in folder or the file names contain spaces.";
 		// this.d['addPictureToFolder'] =  "Save pictures in folder ";
 		// this.d['addCsvFileToFolder'] =  "Save csvlfile in folder ";
 		// this.d['ErrorNoPicture'] =  "Not pictures found!";
+		this.d['noPictureFolderFound'] = "No folder for pictures found, please add pictures to folder: ";
 		// this.d['ErrorNoCsvFile'] =  "Not csv files found!";
-		// this.d['or'] =  'or';
-		// this.d['uri'] =  'paste graphic\'s link here';
-		// this.d['graphicTitle'] =  'Title for graphic';
-		// this.d['somethingWentWrongDuringInsertOfGraphic'] =  'An unexpected matuc error occured';
-		// this.d['imagesMdHasBeenWritten'] =  'has been written';
-		// this.d['selectPictureFromHere'] =  '...or select from here...';
+		 this.d['or'] =  'or';
+		 this.d['graphicsUri'] =  'paste graphic\'s link here';
+		 this.d['graphicTitle'] =  'Title for graphic';
+		 this.d['somethingWentWrongDuringInsertOfGraphic'] =  'An unexpected matuc error occured';
+		 this.d['imagesMdHasBeenWritten'] =  'has been written';
+		 this.d['selectPictureFromHere'] =  '...or select from here...';
 
 		// //insert footnote dialog
 		// this.d['footLabel'] =  'Label for footnote';
