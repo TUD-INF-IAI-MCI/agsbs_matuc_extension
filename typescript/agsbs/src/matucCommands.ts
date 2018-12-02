@@ -14,7 +14,7 @@ export default class MatucCommands {
     /**
      * Generats an image description using matuc.
      * @param desc Description of the image
-     * @param outsourced Boolean, if the Description is outsourced or nor
+     * @param outsourced Boolean, if the description is outsourced or nor
      * @param currentPath the current working directory, is used to determine the current working directory (cwd)
      * @param title title of the image, is used in the outsourced matuc picture description file
      * @param relPathToImg path to the image in a relative form
