@@ -45,7 +45,7 @@ export default class ImageHelper {
         });
     }
 
-        /**
+    /**
      * Gets the extension of a given file, like 'pic.jpg' returns 'jpg'
      * @param filename string of the file name
      * @returns the string of the file extension

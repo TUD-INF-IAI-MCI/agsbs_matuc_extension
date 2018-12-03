@@ -23,7 +23,7 @@ export default class MatucCommands {
         var cmd = "";
 		if(desc.includes("\n")){
 			outsourced = true;
-			desc = desc.replace(/\n/g,'\\n');
+			desc = desc.replace(/\n/g,'\\n'); //TODO: Check if neccessary
 		}
 
 		//var pathToImg = relPath;

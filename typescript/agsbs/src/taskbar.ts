@@ -47,7 +47,9 @@ export default class Taskbar {
             'agsbstaskbar', // Identifies the type of the webview. Used internally
             "AGSBS Toolbar", // Title of the panel displayed to the user
             //vscode.ViewColumn.X, // Editor column to show the new webview panel in.
-            vscode.ViewColumn.Three,
+            {viewColumn:vscode.ViewColumn.Three,
+                preserveFocus: true
+                },
             { 
                 enableScripts: true
             } // Webview options. More on these later.
@@ -96,10 +98,11 @@ export default class Taskbar {
             this._addToHTML("BODY_END",newSectionHTML);
         }
         var icon = this._helper.getWebviewResourceIconURI(iconName,this._context);
-        var html = `<button name="${name}" title="${name}" style="width:50px;height:50px;boder:1px solid white;" onclick="sendMessage('${id}')">
+        var html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')">
                         <img src="${icon}" style="width:100%"/><br>
-                        <label for="${name}">${name}</label>
-                    </button>`;
+                    </button>
+                    `;
+                    //<br><label for="${name}">${name}</label>
         this._callbacks[id] = callback;
         newSection = "SECTION-"+newSection;
         this._addToHTML(newSection,html);
@@ -139,7 +142,9 @@ export default class Taskbar {
             return false;
         }
     }
-    
+    public showHTML (){
+        console.log(this._panel.webview.html);
+    }
     /**
      * Returns the base Frame HTML for the Webview
      */

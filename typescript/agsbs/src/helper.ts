@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import Language from './languages';
+import { EDOM } from 'constants';
 
 export default class Helper {
     private _language: Language;
@@ -13,6 +14,14 @@ export default class Helper {
      */
     public setEditorLayout(layout: Object) {
         vscode.commands.executeCommand('vscode.setEditorLayout', layout);
+    }
+    
+    public async focusDocument(editor?: vscode.TextEditor){
+        if(editor === undefined){
+            var editor = await this.getCurrentTextEditor();
+        }  
+
+        vscode.window.showTextDocument(editor.document,editor.viewColumn);
     }
 
     /**
@@ -91,12 +100,44 @@ export default class Helper {
     }
     /**
      * Inserts a given string at the start of a selection
+     * @param charactersToInsert string that will be inserted 
      * @param currentTextEditor the current text editor
      * @param selection the current selection
-     * @param charactersToInsert string that will be inserted 
      */
-    public async insertStringAtStartOfSelection(currentTextEditor: vscode.TextEditor, selection: vscode.Range, charactersToInsert: any) {
+    public async insertStringAtStartOfSelection(charactersToInsert: any, currentTextEditor?: vscode.TextEditor, selection?: vscode.Range) {
+        if (currentTextEditor === undefined) {
+            currentTextEditor = await this.getCurrentTextEditor();
+        }
+        if (selection === undefined) {
+            selection = this.getWordsSelection(currentTextEditor);
+        }
         const workSpaceEdit = new vscode.WorkspaceEdit();
+        workSpaceEdit.insert(
+            currentTextEditor.document.uri,
+            selection.start,
+            charactersToInsert
+        );
+        await vscode.workspace.applyEdit(workSpaceEdit);
+    }
+
+    /**
+     * Insert a String if characters at the beginning of the line of the selection. 
+     * @param charactersToInsert a string of characters to insert at the beginning
+     * @param currentTextEditor optional. The text editor to work with
+     * @param selection optional. the selection to work with
+     */
+    public async insertStringAtStartOfLine(charactersToInsert: any, currentTextEditor?: vscode.TextEditor, selection?: vscode.Range) {
+        if (currentTextEditor === undefined) {
+            currentTextEditor = await this.getCurrentTextEditor();
+        }
+        if (selection === undefined) {
+            selection = this.getWordsSelection(currentTextEditor);
+        }
+        const workSpaceEdit = new vscode.WorkspaceEdit();
+        if (selection.start.character !== 0) {
+            var newStartPositionAtLineStart = new vscode.Position(selection.start.line, 0);
+            selection = new vscode.Selection(newStartPositionAtLineStart, newStartPositionAtLineStart);
+        }
         workSpaceEdit.insert(
             currentTextEditor.document.uri,
             selection.start,
@@ -178,12 +219,18 @@ export default class Helper {
     }
     /**
      * Toggles the existence of given Characters in a Selection, also checks around the selection for better matching
-     * @param currentTextEditor the given Text Editor
-     * @param selection the selection that will be edited and checked
      * @param startCharacters Characters at the beginning of the selection that will be added or removed
      * @param endCharacters Characters at the end of the selection that will be added or removed
+     * @param currentTextEditor optional. The given Text Editor
+     * @param selection optional. The selection that will be edited and checked
      */
-    public async toggleCharactersAtStartAndEnd(currentTextEditor: vscode.TextEditor, selection: vscode.Range, startCharacters: string, endCharacters: string) {
+    public async toggleCharactersAtStartAndEnd(startCharacters: string, endCharacters: string, currentTextEditor?: vscode.TextEditor, selection?: vscode.Range) {
+        if (currentTextEditor === undefined) {
+            currentTextEditor = await this.getCurrentTextEditor();
+        }
+        if (selection === undefined) {
+            selection = this.getWordsSelection(currentTextEditor);
+        }
         if (startCharacters.length === 0) {
             return false;
         }

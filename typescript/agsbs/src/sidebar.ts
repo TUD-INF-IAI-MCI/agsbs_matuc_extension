@@ -26,6 +26,9 @@ export default class Sidebar {
     public isVisible(){
         return this._sidebarIsVisible;
     }
+    public focus(){
+        this._panel.reveal(this._panel.viewColumn);
+    }
 
     /**
      * Opens a Sidebar Webview
@@ -38,7 +41,10 @@ export default class Sidebar {
             'agsbssidebar', // Identifies the type of the webview. Used internally
             "AGSBS Sidebar", // Title of the panel displayed to the user
             //vscode.ViewColumn.X, // Editor column to show the new webview panel in.
-            vscode.ViewColumn.Two,
+            {viewColumn:vscode.ViewColumn.Two,
+            preserveFocus: true
+            },
+            
             { 
                 enableScripts: true
             } // Webview options. More on these later.
@@ -70,7 +76,8 @@ export default class Sidebar {
     private _messageFromWebviewHandler = (message)=>{
         console.log("CALLBACK");
         this._sidebarCallback(JSON.parse(message.text));
-        this._panel.webview.html = this._getBaseHTML();
+        this._panel.webview.html = this._getBaseHTML(); // erase the contents of the sidebar
+        this._helper.focusDocument();
     }
 
 
@@ -106,9 +113,14 @@ export default class Sidebar {
             var standardButtonText = this._language.get("ok");
             this._addToHTML("BUTTON",`<br><input type="submit" value="${standardButtonText}">`);
         }
+        if(css !== undefined){
+            this._addToHTML("CSS", css);
+        }
         if(script !== undefined){
             this._addToHTML("SCRIPT",script);
         }
+        
+        this.focus(); //gives the focus to the sidebar so people can use tab, usw.
 
     }
 
@@ -138,6 +150,9 @@ export default class Sidebar {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>AGSBS Sidebar</title>
                 <link rel="stylesheet" href="${style}">
+                <style>
+                <!--CSS-->
+                </style>
             </head>
             <body>  
                 <!--HEADLINE-->
