@@ -1,7 +1,141 @@
-
 input {
-    width: auto;
+    width: 90%;
 }
-select {
+input[type=submit] {
     width: auto;
+    margin: 5px;
+    color: var(--vscode-button-foreground);
+    background-color: var(--vscode-button-background);
+    margin-right: 10px;
+    width: auto;
+    padding: 2px 14px;
+    text-decoration: none;
+    box-sizing: border-box;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+    outline-offset: 2px!important;
+    font-size: 13px;
+    line-height: 1.4em;
+    border:0px;
+}
+input[type=submit]:hover {
+
+    background-color: var(--vscode-button-hoverBackground);
+
+}
+
+
+input[type=checkbox]{
+    -webkit-appearance: none;
+    background-color: var(--vscode-settings-checkboxBackground);
+    color: var(--vscode-settings-checkboxForeground);
+    border:1px solid;
+    width:18px;
+    height:18px;
+    border-color: var(--vscode-settings-checkboxBorder);
+    display: inline-block;
+    
+}
+input[type=checkbox]:checked{
+    background: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='-2 -2 16 16'%3E%3Cpath fill='%23C5C5C5' d='M9 0L4.5 9 3 6H0l3 6h3l6-12z'/%3E%3C/svg%3E") 50% no-repeat;
+}
+  
+  input[type=text] {
+    background-color: var(--vscode-input-background);
+    border-color: var(--vscode-input-border);
+    color: var(--vscode-input-foreground);
+    width:100%;
+    padding:4px;
+    text-overflow: ellipsis;
+    user-select: text;
+    margin: 0em;
+    border:none;
+    outline-color: var(--vscode-input-border);
+  }
+  input[type=text]:focus {
+    outline-color: var(--vscode-inputOption-activeBorder);
+  }
+  textarea {
+    background-color: var(--vscode-input-background);
+    border-color: var(--vscode-input-border);
+    color: var(--vscode-input-foreground);
+    width:100%;
+    padding:4px;
+    text-overflow: ellipsis;
+    user-select: text;
+    margin: 0em;
+    border:none;
+    outline-color: var(--vscode-input-border);
+  }
+  textarea:focus {
+    outline-color: var(--vscode-inputOption-activeBorder);
+  }
+  
+  input[type=number] {
+    background-color: var(--vscode-input-background);
+    border-color: var(--vscode-input-border);
+    color: var(--vscode-input-foreground);
+    width:100%;
+    padding:4px;
+    text-overflow: ellipsis;
+    user-select: text;
+    margin: 0em;
+    border:none;
+    outline-color: var(--vscode-input-border);
+  }
+  input[type=number]:focus {
+    outline-color: var(--vscode-inputOption-activeBorder);
+  }
+select {
+    user-select: none;
+    list-style-type: disc;
+    text-rendering: auto;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0px;
+    text-shadow: none;
+    display: inline-block;
+    text-align: start;
+    margin: 0em;
+    font: 11px system-ui;
+    border-radius: 5px;
+    -webkit-appearance: menulist;
+    box-sizing: border-box;
+    align-items: center;
+    white-space: pre;
+    -webkit-rtl-ordering: logical;
+    border-width: 1px;
+    border-style: solid;
+    border-image: initial;
+    width: 100%;
+    font-family: inherit;
+    cursor: pointer;
+    min-width: 110px;
+    margin-right: 10px;
+    background-color: var(--vscode-dropdown-background); //TODO: INSERT VARS!
+    color: var(--vscode-dropdown-foreground);
+    border-color: var(--vscode-dropdown-border);
+}
+
+select:not(:-internal-list-box) {
+    overflow: visible !important;
+}
+
+body {
+    //border: 1px solid white;
+}
+
+#cancel {
+    height: 30px;
+    width: 30px;
+    background-color: rgba(0, 0, 0, 0); //Transparent
+    border: none;
+    float: right;
+}
+
+#cancel img {
+    width: 100%;
+    height: 100%;
 }

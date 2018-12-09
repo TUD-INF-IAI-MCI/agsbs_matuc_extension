@@ -61,7 +61,16 @@ export default class Sidebar {
         }, null);
 
         panel.webview.onDidReceiveMessage(message => { //If the Webview sends a Message
+            if(message.hasOwnProperty('text')){
             this._messageFromWebviewHandler(message);
+            return;
+            }
+            if(message.hasOwnProperty('cancel')){
+                console.log("RESET");
+                this._panel.webview.html = this._getBaseHTML();
+                return;
+            }
+
         }, undefined);
 
         this._panel=panel;
@@ -107,12 +116,18 @@ export default class Sidebar {
         if(headline !== undefined && headline !== ""){
             this._addToHTML("HEADLINE",`<h2>${headline}</h2>`);
         }
+        var closeButtonRessource = this._helper.getWebviewResourceIconURI("close.svg",this._context);
+        //console.log(closeButtonRessource);
+
+
+        this._addToHTML("CANCEL",`<br><button id='cancel' value="cancel" onclick='sendMessageCancel()' title='cancel'><img src='${closeButtonRessource}'></button>`);
         if(buttonText !== undefined){
-        this._addToHTML("BUTTON",`<br><input type="submit" value="${buttonText}">`);
+        this._addToHTML("BUTTON",`<input type="submit" value="${buttonText}">`);
         } else {
             var standardButtonText = this._language.get("ok");
-            this._addToHTML("BUTTON",`<br><input type="submit" value="${standardButtonText}">`);
+            this._addToHTML("BUTTON",`<input type="submit" value="${standardButtonText}">`);
         }
+
         if(css !== undefined){
             this._addToHTML("CSS", css);
         }
@@ -155,14 +170,18 @@ export default class Sidebar {
                 </style>
             </head>
             <body>  
+            <!--CANCEL-->
                 <!--HEADLINE-->
+                
                 <form id="inputForm">
                <!--FORM_START-->
                <!--FORM_END-->
+               
                <!--BUTTON-->
                 </form>
+                <script>
                 <!--SCRIPT-->
-                
+                </script>
                 
                 <script>
                 var form = document.forms["inputForm"];
@@ -194,6 +213,11 @@ export default class Sidebar {
                              text: message
                          })
                      }
+                     function sendMessageCancel(){
+                        vscode.postMessage({
+                            cancel:true
+                        })
+                    }
                 </script>
             </body>
         </html>

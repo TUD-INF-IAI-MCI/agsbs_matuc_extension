@@ -95,6 +95,7 @@ export default class En {
 		this.d['table'] =  'Table';
 		this.d['insertTable'] =  'Insert table';
 		this.d['importTableCsv'] =  'Import table from csv';
+		this.d['editTableLayout'] = "Edit the Table below";
 		this.d['insert'] =  'Insert';
 		this.d['formula'] =  'Insert formula';
 		this.d['formulaInline'] =  'Insert inline formula';
@@ -199,14 +200,16 @@ export default class En {
 		 this.d['insertLinkSubmit'] =  'Insert';
 
 		// //insert table dialog
-		// this.d['tableHeadCheckbox'] =  'Add a head to the table';
-		// this.d['tableType'] =  'Table Type';
-		// this.d['simpleTable'] =  "Simple Table";
-		// this.d['multilineTable'] =  "Multiline Table";
-		// this.d['pipeTable'] =  "Pipe Table";
-		// this.d['gridTable'] =  "Grid Table";
-		// this.d['rows'] =  'Rows';
-		// this.d['columns'] =  'Columns';
+		this.d['tableHeadCheckbox'] =  'Add a head to the table';
+		 this.d['tableType'] =  'Table Type';
+		 this.d['simpleTable'] =  "Simple Table";
+		 //this.d['multilineTable'] =  "Multiline Table";
+		 this.d['pipeTable'] =  "Pipe Table";
+		 this.d['gridTable'] =  "Grid Table";
+		 this.d['rows'] =  'Rows';
+		 this.d['row'] =  'Row';
+		 this.d['columns'] =  'Columns';
+		 this.d['column'] =  'Column';
 		// this.d['head'] =  'Head';
 		// this.d['field'] =  'Field';
 		// this.d['toFastError'] =  'You are too fast, Dude';
@@ -237,7 +240,7 @@ export default class En {
 		 this.d['graphicTitle'] =  'Title for graphic';
 		 this.d['somethingWentWrongDuringInsertOfGraphic'] =  'An unexpected matuc error occured';
 		 this.d['imagesMdHasBeenWritten'] =  'has been written';
-		 this.d['selectPictureFromHere'] =  '...or select from here...';
+		 this.d['selectPictureFromHere'] =  'select from here:';
 
 		// //insert footnote dialog
 		// this.d['footLabel'] =  'Label for footnote';
@@ -258,7 +261,7 @@ export default class En {
 		// //dialog warningPagenumbering
 		// this.d['warningPagenumbering'] =  "Warning";
 		// this.d['correct'] =  "Correct";
-		// this.d['abort'] =  "Cancel";
+		 this.d['abort'] =  "Cancel";
 		// this.d['textAutoCorrection'] =  "Press <strong>Correct</strong>if the page number\n should be corrected <strong>automatically</strong>.\n Press Abort for a manually correction!";
 
         // this.d['checkLine'] =  'Check line: ';

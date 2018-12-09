@@ -142,9 +142,7 @@ export default class Taskbar {
             return false;
         }
     }
-    public showHTML (){
-        console.log(this._panel.webview.html);
-    }
+
     /**
      * Returns the base Frame HTML for the Webview
      */

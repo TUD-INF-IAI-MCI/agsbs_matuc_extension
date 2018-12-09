@@ -145,6 +145,32 @@ export default class Helper {
         );
         await vscode.workspace.applyEdit(workSpaceEdit);
     }
+    public async insertStringAtStartOfLineOrLinebreak(charactersToInsert: any, currentTextEditor?: vscode.TextEditor, selection?: vscode.Range) {
+        if (currentTextEditor === undefined) {
+            currentTextEditor = await this.getCurrentTextEditor();
+        }
+        if (selection === undefined) {
+            selection = this.getWordsSelection(currentTextEditor);
+        }
+        var lineLength = currentTextEditor.document.lineAt(selection.end.line).range.end.character;
+        
+
+        if(lineLength===0){
+            var newStartPositionAtLineStart = new vscode.Position(selection.start.line, 0);
+            selection = new vscode.Selection(newStartPositionAtLineStart, newStartPositionAtLineStart);
+        } else {
+            var newStartPositionAtLineEnd = new vscode.Position(selection.end.line, lineLength);
+            selection = new vscode.Selection(newStartPositionAtLineEnd, newStartPositionAtLineEnd); 
+            charactersToInsert = "\n" + charactersToInsert;
+        }   
+        const workSpaceEdit = new vscode.WorkspaceEdit();
+        workSpaceEdit.insert(
+            currentTextEditor.document.uri,
+            selection.start,
+            charactersToInsert
+        );
+        await vscode.workspace.applyEdit(workSpaceEdit);
+    }
 
     /**
      * Wraps Characters around the current selected Area.

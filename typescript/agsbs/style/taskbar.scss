@@ -3,7 +3,7 @@ body{
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: flex-start;
-    align-content: stretch;
+    align-content: flex-start;
     align-items: flex-start; 
     //background-color: black;
 
@@ -13,22 +13,33 @@ fieldset {
     border: 1px solid white;// #9da5b4
     border-left-width: 0px;
     border-right-width: 0px;
-    border-bottom-width: 0px;
+     border-bottom-width: 0px;
     order: 0;
     flex: 0 1 auto;
     align-self: auto;
-
+    padding:0px;
+    margin:0px;
+    margin-left: 0.4rem;
+    vertical-align:top;
 }
 legend {
     margin: 0px auto;
 }
 button{
-    display: inline-block;
-    margin: 4px;
+    display: inline;
+    margin: 0px;
+    padding:0px;
     background-color: rgba(0,0,0,0);
     overflow: hidden;
-    width:50px;
-    height:50px;
+    width:40px;
+    height:40px;
     border:1px solid white;
     color: white;
+    margin-left: 0.2rem;
+    margin-right: 0.2rem;
+    border:0px;
+    vertical-align:top;
+}
+buton:hover{
+    border: 1px solid white;
 }
