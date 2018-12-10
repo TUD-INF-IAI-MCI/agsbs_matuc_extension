@@ -41,9 +41,9 @@ export default class EditorFunctionSnippets {
                                         
                                     </select><br>
                                     <label>${this._language.get("rows")}</label>
-                                    <input type="number" name='rows' , id='rows' min="1" placeholder="1" value="1" onclick="onRowChange(this)">
+                                    <input type="number" name='rows' , id='rows' min="1" placeholder="1" value="1" onclick="onRowChange(this)" onkeyup="onRowChange(this)">
                                     <label>${this._language.get("columns")}</label>
-                                    <input type="number" name='columns' , id='columns' min="1" placeholder="1" value="1" onclick="onColumsChange(this)">
+                                    <input type="number" name='columns' , id='columns' min="1" placeholder="1" value="1" onclick="onColumsChange(this)" onkeyup="onColumsChange(this)">
                                     <input type="hidden" value="" name="tableJSON" id="tableJSON">
                                     <hr>
                                     <h4>${this._language.get("editTableLayout")}</h4>

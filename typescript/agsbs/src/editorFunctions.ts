@@ -7,6 +7,7 @@ import ImageHelper from './imageHelper';
 import MatucCommands from './matucCommands';
 import EditorFunctionSnippets from './editorFunctionsSnippets';
 import TableHelper from './tableHelper';
+import { currentId } from 'async_hooks';
 
 export default class EditorFunctions {
     private _helper: Helper;
