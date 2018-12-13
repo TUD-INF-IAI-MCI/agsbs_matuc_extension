@@ -7,7 +7,7 @@ import ImageHelper from './imageHelper';
 import MatucCommands from './matucCommands';
 import EditorFunctionSnippets from './editorFunctionsSnippets';
 import TableHelper from './tableHelper';
-import { currentId } from 'async_hooks';
+import * as Papa from 'papaparse';
 
 export default class EditorFunctions {
     private _helper: Helper;
@@ -41,9 +41,53 @@ export default class EditorFunctions {
         this._taskbarCallback.addButton("link.svg", this._language.get("insertLink"), this.insertLink, this._language.get("insert"));
         this._taskbarCallback.addButton('image.svg', this._language.get('insertGraphic'), this.insertImage, this._language.get('insert'));
         this._taskbarCallback.addButton('table.svg', this._language.get('insertTable'), this.insertTable, this._language.get('insert'));
-        this.insertImage();
+        this._taskbarCallback.addButton('import_table_csv.svg', this._language.get('importTableCsv'), this.insertCSVTable, this._language.get('insert'));
+
     }
 
+    public insertCSVTable = async () => {
+        var thisPath = await this._helper.getCurrentDocumentFolderPath();
+        var results = await this._tableHelper.getAllTablesInFolder(thisPath);
+        var selectionTablesHTML = this._tableHelper.generateSelectTableOptionsHTML(results);
+
+        var form = `
+        <input type="text" name="uriTable" placeholder="${this._language.get("uriTable")}"><br><br>
+        <select name='selectTable'>
+        <option selected="true" disabled="disabled" value=''>${this._language.get("selectTable")}</option>
+        ${selectionTablesHTML}
+        </select>
+        `;
+        this._sidebarCallback.addToSidebar(form, this._language.get("importTableCsv"), this.insertCSVTableSidebarCallback, this._language.get("insert"));
+    }
+
+    public insertCSVTableSidebarCallback = async (params) => {
+        var urlData = params.selectTable.value;
+        var url:any;
+        if(urlData===""){
+            console.log("No File Selected");
+            return false;
+            
+        } else {
+            try{
+            url = JSON.parse(urlData);
+            } catch (e){
+                console.log(e);
+                return false;
+            }
+        }
+        var content:any = await this._helper.getContentOfFile(url.completePath); 
+        content = content.replace(/\ +$/, "");
+        content = content.replace(/\n+$/, "");//removes trailing spaces and line breaks
+        var result = await Papa.parse(content);
+        var extraText = this._language.get("importedFrom")+ " " + url.relativePath;
+        var table = this._tableHelper.generateTable(false,result.data,"",extraText);
+        this._helper.insertStringAtStartOfLineOrLinebreak(table);
+    }
+
+
+    /**
+     * Insert Table Button Function
+     */
     public insertTable = async () => {
         var form = this._snippets.get('insertTableHTML');
         var script = this._snippets.get('insertTableSCRIPT');
@@ -51,16 +95,25 @@ export default class EditorFunctions {
         this._sidebarCallback.addToSidebar(form, this._language.get("insertTable"), this.insertTableSidebarCallback, this._language.get("insert"),style,script);
     }
 
+    /**
+     * Insert Table SidebarCallback Function
+     */
     public insertTableSidebarCallback = async (params) => {
         var hasHeader = params.tableHeadCheckbox.checked;
         var tableType = params.tableType.value;
         var rowsNumber = params.rows.value;
         var columns = params.columns.value;
         var rawdata = params.tableJSON.value;
-        var table = this._tableHelper.generateTable(hasHeader,tableType,rawdata);
-        console.log("TABLE",table);
+        var data;
+        try {
+           data  = JSON.parse(rawdata);
+        } catch (e) {
+            console.log(e);
+            return;
+        }
+        var table = this._tableHelper.generateTable(hasHeader,data,tableType);
         this._helper.insertStringAtStartOfLineOrLinebreak(table);
-        
+
     }   
 
 
@@ -92,7 +145,7 @@ export default class EditorFunctions {
         pictureTitle += params.graphicTitle.value;
         var pictureSource = "";
         pictureSource += pictureSelector.markdownReadyRelativePath;
-        console.log(altText, false, pictureSelector.basePath, pictureTitle, pictureSelector.markdownReadyRelativePath);
+        //console.log(altText, false, pictureSelector.basePath, pictureTitle, pictureSelector.markdownReadyRelativePath);
         var result = await this._matucCommands.imageDescription(
                                                 altText, 
                                                 params.outsourceCheckbox.checked, 

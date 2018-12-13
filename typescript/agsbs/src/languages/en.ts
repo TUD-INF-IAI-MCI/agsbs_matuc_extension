@@ -189,7 +189,7 @@ export default class En {
 		// this.d['addHorizontalRuleErrorDetail'] =  'Text can not be set as horizontal rule.';
 		// this.d['addListError'] =  'No list possible';
 		// this.d['addListErrorDetail'] =  'Only fully selected lines can be set as list items.';
-		// this.d['importTableFromCsvError'] =  'Failed to import table';
+		 this.d['importTableFromCsvError'] =  'Failed to import table';
 		// this.d['importTableFromCsvErrorDetail'] =  'Can not replace text by table from CSV.';
 		// this.d['AddPageNumberError'] =  'Error during the generation of the page number. Matuc-Message is';
 
@@ -216,10 +216,10 @@ export default class En {
 		// this.d['toFastErrorDetails'] =  'Please, do not treat the table this hard.';
 		// this.d['selectTableType'] =  'Table type';
 		// this.d['ErrorNoTable'] =  'No tables found!';
-		// this.d['thereAreNoTableInFolder'] =  'No tables found in folder.';
+		 this.d['thereAreNoTableInFolder'] =  'No tables found in folder.';
 		// this.d['addTableToFolder'] =  'Save csv tables in folder ';
-		// this.d['selectTable'] =  '...or select it from here';
-		// this.d['importTableError'] =  "Error during table import";
+		 this.d['selectTable'] =  '...or select it from here';
+		this.d['importTableError'] =  "Error during table import";
 		// this.d['importTableErrorText'] =  "Check the csv table";
 		// //insert graphic dialog
 		 this.d['selectImageFile'] =  'Select the Image here';
@@ -250,7 +250,7 @@ export default class En {
 
 		// //import csv dialog
 		// this.d['import'] =  'Import';
-		// this.d['uriTable'] =  'Insert table link here';
+		this.d['uriTable'] =  'Insert table link here';
 		// //mistkerl
 		// this.d['mistkerlFoundGlobalError'] =  'A global error in your markdown occured.';
 		// this.d['mistkerlDidNotFindAnyErrorAndSavedFile'] =  'Saved.';
@@ -264,7 +264,11 @@ export default class En {
 		 this.d['abort'] =  "Cancel";
 		// this.d['textAutoCorrection'] =  "Press <strong>Correct</strong>if the page number\n should be corrected <strong>automatically</strong>.\n Press Abort for a manually correction!";
 
-        // this.d['checkLine'] =  'Check line: ';
+		// this.d['checkLine'] =  'Check line: ';
+		
+		// Reading Files
+		this.d['readingFileError'] =  'An unexpected error occured reading the file.';
+		this.d['importedFrom'] ='imported from';
     }
 
     public get = (varname)=>{

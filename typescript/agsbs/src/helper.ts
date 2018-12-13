@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
 import Language from './languages';
 import { EDOM } from 'constants';
 
@@ -15,13 +16,13 @@ export default class Helper {
     public setEditorLayout(layout: Object) {
         vscode.commands.executeCommand('vscode.setEditorLayout', layout);
     }
-    
-    public async focusDocument(editor?: vscode.TextEditor){
-        if(editor === undefined){
-            var editor = await this.getCurrentTextEditor();
-        }  
 
-        vscode.window.showTextDocument(editor.document,editor.viewColumn);
+    public async focusDocument(editor?: vscode.TextEditor) {
+        if (editor === undefined) {
+            var editor = await this.getCurrentTextEditor();
+        }
+
+        vscode.window.showTextDocument(editor.document, editor.viewColumn);
     }
 
     /**
@@ -153,16 +154,16 @@ export default class Helper {
             selection = this.getWordsSelection(currentTextEditor);
         }
         var lineLength = currentTextEditor.document.lineAt(selection.end.line).range.end.character;
-        
 
-        if(lineLength===0){
+
+        if (lineLength === 0) {
             var newStartPositionAtLineStart = new vscode.Position(selection.start.line, 0);
             selection = new vscode.Selection(newStartPositionAtLineStart, newStartPositionAtLineStart);
         } else {
             var newStartPositionAtLineEnd = new vscode.Position(selection.end.line, lineLength);
-            selection = new vscode.Selection(newStartPositionAtLineEnd, newStartPositionAtLineEnd); 
+            selection = new vscode.Selection(newStartPositionAtLineEnd, newStartPositionAtLineEnd);
             charactersToInsert = "\n" + charactersToInsert;
-        }   
+        }
         const workSpaceEdit = new vscode.WorkspaceEdit();
         workSpaceEdit.insert(
             currentTextEditor.document.uri,
@@ -358,6 +359,30 @@ export default class Helper {
         });
     }
 
+    /**
+     * Returns the content of a given file
+     * @param fileName the complete path to the file
+     * @param encoding optional. If not set the default is utf-8
+     * @returns string of the content
+     */
+    public async getContentOfFile(fileName: string,encoding?:string) {
+        return new Promise(async (resolve, reject) => {
+        if(encoding === undefined){
+            encoding = 'utf8';
+        }
+        if(fileName === ""){
+            vscode.window.showErrorMessage(this._language.get("readingFileError"));
+            reject();
+        }
+        fs.readFile(fileName, encoding, function (err, data) {
+            if (err) {
+                vscode.window.showErrorMessage(this._language.get("readingFileError"));
+                reject(err);
+            }
+            resolve(data);
+        });
+    });
+}
 
 
 

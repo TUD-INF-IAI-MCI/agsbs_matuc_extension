@@ -99,8 +99,8 @@ export default class EditorFunctionSnippets {
                             
                                         function generateCell(r, c) {
                                             var placeholder = generatePlaceholder(r, c);
-                                            return '<input type="text" class="cell" placeholder="' + placeholder + '" datarow="' + r +
-                                                '" datacolumn="' + c + '" onkeyup="changedCell()">';
+                                            return '<textarea type="text" class="cell" placeholder="' + placeholder + '" datarow="' + r +
+                                                '" datacolumn="' + c + '" onkeyup="changedCell()"></textarea>';
                                         }
                             
                                         function generatePlaceholder(r, c) { //Is used by generateCell, what content is displayed as placeholder
