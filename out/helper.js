@@ -12,6 +12,7 @@ const vscode = require("vscode");
 const path = require("path");
 const fs = require("fs");
 const languages_1 = require("./languages");
+const Papa = require("papaparse");
 class Helper {
     constructor() {
         this._language = new languages_1.default;
@@ -424,10 +425,11 @@ class Helper {
     /**
      * Iterates upwards from the given selection until it found a line that begins with the given test string, or the beginning of the file
      * @param testString text to check if the selection begins with
+     * @param antiString string, if this is found instead of the test string the search will stop
      * @param currentTextEditor optional. The given text editor
      * @param selection optional. A custom selection
      */
-    iterateUpwardsToCheckForString(testString, currentTextEditor, selection) {
+    iterateUpwardsToCheckForString(testString, antiString, currentTextEditor, selection) {
         return __awaiter(this, void 0, void 0, function* () {
             if (currentTextEditor === undefined) {
                 currentTextEditor = yield this.getCurrentTextEditor();
@@ -437,6 +439,17 @@ class Helper {
             }
             var selectionStartLine = selection.start.line;
             var selectionStartsWith = yield this.checkIfSelectionStartsWith(testString, currentTextEditor, selection);
+            var selectionStartsWithAntiString = yield this.checkIfSelectionStartsWith(antiString, currentTextEditor, newSelection); //Check if the current line starts with the antistring
+            if (selectionStartsWithAntiString === true) {
+                return false;
+            }
+            var newEndPositionStart = new vscode.Position(selection.start.line, 0);
+            var newEndPositionEnd = new vscode.Position(selection.start.line, currentTextEditor.document.lineAt(selection.start.line).range.end.character);
+            var newEndSelectionAtFirstLine = new vscode.Selection(newEndPositionStart, newEndPositionEnd);
+            selectionStartsWithAntiString = yield this.checkIfSelectionEndsWith(antiString, currentTextEditor, newEndSelectionAtFirstLine); //Check if the current line ENDS with the antistring
+            if (selectionStartsWithAntiString === true) {
+                return false;
+            }
             if (selectionStartsWith === true) {
                 return selection;
             }
@@ -445,6 +458,17 @@ class Helper {
                 var newSelection = new vscode.Selection(newStartPosition, selection.end);
                 selectionStartLine = selection.start.line;
                 selectionStartsWith = yield this.checkIfSelectionStartsWith(testString, currentTextEditor, newSelection);
+                selectionStartsWithAntiString = yield this.checkIfSelectionStartsWith(antiString, currentTextEditor, newSelection); //Checks if this line starts with the antistring
+                if (selectionStartsWithAntiString === true) {
+                    return false;
+                }
+                newEndPositionStart = new vscode.Position(newSelection.start.line, 0);
+                newEndPositionEnd = new vscode.Position(newSelection.start.line, currentTextEditor.document.lineAt(newSelection.start.line).range.end.character);
+                newEndSelectionAtFirstLine = new vscode.Selection(newEndPositionStart, newEndPositionEnd);
+                selectionStartsWithAntiString = yield this.checkIfSelectionEndsWith(antiString, currentTextEditor, newEndSelectionAtFirstLine); //Check if this line ends with the antistring
+                if (selectionStartsWithAntiString === true) {
+                    return false;
+                }
                 if (selectionStartsWith === true) {
                     return newSelection;
                 }
@@ -483,6 +507,46 @@ class Helper {
                 }
             }
             return false;
+        });
+    }
+    /**
+     * Makes a directory with a promise
+     * @param path path that will be created
+     * @returns promise that resolves into the path
+     */
+    mkDir(path) {
+        return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+            fs.mkdir(path, (err) => {
+                if (err) {
+                    vscode.window.showErrorMessage(this._language.get('createFolderError'));
+                    console.log(err);
+                }
+                resolve(path);
+            });
+        }));
+    }
+    fileExists(path) {
+        return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+            if (fs.existsSync(path)) {
+                resolve(true);
+            }
+            else {
+                resolve(false);
+            }
+        }));
+    }
+    parseCSVtoJSON(csvData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                try {
+                    var result = Papa.parse(csvData);
+                    resolve(result);
+                }
+                catch (e) {
+                    console.log(e);
+                    resolve(false);
+                }
+            }));
         });
     }
 }

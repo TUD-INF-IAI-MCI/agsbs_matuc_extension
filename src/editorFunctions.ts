@@ -9,6 +9,7 @@ import MatucCommands from './matucCommands';
 import EditorFunctionSnippets from './editorFunctionsSnippets';
 import TableHelper from './tableHelper';
 import * as Papa from 'papaparse';
+import * as path from 'path';
 
 export default class EditorFunctions {
     private _helper: Helper;
@@ -43,8 +44,19 @@ export default class EditorFunctions {
         this._taskbarCallback.addButton('image.svg', this._language.get('insertGraphic'), this.insertImage, this._language.get('insert'));
         this._taskbarCallback.addButton('table.svg', this._language.get('insertTable'), this.insertTable, this._language.get('insert'));
         this._taskbarCallback.addButton('import_table_csv.svg', this._language.get('importTableCsv'), this.insertCSVTable, this._language.get('insert'));
+        this._taskbarCallback.addButton("edit_table.svg",this._language.get("editTable"),this.editTable,this._language.get("edit"));
 
     }
+    public editTable = async () => {
+        var insertPosition:any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        if(insertPosition === false){
+            vscode.window.showErrorMessage(this._language.get("noTableFound"));
+            
+        } else {
+            this._tableHelper.loadSelectedTable(insertPosition);
+        }
+    }
+
     /**
      * Insert a Table from a CSV-File
      */
@@ -52,6 +64,7 @@ export default class EditorFunctions {
         var thisPath = await this._helper.getCurrentDocumentFolderPath();
         var results = await this._tableHelper.getAllTablesInFolder(thisPath);
         var selectionTablesHTML = this._tableHelper.generateSelectTableOptionsHTML(results);
+       
         //<input type="text" name="uriTable" placeholder="${this._language.get("uriTable")}"><br><br>
         var form = `
         
@@ -92,6 +105,7 @@ export default class EditorFunctions {
         if(insertPosition === false){
         this._helper.insertStringAtStartOfLineOrLinebreak(table);
         } else {
+            vscode.window.showWarningMessage(this._language.get("tableInsertionPositionConflictWarning"));
             var thisCurrentEditor = await this._helper.getCurrentTextEditor();
             var newEndPosition = new vscode.Selection(insertPosition.end, insertPosition.end);
             this._helper.insertStringAtStartOfLineOrLinebreak(table,thisCurrentEditor,newEndPosition);
@@ -126,11 +140,27 @@ export default class EditorFunctions {
             console.log(e);
             return;
         }
-        var table = this._tableHelper.generateTable(hasHeader,data,tableType);
+        
+        var savedTable:any = await this._tableHelper.generateCSVfromJSONandSave(rawdata);
+        
+
+
+        var extraText = "";
+        if(savedTable !== false){
+        var relSavedTablePathParts = savedTable.split(path.sep);
+
+        var relSavedTablePath = "."+path.sep+relSavedTablePathParts[relSavedTablePathParts.length-2] +  path.sep + relSavedTablePathParts[relSavedTablePathParts.length-1];
+
+        extraText = "exported to " + relSavedTablePath;
+        }
+
+
+        var table = this._tableHelper.generateTable(hasHeader,data,tableType,extraText);
         var insertPosition:any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
         if(insertPosition === false){
         this._helper.insertStringAtStartOfLineOrLinebreak(table);
         } else {
+            vscode.window.showWarningMessage(this._language.get("tableInsertionPositionConflictWarning"));
             var thisCurrentEditor = await this._helper.getCurrentTextEditor();
             var newEndPosition = new vscode.Selection(insertPosition.end, insertPosition.end);
             this._helper.insertStringAtStartOfLineOrLinebreak(table,thisCurrentEditor,newEndPosition);

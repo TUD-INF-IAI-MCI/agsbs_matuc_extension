@@ -44,10 +44,10 @@
 
 <body>
     <form>
-        <input name="tableHeadCheckbox" type="checkbox" onchange="tableHeaderToggle(this)">
+        <input name="tableHeadCheckbox" id="tableHeadCheckbox" type="checkbox" onchange="tableHeaderToggle(this)">
         <label for="tableHeadCheckbox">${this._language.get("tableHeadCheckbox")}</label><br>
         <label for="tableType">${this._language.get("tableType")}</label><br>
-        <select name='tableType'>
+        <select name='tableType' id='tableType'>
             <option value='simpleTable'>this._language.get("simpleTable")</option>
             <option value='pipeTable'>this._language.get("pipeTable")</option>
             <option value='gridTable'>this._language.get("gridTable")</option>
@@ -226,6 +226,89 @@
             }
             async function adaptCellHeight(cell) {
                 cell.style.height = (cell.scrollHeight) + "px";
+            }
+        </script>
+        <script>
+            var jsonString =`{"hasHeader":false,"tableType":"GRID","data":[["B\\nC","V"],["f","*"]]}`;
+            var tableHeadCheckboxText = "tableHeadCheckbox";
+            var tableTypeSelector = "tableType";
+            var tableTypeText = [];
+            tableTypeText["GRID"] = "gridTable";
+            tableTypeText["PIPE"] = "pipeTable";
+            tableTypeText["SIMPLE"] = "simpleTable";
+            var rowsSelectorName = "rows";
+            var columnsSelectorName = "columns";
+            var tableBoxName = "table";
+            function genCell () {
+               
+            }
+            function loadJSON(){
+                var escapedJSONString = jsonString.replace(/\\n/g, "\\n")
+                .replace(/\\'/g, "\\'")
+                .replace(/\\"/g, '\\"')
+                .replace(/\\&/g, "\\&")
+                .replace(/\\r/g, "\\r")
+                .replace(/\\t/g, "\\t")
+                .replace(/\\b/g, "\\b")
+                .replace(/\\f/g, "\\f");
+                var json = JSON.parse(escapedJSONString);
+                console.log(json);
+                return json;
+            }
+            async function loadIntoForm(json){
+                var headerCheckbox =  document.getElementById(tableHeadCheckboxText);
+                if(json.hasHeader === true){
+                   headerCheckbox.checked = true;
+                } else {
+                    headerCheckbox.checked = false;
+                }
+                var thisTableType = tableTypeText[json.tableType];
+                if(thisTableType!== undefined && thisTableType!==""){
+                var thistableTypeSelector = document.getElementById(tableTypeSelector);
+                thistableTypeSelector.value = thisTableType;
+                }
+                var rowsSelector = document.getElementById(rowsSelectorName);
+                var colSelector = document.getElementById(columnsSelectorName);
+                var rowNumber = json["data"].length;
+                var colNumber = json["data"][0].length;
+                if(rowNumber === undefined || rowNumber===null){
+                    return false;
+                }
+                if(colNumber === undefined || colNumber===null){
+                    return false;
+                }
+                console.log(rowNumber,colNumber);
+                rowsSelector.value = rowNumber;
+                onRowChange(rowsSelector); //call to other scriptblock from the normal insert table script.
+                colSelector.value = colNumber;
+                onColumsChange(colSelector); //call to other scriptblock from the normal insert table script.
+                loadCellsWithContent(json["data"]);
+            }
+
+            function loadCellsWithContent (data){
+                console.log(data);
+                var table = document.getElementById(tableBoxName);
+                var rows = table.children;
+                console.log(rows);
+                for (var i=0;i<rows.length;i++){
+                    var thisRow = rows[i];
+                    var thisJSONRow = data[i];
+                    var thisCols = thisRow.children;
+                    console.log(thisRow);
+                    for (var j = 0;j<thisCols.length;j++){
+                        
+                        var thisCell = thisCols[j];
+                        var thisJSONCell = thisJSONRow[j];
+                        console.log(thisCell,thisJSONCell);
+                        thisCell.value = thisJSONCell;
+                    }
+                }
+            }
+
+            window.onload = async function(){
+                var parsedJSON = loadJSON();
+                loadIntoForm(parsedJSON);
+
             }
         </script>
 

@@ -30,10 +30,10 @@ export default class EditorFunctionSnippets {
                                         <input type='text' id='altText' name='altText'><br>
                                         <label for='graphicTitle'>${this._language.get("graphicTitle")}</label><br>
                                         <input type='text' id='graphicTitle' name='graphicTitle'><br> `;
-        this.d['insertTableHTML'] = `<input name="tableHeadCheckbox" type="checkbox" onchange="tableHeaderToggle(this)">
+        this.d['insertTableHTML'] = `<input name="tableHeadCheckbox" id="tableHeadCheckbox" type="checkbox" onchange="tableHeaderToggle(this)">
                                     <label for="tableHeadCheckbox">${this._language.get("tableHeadCheckbox")}</label><br>
                                     <label for="tableType">${this._language.get("tableType")}</label><br>
-                                    <select name='tableType'>
+                                    <select name='tableType' id='tableType'>
                                         <option value='gridTable'>${this._language.get("gridTable")}</option>
                                         <option value='pipeTable'>${this._language.get("pipeTable")}</option>
                                         <option value='simpleTable'>${this._language.get("simpleTable")}</option>

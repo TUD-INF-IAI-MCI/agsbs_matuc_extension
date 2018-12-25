@@ -17,6 +17,7 @@ const matucCommands_1 = require("./matucCommands");
 const editorFunctionsSnippets_1 = require("./editorFunctionsSnippets");
 const tableHelper_1 = require("./tableHelper");
 const Papa = require("papaparse");
+const path = require("path");
 class EditorFunctions {
     constructor(taskbarCallback, sidebarCallback, context) {
         /**
@@ -30,7 +31,17 @@ class EditorFunctions {
             this._taskbarCallback.addButton('image.svg', this._language.get('insertGraphic'), this.insertImage, this._language.get('insert'));
             this._taskbarCallback.addButton('table.svg', this._language.get('insertTable'), this.insertTable, this._language.get('insert'));
             this._taskbarCallback.addButton('import_table_csv.svg', this._language.get('importTableCsv'), this.insertCSVTable, this._language.get('insert'));
+            this._taskbarCallback.addButton("edit_table.svg", this._language.get("editTable"), this.editTable, this._language.get("edit"));
         };
+        this.editTable = () => __awaiter(this, void 0, void 0, function* () {
+            var insertPosition = yield this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+            if (insertPosition === false) {
+                vscode.window.showErrorMessage(this._language.get("noTableFound"));
+            }
+            else {
+                this._tableHelper.loadSelectedTable(insertPosition);
+            }
+        });
         /**
          * Insert a Table from a CSV-File
          */
@@ -79,6 +90,7 @@ class EditorFunctions {
                 this._helper.insertStringAtStartOfLineOrLinebreak(table);
             }
             else {
+                vscode.window.showWarningMessage(this._language.get("tableInsertionPositionConflictWarning"));
                 var thisCurrentEditor = yield this._helper.getCurrentTextEditor();
                 var newEndPosition = new vscode.Selection(insertPosition.end, insertPosition.end);
                 this._helper.insertStringAtStartOfLineOrLinebreak(table, thisCurrentEditor, newEndPosition);
@@ -110,12 +122,20 @@ class EditorFunctions {
                 console.log(e);
                 return;
             }
-            var table = this._tableHelper.generateTable(hasHeader, data, tableType);
+            var savedTable = yield this._tableHelper.generateCSVfromJSONandSave(rawdata);
+            var extraText = "";
+            if (savedTable !== false) {
+                var relSavedTablePathParts = savedTable.split(path.sep);
+                var relSavedTablePath = "." + path.sep + relSavedTablePathParts[relSavedTablePathParts.length - 2] + path.sep + relSavedTablePathParts[relSavedTablePathParts.length - 1];
+                extraText = "exported to " + relSavedTablePath;
+            }
+            var table = this._tableHelper.generateTable(hasHeader, data, tableType, extraText);
             var insertPosition = yield this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
             if (insertPosition === false) {
                 this._helper.insertStringAtStartOfLineOrLinebreak(table);
             }
             else {
+                vscode.window.showWarningMessage(this._language.get("tableInsertionPositionConflictWarning"));
                 var thisCurrentEditor = yield this._helper.getCurrentTextEditor();
                 var newEndPosition = new vscode.Selection(insertPosition.end, insertPosition.end);
                 this._helper.insertStringAtStartOfLineOrLinebreak(table, thisCurrentEditor, newEndPosition);

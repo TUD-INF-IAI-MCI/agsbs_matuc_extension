@@ -3,16 +3,18 @@ import * as path from 'path';
 import * as fs from 'fs';
 import Language from './languages';
 import Helper from './helper';
+import * as Papa from 'papaparse';
+import { start } from 'repl';
 
 export default class TableHelper {
     private _language: Language;
-    private _helper:Helper;
-    public tableStartMarker:string;
-    public tableEndMarker:string;
+    private _helper: Helper;
+    public tableStartMarker: string;
+    public tableEndMarker: string;
     constructor() {
         this._language = new Language;
         this._helper = new Helper;
-        this.tableStartMarker= "TABLE START TYPE";
+        this.tableStartMarker = "TABLE START TYPE";
         this.tableEndMarker = "TABLE END";
     }
 
@@ -25,20 +27,25 @@ export default class TableHelper {
      * @param extraTableStartText optional. Extra Text at the starting comment
      * @returns String of the table
      */
-    public generateTable(hasHeader: boolean, rawdata: any,tableType?: string, extraTableStartText?:string) {
+    public generateTable(hasHeader: boolean, rawdata: any, tableType?: string, extraTableStartText?: string) {
         var horizontalChar = null;
         var verticalChar = null;
         var crossChar = null;
         var headerSeperatorChar = null;
         var tableTypeName = "";
         var data;
-        if(extraTableStartText === undefined){
+        var hasHeaderString = "NO HEADER";
+        if(hasHeader===true){
+            hasHeaderString = "HAS HEADER";
+        }
+
+        if (extraTableStartText === undefined) {
             extraTableStartText = "";
         } else {
             extraTableStartText = " " + extraTableStartText;
         }
 
-        if(tableType === undefined || tableType === ""){
+        if (tableType === undefined || tableType === "") {
             tableType = "gridTable";
         }
 
@@ -62,7 +69,6 @@ export default class TableHelper {
             tableTypeName = "SIMPLE";
         }
         if (rawdata.length === 0) {
-            console.log("empty");
             data = JSON.parse('[[""]]');
         } else {
             data = rawdata;
@@ -80,19 +86,47 @@ export default class TableHelper {
                     if (i === 0 && data.length > 1 && hasHeader === false && tableType !== "gridTable") {
                         returnString += this._generateHorizontalSplitterMarkdown(headerSeperatorChar, crossChar, lengths) + "\n";
                     } else {
-                    if (horizontalChar !== null) { 
-                        returnString += this._generateHorizontalSplitterMarkdown(horizontalChar, crossChar, lengths) + "\n";
+                        if (horizontalChar !== null) {
+                            returnString += this._generateHorizontalSplitterMarkdown(horizontalChar, crossChar, lengths) + "\n";
+                        }
                     }
-                }
                 }
 
             }
-            console.log(returnString);
             
-            returnString = "<!-- "+this.tableStartMarker+" " + tableTypeName + ""+extraTableStartText+" -->\n\n" + returnString + "\n<!-- " + tableTypeName + " "+this.tableEndMarker+" -->";
+
+            returnString = "<!-- " + this.tableStartMarker + " " + tableTypeName + " "+hasHeaderString+ "" + extraTableStartText + " -->\n\n" + returnString + "\n<!-- " + tableTypeName + " " + this.tableEndMarker + " -->";
             return returnString;
 
         }
+    }
+    /**
+     * Generates a CSV-File from a Array of an Array of data and saves it as a new file.
+     * @param data array of an array of data
+     * @param header optional. Boolean if the table has a header
+     * @returns file path
+     */
+    public async generateCSVfromJSONandSave(data: any, header?: boolean) {
+        return new Promise(async (resolve, reject) => {
+            var returnResult:any =false;
+        if (header === undefined) {
+            header = false;
+        }
+        var result = Papa.unparse(data,
+            {
+                delimiter: ";",
+                header: header,
+            }); //TODO: change delimiter to an optional
+        if (result !== undefined && result !== "") {
+            try {
+                returnResult= await this.writeCSVFile(result);
+            } catch (e) {
+                console.log(e);
+                resolve (false);
+            }
+            resolve (returnResult);
+        }
+    });
     }
 
     /**
@@ -128,7 +162,7 @@ export default class TableHelper {
 
                 returnString += verticalChar;
             }
-            if(rowArray.length>1 && (i!==(rowArray.length-1))){
+            if (rowArray.length > 1 && (i !== (rowArray.length - 1))) {
                 returnString += "\n";
             }
         }
@@ -342,8 +376,8 @@ export default class TableHelper {
      * @param selection optional. The selection to check
      * @returns false if the selection is not a table/ not in a table, returns selection of the table if it is in a table
      */
-    public async getIfSelectionIsInTableAndReturnSelection(currentTextEditor?: vscode.TextEditor, selection?: vscode.Selection){
-        var tableStartMarker = "<!-- "+this.tableStartMarker;
+    public async getIfSelectionIsInTableAndReturnSelection(currentTextEditor?: vscode.TextEditor, selection?: vscode.Selection) {
+        var tableStartMarker = "<!-- " + this.tableStartMarker;
         var tableEndMarker = this.tableEndMarker + " -->";
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
@@ -351,15 +385,114 @@ export default class TableHelper {
         if (selection === undefined) {
             selection = this._helper.getWordsSelection(currentTextEditor);
         }
-        var foundTableStartSelection:any = await this._helper.iterateUpwardsToCheckForString(tableStartMarker,currentTextEditor,selection);
-        if(foundTableStartSelection === false ){
+        var foundTableStartSelection: any = await this._helper.iterateUpwardsToCheckForString(tableStartMarker,tableEndMarker, currentTextEditor, selection);
+        if (foundTableStartSelection === false) {
             return false;
         }
-        var foundTableEnd = await this._helper.iterateDownwardsToCheckForString(tableEndMarker,currentTextEditor,foundTableStartSelection);
-        console.log("TABLE END",foundTableEnd);
+        var foundTableEnd = await this._helper.iterateDownwardsToCheckForString(tableEndMarker, currentTextEditor, foundTableStartSelection);
         return foundTableEnd;
         //
-    //});
+        //});
+    }
+
+    /**
+     * Writes a CSV File.
+     * @param content content of the file as a string
+     * @param fileName optional. A custom filename, with or without ".csv". If no fileName is provided, it will be generated from the current date.
+     * @param fileBasePath optional. a custom file base path.
+     */
+    public async writeCSVFile(content: string, fileName?: string, fileBasePath?: string) {
+        return new Promise(async (resolve, reject) => {
+        if (fileBasePath === undefined) {
+            var folderName: string = this.getGeneratedTablesFolderName();
+            var folderBasePath: any = await this._helper.getCurrentDocumentFolderPath();
+            var fileBasePath = path.join(folderBasePath, folderName);
+        }
+        
+        if (fileName === undefined) {
+            var date = new Date;
+            var newFileName = "generatedTable-" + date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + "-" + date.getHours() + "-" + date.getMinutes() + "-" + date.getSeconds() + ".csv";
+            fileName = newFileName;
+        }
+        if(!fileName.endsWith(".csv")){
+            fileName += ".csv";
+        }
+        var thisRelPath = path.join(fileBasePath, fileName);
+        var thisPath = path.resolve(thisRelPath);//For cross Platform compatibility, makes absolute path from possibly relative one
+        var pathExists = await fs.existsSync(fileBasePath);
+        if(pathExists === false){
+            await this._helper.mkDir(fileBasePath);
+        }
+        var fd = fs.openSync(thisPath, 'a+'); //Open in "add"-Mode
+        fs.write(fd, content, (error) => {
+            if (error) {
+                vscode.window.showErrorMessage(this._language.get('writingCSVTableFileError'));
+                reject();
+            } else {
+                console.log(fileName + " " + this._language.get("hasBeenWritten"));
+                fs.closeSync(fd);
+                resolve(thisPath);
+            }
+        });
+    });
+    }
+
+    /**
+     * @returns the name of the Folder where the generated tables are
+     */
+    public getGeneratedTablesFolderName() {
+        return "generatedTables";
+    }
+
+    public async loadSelectedTable (selection:vscode.Selection,currentTextEditor?:vscode.TextEditor){
+        if (currentTextEditor === undefined) {
+            currentTextEditor = await this._helper.getCurrentTextEditor();
+        }
+        return new Promise(async (resolve, reject) => {
+            var tableStartRegex = /<!--\ ?TABLE\ ?START\ ?T?Y?P?E?\ ?(GRID|PIPE|SIMPLE)\ ?(HAS\ ?HEADER|NO\ ?HEADER)[a-zA-Z\ ?]*\ *(\.\/.*)\ -->/;
+            var startLineText = currentTextEditor.document.lineAt(selection.start.line).text;
+            console.log(startLineText);
+            var parts = startLineText.match(tableStartRegex);
+            console.log(parts);
+            if(parts.length!==4){ //If The number of matched string parts from the first line is too long or too short
+                resolve(false);
+            } else { 
+                var tableType = parts[1];
+                var tableHeader = parts[2] === "HAS HEADER";
+                var tableSource = parts[3];
+                var basePath:any = await this._helper.getCurrentDocumentFolderPath();
+                var pathToFile = path.join(basePath,tableSource); 
+                var fileExists = await this._helper.fileExists(pathToFile);
+                if(fileExists === false){
+                    vscode.window.showErrorMessage(this._language.get("errorTableFileNonExistant"));
+                    resolve (false);
+                } 
+                var content:any = await this._helper.getContentOfFile(pathToFile);
+                var json = await this._helper.parseCSVtoJSON(content);
+                if(json===false){
+                    vscode.window.showErrorMessage(this._language.get("parsingError"));
+                    resolve(false);
+                }
+                console.log(json);
+                if(!json.hasOwnProperty("data")){ //If the Result has no "data"-property 
+                    vscode.window.showErrorMessage(this._language.get("parsingError"));
+                    resolve(false);
+                }
+                //var jsonString = JSON.stringify(json["data"]);
+                var returnObject = {};
+                returnObject["hasHeader"] = tableHeader;
+                returnObject["tableType"] = tableType;
+                returnObject["data"] = json["data"];
+                console.log(JSON.stringify(returnObject));
+                resolve(returnObject);
+
+                
+            }
+
+        });
+
+
+
     }
 
 

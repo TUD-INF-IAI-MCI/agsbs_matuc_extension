@@ -79,6 +79,9 @@ export default class En {
 		// this.d['allColors'] =  "colorRed, colorBlack, colorGreen, colorYellow, colorOrange, colorBlue, colorBrown, colorGrey, colorViolet";
 		// //footer-panel
 		 this.d['emphasis'] =  'Emphasis';
+		 
+		 this.d['edit'] = "Edit";
+
 		 this.d['bold'] =  'Bold';
 		 this.d['italic'] =  'Italic';
 		 this.d['strikethrough'] =  'Strikethrough';
@@ -96,6 +99,13 @@ export default class En {
 		this.d['insertTable'] =  'Insert table';
 		this.d['importTableCsv'] =  'Import table from csv';
 		this.d['editTableLayout'] = "Edit the Table below";
+
+		this.d['editTable'] = "Edit Table";
+		this.d['noTableFound'] = "No table found";
+		this.d['errorTableFileNonExistant'] ="File of the table does not exist";
+		this.d['parsingError'] = "Error parsing Table";
+
+		this.d['tableInsertionPositionConflictWarning'] = "Warning: Table cannot be placed inside a table. Instead, it was appended after this table.";
 		this.d['insert'] =  'Insert';
 		this.d['formula'] =  'Insert formula';
 		this.d['formulaInline'] =  'Insert inline formula';
@@ -190,6 +200,9 @@ export default class En {
 		// this.d['addListError'] =  'No list possible';
 		// this.d['addListErrorDetail'] =  'Only fully selected lines can be set as list items.';
 		 this.d['importTableFromCsvError'] =  'Failed to import table';
+		this.d['writingCSVTableFileError'] = 'A Error occured during the export and saving of the table to a CSV-File.';
+		this.d['hasBeenWritten'] =  'has been written';
+		
 		// this.d['importTableFromCsvErrorDetail'] =  'Can not replace text by table from CSV.';
 		// this.d['AddPageNumberError'] =  'Error during the generation of the page number. Matuc-Message is';
 
@@ -266,9 +279,10 @@ export default class En {
 
 		// this.d['checkLine'] =  'Check line: ';
 		
-		// Reading Files
+		// Reading Files and Folders
 		this.d['readingFileError'] =  'An unexpected error occured reading the file.';
 		this.d['importedFrom'] ='imported from';
+		this.d['createFolderError'] ="Error creating folder.";
     }
 
     public get = (varname)=>{
