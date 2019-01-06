@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import Language from './languages';
 import * as Papa from 'papaparse';
+import { start } from 'repl';
 
 export default class Helper {
     private _language: Language;
@@ -198,7 +199,32 @@ export default class Helper {
             selection.end,
             endCharacters
         );
+        var newLinesExtra = (startCharacters.match(/\n/g) || []).length; //Checks how many new lines there are
+        var startLine = selection.start.line + newLinesExtra;
+        var startCharacter = selection.start.character + startCharacters.length;
+        if(newLinesExtra!==0){
+            startCharacter = 0;
+        }
         await vscode.workspace.applyEdit(workSpaceEdit);
+        var newStartPosition = new vscode.Position(startLine,startCharacter);
+        var newEndPosition = newStartPosition;
+        // if(selection.isEmpty !== false ){
+        //     console.log("selection not empty");
+        //     newEndPosition = selection.end;
+        //     newEndPosition.translate(newLinesExtra,startCharacters.length);
+        
+        // }
+        if (selection.start.line !== selection.end.line){
+            newEndPosition = new vscode.Position(selection.end.line + newLinesExtra,selection.end.character);   
+        } else {
+            var selectionLength = selection.end.character - selection.start.character;
+            newEndPosition = new vscode.Position(selection.start.line + newLinesExtra,startCharacter + selectionLength);  
+        }
+
+        var newSelection = new vscode.Selection (newStartPosition,newEndPosition);
+        console.log("new Selection ", newSelection);
+        currentTextEditor.selection = newSelection;
+        
 
     }
     /**
@@ -250,6 +276,48 @@ export default class Helper {
         }
 
     }
+
+    /**
+     * Toggles given Characters at the beginning of a line
+     * @param characters characters that should be toggled
+     * @param line optional. Line to work with
+     * @param currentTextEditor optional. Editor to work with
+     */
+    public async toggleCharactersAtBeginningOfLine(characters:string, line?:number, currentTextEditor?: vscode.TextEditor){
+        if (currentTextEditor === undefined) {
+            currentTextEditor = await this.getCurrentTextEditor();
+        }
+        if(line ===undefined){
+            var selection = this.getWordsSelection(currentTextEditor);
+            line = selection.start.line;
+        }
+
+
+        var lineText = currentTextEditor.document.lineAt(line).text;
+        console.log("LINETEXT",lineText);
+        var startSubstring = lineText.substr(0, characters.length);
+        if(startSubstring===characters){
+            const workSpaceEdit = new vscode.WorkspaceEdit();
+            var startPosition = new vscode.Position(line,0);
+            var endPosition = new vscode.Position(line,characters.length);
+            var characterSelection = new vscode.Selection(startPosition,endPosition);
+            await workSpaceEdit.delete(
+                currentTextEditor.document.uri,
+                characterSelection
+            );
+            await vscode.workspace.applyEdit(workSpaceEdit);
+        } else {
+            const workSpaceEdit = new vscode.WorkspaceEdit();
+        workSpaceEdit.insert(
+            currentTextEditor.document.uri,
+            currentTextEditor.document.lineAt(line).range.start,
+            characters
+        );
+        await vscode.workspace.applyEdit(workSpaceEdit);
+        }
+
+    }
+
     /**
      * Toggles the existence of given Characters in a Selection, also checks around the selection for better matching
      * @param startCharacters Characters at the beginning of the selection that will be added or removed
@@ -326,6 +394,8 @@ export default class Helper {
 
         //If they are different and the selection is not longer than the length of the startCharacters
         await this.wrapCharactersAroundSelection(currentTextEditor, selection, startCharacters, endCharacters);
+
+        //currentTextEditor.selection = 
         return true;
 
 
@@ -544,6 +614,11 @@ export default class Helper {
             });
         });
     }
+    /**
+     * Checks if file Exists
+     * @param path path to file
+     * @returns true if file exists, otherwise false
+     */
     public fileExists(path: string) {
         return new Promise(async (resolve, reject) => {
             if (fs.existsSync(path)) {
@@ -553,6 +628,11 @@ export default class Helper {
             }
         });
     }
+    /**
+     * Parses CSV to JSON
+     * @param csvData csv data as String
+     * @returns JSON if possible, otherwise false
+     */
     public async parseCSVtoJSON(csvData: string) {
         return new Promise(async (resolve, reject) => {
             try {
@@ -564,6 +644,28 @@ export default class Helper {
                 resolve(false);
             }
         });
+    }
+
+    /**
+     * Replaces a Selection with a different Text
+     * @param replacetext text that replaces the selection
+     * @param selection otional. The selection used
+     * @param currentTextEditor optional. The editor used
+     */
+    public async replaceSelection(replacetext:string,selection?:vscode.Selection,currentTextEditor?:vscode.TextEditor){
+        if (currentTextEditor === undefined) {
+            currentTextEditor = await this.getCurrentTextEditor();
+        }
+        if (selection === undefined) {
+            selection = this.getWordsSelection(currentTextEditor);
+        }
+        const workSpaceEdit = new vscode.WorkspaceEdit();
+        workSpaceEdit.replace(
+            currentTextEditor.document.uri,
+            selection,
+            replacetext
+        );
+        await vscode.workspace.applyEdit(workSpaceEdit);
 
     }
 

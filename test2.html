@@ -56,7 +56,7 @@
         <input type="number" name='rows' , id='rows' min="1" placeholder="1" value="1" onchange="onRowChange(this)">
         <label>this._language.get("columns")</label>
         <input type="number" name='columns' , id='columns' min="1" placeholder="1" value="1" onchange="onColumsChange(this)">
-        <input type="hidden" value="" name="tableJSON" id="tableJSON">
+        <input type="hidden" value=`` name="tableJSON" id="tableJSON">
 
         <div id="table">
         </div>
@@ -229,7 +229,8 @@
             }
         </script>
         <script>
-            var jsonString =`{"hasHeader":false,"tableType":"GRID","data":[["B\\nC","V"],["f","*"]]}`;
+            var jsonString =`
+            {"hasHeader":true,"tableType":"SIMPLE","data":[["B\\nC","V"],["f","*"]]}`;
             var tableHeadCheckboxText = "tableHeadCheckbox";
             var tableTypeSelector = "tableType";
             var tableTypeText = [];
@@ -243,15 +244,18 @@
                
             }
             function loadJSON(){
-                var escapedJSONString = jsonString.replace(/\\n/g, "\\n")
-                .replace(/\\'/g, "\\'")
-                .replace(/\\"/g, '\\"')
-                .replace(/\\&/g, "\\&")
-                .replace(/\\r/g, "\\r")
-                .replace(/\\t/g, "\\t")
-                .replace(/\\b/g, "\\b")
-                .replace(/\\f/g, "\\f");
+                var escapedJSONString = jsonString.replace(/\\\\n/g, "\n")
+                .replace(/\\\\'/g, "\'")
+                .replace(/\\\\"/g, '\"')
+                .replace(/\\\\&/g, "\&")
+                .replace(/\\\\r/g, "\r")
+                .replace(/\\\\t/g, "\t")
+                .replace(/\\\\b/g, "\b")
+                .replace(/\\\\f/g, "\f");
                 var json = JSON.parse(escapedJSONString);
+                console.log("backlacsh" + jsonString.includes("\\n"));
+                console.log("backlach" + jsonString.includes("\n"));
+                //var json = JSON.parse(jsonString);
                 console.log(json);
                 return json;
             }
@@ -282,6 +286,7 @@
                 onRowChange(rowsSelector); //call to other scriptblock from the normal insert table script.
                 colSelector.value = colNumber;
                 onColumsChange(colSelector); //call to other scriptblock from the normal insert table script.
+                
                 loadCellsWithContent(json["data"]);
             }
 
@@ -301,16 +306,20 @@
                         var thisJSONCell = thisJSONRow[j];
                         console.log(thisCell,thisJSONCell);
                         thisCell.value = thisJSONCell;
+                        changedCell(); //Call to update the hidden form
                     }
                 }
             }
 
             window.onload = async function(){
+                document.body.innerHTML ="LOADED"+ document.body.innerHTML;
                 var parsedJSON = loadJSON();
                 loadIntoForm(parsedJSON);
 
             }
         </script>
+
+
 
     </form>
 </body>

@@ -201,7 +201,10 @@ export default class En {
 		// this.d['addListErrorDetail'] =  'Only fully selected lines can be set as list items.';
 		 this.d['importTableFromCsvError'] =  'Failed to import table';
 		this.d['writingCSVTableFileError'] = 'A Error occured during the export and saving of the table to a CSV-File.';
+		this.d['originalTableNotFound'] = "Original Table that has been edited could not be found. Instead, the table was inserted at the start of the current line.";
 		this.d['hasBeenWritten'] =  'has been written';
+		this.d['filehasBeenWritten'] = "file has been written: ";
+
 		
 		// this.d['importTableFromCsvErrorDetail'] =  'Can not replace text by table from CSV.';
 		// this.d['AddPageNumberError'] =  'Error during the generation of the page number. Matuc-Message is';

@@ -109,14 +109,7 @@ export default class TableHelper {
     public async generateCSVfromJSONandSave(data: any, header?: boolean) {
         return new Promise(async (resolve, reject) => {
             var returnResult:any =false;
-        if (header === undefined) {
-            header = false;
-        }
-        var result = Papa.unparse(data,
-            {
-                delimiter: ";",
-                header: header,
-            }); //TODO: change delimiter to an optional
+            var result:any = await this.generateCSVfromJSON(data,header);
         if (result !== undefined && result !== "") {
             try {
                 returnResult= await this.writeCSVFile(result);
@@ -127,6 +120,27 @@ export default class TableHelper {
             resolve (returnResult);
         }
     });
+    }
+
+    /**
+     * generates a CSV-String from JSON
+     * @param data an array of an array of data
+     * @param header optional. Boolean if the table has a header
+     * @returns JSON
+     */
+    public async generateCSVfromJSON(data:any, header?:boolean){
+        return new Promise(async (resolve, reject) => {
+            
+        if (header === undefined) {
+            header = false;
+        }
+        var result = await Papa.unparse(data,
+            {
+                delimiter: ";",
+                header: header,
+            }); //TODO: change delimiter to an optional
+        resolve(result);
+        });
     }
 
     /**
@@ -423,7 +437,7 @@ export default class TableHelper {
         if(pathExists === false){
             await this._helper.mkDir(fileBasePath);
         }
-        var fd = fs.openSync(thisPath, 'a+'); //Open in "add"-Mode
+        var fd = fs.openSync(thisPath, 'w+'); //Open in "add"-Mode
         fs.write(fd, content, (error) => {
             if (error) {
                 vscode.window.showErrorMessage(this._language.get('writingCSVTableFileError'));
@@ -480,10 +494,13 @@ export default class TableHelper {
                 }
                 //var jsonString = JSON.stringify(json["data"]);
                 var returnObject = {};
-                returnObject["hasHeader"] = tableHeader;
-                returnObject["tableType"] = tableType;
-                returnObject["data"] = json["data"];
-                console.log(JSON.stringify(returnObject));
+                var returnDataObject = {};
+                returnDataObject["hasHeader"] = tableHeader;
+                returnDataObject["tableType"] = tableType;
+                returnDataObject["data"] = json["data"];
+                returnObject["data"] = returnDataObject;
+                returnObject["file"] = pathToFile;
+                 console.log(JSON.stringify(returnObject));
                 resolve(returnObject);
 
                 

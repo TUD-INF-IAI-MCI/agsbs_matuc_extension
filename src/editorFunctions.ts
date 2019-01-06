@@ -32,6 +32,8 @@ export default class EditorFunctions {
         this._tableHelper = new TableHelper;
     }
 
+
+
     /**
      * Setup of the Editor Functions. Here taskbar-buttons can be added.
      */
@@ -40,21 +42,125 @@ export default class EditorFunctions {
         this._taskbarCallback.addButton("italic.svg", this._language.get("italic"), this.italic, this._language.get("emphasis"));
         this._taskbarCallback.addButton("strikethrough.svg", this._language.get("strikethrough"), this.strikethrough, this._language.get("emphasis"));
 
+        this._taskbarCallback.addButton('list.svg', this._language.get('unorderedList'), this.unorderedList, this._language.get('list'));
+
+        this._taskbarCallback.addButton('table.svg', this._language.get('insertTable'), this.insertTable, this._language.get('table'));
+        this._taskbarCallback.addButton('import_table_csv.svg', this._language.get('importTableCsv'), this.insertCSVTable, this._language.get('table'));
+        this._taskbarCallback.addButton("edit_table.svg", this._language.get("editTable"), this.editTable, this._language.get("table"));
+
+        this._taskbarCallback.addButton("formula.svg", this._language.get("formula"), this.formula, this._language.get("formatting"));
+        this._taskbarCallback.addButton("inline_formula.svg", this._language.get("formulaInline"), this.inlineFormula, this._language.get("formatting"));
+        this._taskbarCallback.addButton("code.svg", this._language.get("code"), this.code, this._language.get("formatting"));
+        this._taskbarCallback.addButton("quote.svg", this._language.get("blockquote"), this.blockquote, this._language.get("formatting"));
+
         this._taskbarCallback.addButton("link.svg", this._language.get("insertLink"), this.insertLink, this._language.get("insert"));
         this._taskbarCallback.addButton('image.svg', this._language.get('insertGraphic'), this.insertImage, this._language.get('insert'));
-        this._taskbarCallback.addButton('table.svg', this._language.get('insertTable'), this.insertTable, this._language.get('insert'));
-        this._taskbarCallback.addButton('import_table_csv.svg', this._language.get('importTableCsv'), this.insertCSVTable, this._language.get('insert'));
-        this._taskbarCallback.addButton("edit_table.svg",this._language.get("editTable"),this.editTable,this._language.get("edit"));
-
+        
     }
+
+    public blockquote = async () => {
+        await this._helper.toggleCharactersAtBeginningOfLine("> ");
+        this._helper.focusDocument(); //Puts focus back to the text editor
+    }
+
+    public code = async () => {
+        await this._helper.toggleCharactersAtStartAndEnd("```\n","\n```");
+        this._helper.focusDocument(); //Puts focus back to the text editor
+    }
+
+    public inlineFormula = async () => {
+        await this._helper.toggleCharactersAtStartAndEnd("$","$");
+        this._helper.focusDocument(); //Puts focus back to the text editor
+    }
+
+    public formula = async () => {
+        await this._helper.toggleCharactersAtStartAndEnd("$$ "," $$");
+        this._helper.focusDocument(); //Puts focus back to the text editor
+    }
+
+    /**
+     * Toggles a unordered list.
+     */
+    public unorderedList = async () => {
+        await this._helper.toggleCharactersAtBeginningOfLine("- ");
+        this._helper.focusDocument(); //Puts focus back to the text editor
+    }
+
+    /**
+     * Editing a existing Table
+     */
     public editTable = async () => {
-        var insertPosition:any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
-        if(insertPosition === false){
+        var insertPosition: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        if (insertPosition === false) {
             vscode.window.showErrorMessage(this._language.get("noTableFound"));
-            
+
         } else {
-            this._tableHelper.loadSelectedTable(insertPosition);
+            var tableData = await this._tableHelper.loadSelectedTable(insertPosition);
+
+            var form = this._snippets.get('editTableHTML');
+            form = form + `<input type="hidden" value="${tableData["file"]}" name="hiddenFileName" id="hiddenFileName">`; //TODO possible escape file string
+            var script = this._snippets.get('editTableSCRIPT');
+            script += this._snippets.get('editTableScriptPart1');
+            var jsonToInsert = JSON.stringify(tableData["data"]);
+            jsonToInsert = jsonToInsert.replace(/\\n/g, "\\\\n")
+                .replace(/\\"/g, "\\\\\"")
+                .replace(/\\'/g, "\\\\'")
+                .replace(/\\&/g, "\\\\&")
+                .replace(/\\r/g, "\\\\r")
+                .replace(/\\t/g, "\\\\t")
+                .replace(/\\b/g, "\\\\b")
+                .replace(/\\f/g, "|\f");
+
+            script += jsonToInsert;
+            script += this._snippets.get('editTableScriptPart2');
+
+            var style = this._snippets.get('editTableSTYLE');
+            this._sidebarCallback.addToSidebar(form, this._language.get("insertTable"), this.editTableSidebarCallback, this._language.get("insert"), style, script);
         }
+    }
+
+    /**
+     * Callback of the Sidebar for editing a table
+     */
+    public editTableSidebarCallback = async (params: any) => {
+        //console.log(params);
+        var hasHeader = params.tableHeadCheckbox.checked;
+        var tableType = params.tableType.value;
+        var rawdata = params.tableJSON.value;
+        console.log("rawdata "+rawdata);
+        var data: any;
+        try {
+            data = JSON.parse(rawdata);
+        } catch (e) {
+            console.log(e);
+            return;
+        }
+
+        var tableData: any = await this._tableHelper.generateCSVfromJSON(rawdata);
+        console.log("TABLEData" + tableData);
+        //console.log(params.hiddenFileName);
+        var fileName: string = params.hiddenFileName.value.replace(/^.*[\\\/]/, '');
+        console.log("TABLE DATA", tableData, "END");
+        var savedTable: any = await this._tableHelper.writeCSVFile(tableData, fileName);
+
+        var extraText = "";
+        if (savedTable !== false) {
+            var relSavedTablePathParts = savedTable.split(path.sep);
+
+            var relSavedTablePath = "." + path.sep + relSavedTablePathParts[relSavedTablePathParts.length - 2] + path.sep + relSavedTablePathParts[relSavedTablePathParts.length - 1];
+
+            extraText = "exported to " + relSavedTablePath;
+        }
+
+        var table = this._tableHelper.generateTable(hasHeader, data, tableType, extraText);
+        var insertSelection: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        if (insertSelection === false) {
+            vscode.window.showErrorMessage(this._language.get("originalTableNotFound"));
+            this._helper.insertStringAtStartOfLineOrLinebreak(table);
+        } else {
+            this._helper.replaceSelection(table, insertSelection);
+        }
+
     }
 
     /**
@@ -64,7 +170,7 @@ export default class EditorFunctions {
         var thisPath = await this._helper.getCurrentDocumentFolderPath();
         var results = await this._tableHelper.getAllTablesInFolder(thisPath);
         var selectionTablesHTML = this._tableHelper.generateSelectTableOptionsHTML(results);
-       
+
         //<input type="text" name="uriTable" placeholder="${this._language.get("uriTable")}"><br><br>
         var form = `
         
@@ -81,34 +187,34 @@ export default class EditorFunctions {
      */
     public insertCSVTableSidebarCallback = async (params) => {
         var urlData = params.selectTable.value;
-        var url:any;
-        if(urlData===""){
+        var url: any;
+        if (urlData === "") {
             console.log("No File Selected");
             return false;
-            
+
         } else {
-            try{
-            url = JSON.parse(urlData);
-            } catch (e){
+            try {
+                url = JSON.parse(urlData);
+            } catch (e) {
                 vscode.window.showErrorMessage(this._language.get("importTableFromCsvError"));
                 console.log(e);
                 return false;
             }
         }
-        var content:any = await this._helper.getContentOfFile(url.completePath); 
+        var content: any = await this._helper.getContentOfFile(url.completePath);
         content = content.replace(/\ +$/, "");
         content = content.replace(/\n+$/, "");//removes trailing spaces and line breaks
         var result = await Papa.parse(content);
-        var extraText = this._language.get("importedFrom")+ " " + url.relativePath;
-        var table = this._tableHelper.generateTable(false,result.data,"",extraText);
-        var insertPosition:any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
-        if(insertPosition === false){
-        this._helper.insertStringAtStartOfLineOrLinebreak(table);
+        var extraText = this._language.get("importedFrom") + " " + url.relativePath;
+        var table = this._tableHelper.generateTable(false, result.data, "", extraText);
+        var insertPosition: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        if (insertPosition === false) {
+            this._helper.insertStringAtStartOfLineOrLinebreak(table);
         } else {
             vscode.window.showWarningMessage(this._language.get("tableInsertionPositionConflictWarning"));
             var thisCurrentEditor = await this._helper.getCurrentTextEditor();
             var newEndPosition = new vscode.Selection(insertPosition.end, insertPosition.end);
-            this._helper.insertStringAtStartOfLineOrLinebreak(table,thisCurrentEditor,newEndPosition);
+            this._helper.insertStringAtStartOfLineOrLinebreak(table, thisCurrentEditor, newEndPosition);
         }
     }
 
@@ -120,7 +226,7 @@ export default class EditorFunctions {
         var form = this._snippets.get('insertTableHTML');
         var script = this._snippets.get('insertTableSCRIPT');
         var style = this._snippets.get('insertTableSTYLE');
-        this._sidebarCallback.addToSidebar(form, this._language.get("insertTable"), this.insertTableSidebarCallback, this._language.get("insert"),style,script);
+        this._sidebarCallback.addToSidebar(form, this._language.get("insertTable"), this.insertTableSidebarCallback, this._language.get("insert"), style, script);
 
     }
 
@@ -130,43 +236,41 @@ export default class EditorFunctions {
     public insertTableSidebarCallback = async (params) => {
         var hasHeader = params.tableHeadCheckbox.checked;
         var tableType = params.tableType.value;
-        var rowsNumber = params.rows.value;
-        var columns = params.columns.value;
         var rawdata = params.tableJSON.value;
         var data;
         try {
-           data  = JSON.parse(rawdata);
+            data = JSON.parse(rawdata);
         } catch (e) {
             console.log(e);
             return;
         }
-        
-        var savedTable:any = await this._tableHelper.generateCSVfromJSONandSave(rawdata);
-        
+
+        var savedTable: any = await this._tableHelper.generateCSVfromJSONandSave(rawdata);
+
 
 
         var extraText = "";
-        if(savedTable !== false){
-        var relSavedTablePathParts = savedTable.split(path.sep);
+        if (savedTable !== false) {
+            var relSavedTablePathParts = savedTable.split(path.sep);
 
-        var relSavedTablePath = "."+path.sep+relSavedTablePathParts[relSavedTablePathParts.length-2] +  path.sep + relSavedTablePathParts[relSavedTablePathParts.length-1];
+            var relSavedTablePath = "." + path.sep + relSavedTablePathParts[relSavedTablePathParts.length - 2] + path.sep + relSavedTablePathParts[relSavedTablePathParts.length - 1];
 
-        extraText = "exported to " + relSavedTablePath;
+            extraText = "exported to " + relSavedTablePath;
         }
 
 
-        var table = this._tableHelper.generateTable(hasHeader,data,tableType,extraText);
-        var insertPosition:any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
-        if(insertPosition === false){
-        this._helper.insertStringAtStartOfLineOrLinebreak(table);
+        var table = this._tableHelper.generateTable(hasHeader, data, tableType, extraText);
+        var insertPosition: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        if (insertPosition === false) {
+            this._helper.insertStringAtStartOfLineOrLinebreak(table);
         } else {
             vscode.window.showWarningMessage(this._language.get("tableInsertionPositionConflictWarning"));
             var thisCurrentEditor = await this._helper.getCurrentTextEditor();
             var newEndPosition = new vscode.Selection(insertPosition.end, insertPosition.end);
-            this._helper.insertStringAtStartOfLineOrLinebreak(table,thisCurrentEditor,newEndPosition);
+            this._helper.insertStringAtStartOfLineOrLinebreak(table, thisCurrentEditor, newEndPosition);
         }
 
-    }   
+    }
 
 
     /**
@@ -188,7 +292,7 @@ export default class EditorFunctions {
     public insertImageSidebarCallback = async (params) => {
 
         //TODO: Fallback if Matuc cannot be loaded
-         //stringToInsert = '![' + altText + '](' + pictureSource + ')'; //TODO: Delete
+        //stringToInsert = '![' + altText + '](' + pictureSource + ')'; //TODO: Delete
 
         var altText = "";
         var pictureTitle = "";
@@ -199,21 +303,21 @@ export default class EditorFunctions {
         pictureSource += pictureSelector.markdownReadyRelativePath;
         //console.log(altText, false, pictureSelector.basePath, pictureTitle, pictureSelector.markdownReadyRelativePath);
         var result = await this._matucCommands.imageDescription(
-                                                altText, 
-                                                params.outsourceCheckbox.checked, 
-                                                pictureSelector.basePath, 
-                                                pictureTitle, 
-                                                pictureSelector.markdownReadyRelativePath);
+            altText,
+            params.outsourceCheckbox.checked,
+            pictureSelector.basePath,
+            pictureTitle,
+            pictureSelector.markdownReadyRelativePath);
 
         //TODO: Insert only if the selection is at the start of the line, otherwise do a linebreak first
         //TODO: Handle Alternative direct Path 
 
-        await this._helper.insertStringAtStartOfSelection(result['internal'].verbatim); 
+        await this._helper.insertStringAtStartOfSelection(result['internal'].verbatim);
         //typescript does not like .internal, so this workaround is used.
         if (result.hasOwnProperty("external")) { // if the description is outsourced, the returning JSON has a 'external' property
             var fileName = await this._imageHelper.getPictureFolderName();
             fileName += ".md";
-            this._imageHelper.addImageDescriptionToFile(pictureSelector.basePath, fileName, result["external"].verbatim); 
+            this._imageHelper.addImageDescriptionToFile(pictureSelector.basePath, fileName, result["external"].verbatim);
             //typescript does not like .external, so this workaround is used.
         }
     }
@@ -244,14 +348,14 @@ export default class EditorFunctions {
     public bold = async () => {
         await this._helper.toggleCharactersAtStartAndEnd("**", "**");
         this._helper.focusDocument(); //Puts focus back to the text editor
-        
+
     }
 
     /**
      * Makes the current text italic.
      */
     public italic = async () => {
-        await this._helper.toggleCharactersAtStartAndEnd( "*", "*");
+        await this._helper.toggleCharactersAtStartAndEnd("*", "*");
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 

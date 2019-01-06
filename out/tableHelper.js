@@ -110,13 +110,7 @@ class TableHelper {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                 var returnResult = false;
-                if (header === undefined) {
-                    header = false;
-                }
-                var result = Papa.unparse(data, {
-                    delimiter: ";",
-                    header: header,
-                }); //TODO: change delimiter to an optional
+                var result = yield this.generateCSVfromJSON(data, header);
                 if (result !== undefined && result !== "") {
                     try {
                         returnResult = yield this.writeCSVFile(result);
@@ -127,6 +121,26 @@ class TableHelper {
                     }
                     resolve(returnResult);
                 }
+            }));
+        });
+    }
+    /**
+     * generates a CSV-String from JSON
+     * @param data an array of an array of data
+     * @param header optional. Boolean if the table has a header
+     * @returns JSON
+     */
+    generateCSVfromJSON(data, header) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                if (header === undefined) {
+                    header = false;
+                }
+                var result = yield Papa.unparse(data, {
+                    delimiter: ";",
+                    header: header,
+                }); //TODO: change delimiter to an optional
+                resolve(result);
             }));
         });
     }
@@ -410,7 +424,7 @@ class TableHelper {
                 if (pathExists === false) {
                     yield this._helper.mkDir(fileBasePath);
                 }
-                var fd = fs.openSync(thisPath, 'a+'); //Open in "add"-Mode
+                var fd = fs.openSync(thisPath, 'w+'); //Open in "add"-Mode
                 fs.write(fd, content, (error) => {
                     if (error) {
                         vscode.window.showErrorMessage(this._language.get('writingCSVTableFileError'));
@@ -469,9 +483,12 @@ class TableHelper {
                     }
                     //var jsonString = JSON.stringify(json["data"]);
                     var returnObject = {};
-                    returnObject["hasHeader"] = tableHeader;
-                    returnObject["tableType"] = tableType;
-                    returnObject["data"] = json["data"];
+                    var returnDataObject = {};
+                    returnDataObject["hasHeader"] = tableHeader;
+                    returnDataObject["tableType"] = tableType;
+                    returnDataObject["data"] = json["data"];
+                    returnObject["data"] = returnDataObject;
+                    returnObject["file"] = pathToFile;
                     console.log(JSON.stringify(returnObject));
                     resolve(returnObject);
                 }
