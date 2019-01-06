@@ -55,7 +55,7 @@ export default class EditorFunctions {
 
         this._taskbarCallback.addButton("link.svg", this._language.get("insertLink"), this.insertLink, this._language.get("insert"));
         this._taskbarCallback.addButton('image.svg', this._language.get('insertGraphic'), this.insertImage, this._language.get('insert'));
-        
+
     }
 
     public blockquote = async () => {
@@ -64,17 +64,17 @@ export default class EditorFunctions {
     }
 
     public code = async () => {
-        await this._helper.toggleCharactersAtStartAndEnd("```\n","\n```");
+        await this._helper.toggleCharactersAtStartAndEnd("```\n", "\n```");
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 
     public inlineFormula = async () => {
-        await this._helper.toggleCharactersAtStartAndEnd("$","$");
+        await this._helper.toggleCharactersAtStartAndEnd("$", "$");
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 
     public formula = async () => {
-        await this._helper.toggleCharactersAtStartAndEnd("$$ "," $$");
+        await this._helper.toggleCharactersAtStartAndEnd("$$ ", " $$");
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 
@@ -127,7 +127,7 @@ export default class EditorFunctions {
         var hasHeader = params.tableHeadCheckbox.checked;
         var tableType = params.tableType.value;
         var rawdata = params.tableJSON.value;
-        console.log("rawdata "+rawdata);
+        console.log("rawdata " + rawdata);
         var data: any;
         try {
             data = JSON.parse(rawdata);
@@ -140,9 +140,17 @@ export default class EditorFunctions {
         console.log("TABLEData" + tableData);
         //console.log(params.hiddenFileName);
         var fileName: string = params.hiddenFileName.value.replace(/^.*[\\\/]/, '');
+        var folderName: string = params.hiddenFileName.value.substr(0, params.hiddenFileName.value.lastIndexOf("/") - 1);
+        var defaultGeneratedFolderName: string = await this._tableHelper.getTableFolderName();
         console.log("TABLE DATA", tableData, "END");
-        var savedTable: any = await this._tableHelper.writeCSVFile(tableData, fileName);
-
+        if (folderName === defaultGeneratedFolderName) {
+            var savedTable: any = await this._tableHelper.writeCSVFile(tableData, fileName);
+        } else {
+            var savedTable: any = await this._tableHelper.writeCSVFile(tableData);
+            //if table exists in other folder, generate new Name, because the file could potentially already exists
+            // with that name so no other file will be overridden by accident
+        }
+        vscode.window.showInformationMessage(this._language.get("filehasBeenWritten") + params.hiddenFileName.value);
         var extraText = "";
         if (savedTable !== false) {
             var relSavedTablePathParts = savedTable.split(path.sep);

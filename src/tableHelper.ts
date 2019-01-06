@@ -35,7 +35,7 @@ export default class TableHelper {
         var tableTypeName = "";
         var data;
         var hasHeaderString = "NO HEADER";
-        if(hasHeader===true){
+        if (hasHeader === true) {
             hasHeaderString = "HAS HEADER";
         }
 
@@ -93,9 +93,9 @@ export default class TableHelper {
                 }
 
             }
-            
 
-            returnString = "<!-- " + this.tableStartMarker + " " + tableTypeName + " "+hasHeaderString+ "" + extraTableStartText + " -->\n\n" + returnString + "\n<!-- " + tableTypeName + " " + this.tableEndMarker + " -->";
+
+            returnString = "<!-- " + this.tableStartMarker + " " + tableTypeName + " " + hasHeaderString + "" + extraTableStartText + " -->\n\n" + returnString + "\n<!-- " + tableTypeName + " " + this.tableEndMarker + " -->";
             return returnString;
 
         }
@@ -108,18 +108,18 @@ export default class TableHelper {
      */
     public async generateCSVfromJSONandSave(data: any, header?: boolean) {
         return new Promise(async (resolve, reject) => {
-            var returnResult:any =false;
-            var result:any = await this.generateCSVfromJSON(data,header);
-        if (result !== undefined && result !== "") {
-            try {
-                returnResult= await this.writeCSVFile(result);
-            } catch (e) {
-                console.log(e);
-                resolve (false);
+            var returnResult: any = false;
+            var result: any = await this.generateCSVfromJSON(data, header);
+            if (result !== undefined && result !== "") {
+                try {
+                    returnResult = await this.writeCSVFile(result);
+                } catch (e) {
+                    console.log(e);
+                    resolve(false);
+                }
+                resolve(returnResult);
             }
-            resolve (returnResult);
-        }
-    });
+        });
     }
 
     /**
@@ -128,18 +128,18 @@ export default class TableHelper {
      * @param header optional. Boolean if the table has a header
      * @returns JSON
      */
-    public async generateCSVfromJSON(data:any, header?:boolean){
+    public async generateCSVfromJSON(data: any, header?: boolean) {
         return new Promise(async (resolve, reject) => {
-            
-        if (header === undefined) {
-            header = false;
-        }
-        var result = await Papa.unparse(data,
-            {
-                delimiter: ";",
-                header: header,
-            }); //TODO: change delimiter to an optional
-        resolve(result);
+
+            if (header === undefined) {
+                header = false;
+            }
+            var result = await Papa.unparse(data,
+                {
+                    delimiter: ";",
+                    header: header,
+                }); //TODO: change delimiter to an optional
+            resolve(result);
         });
     }
 
@@ -399,7 +399,7 @@ export default class TableHelper {
         if (selection === undefined) {
             selection = this._helper.getWordsSelection(currentTextEditor);
         }
-        var foundTableStartSelection: any = await this._helper.iterateUpwardsToCheckForString(tableStartMarker,tableEndMarker, currentTextEditor, selection);
+        var foundTableStartSelection: any = await this._helper.iterateUpwardsToCheckForString(tableStartMarker, tableEndMarker, currentTextEditor, selection);
         if (foundTableStartSelection === false) {
             return false;
         }
@@ -417,38 +417,38 @@ export default class TableHelper {
      */
     public async writeCSVFile(content: string, fileName?: string, fileBasePath?: string) {
         return new Promise(async (resolve, reject) => {
-        if (fileBasePath === undefined) {
-            var folderName: string = this.getGeneratedTablesFolderName();
-            var folderBasePath: any = await this._helper.getCurrentDocumentFolderPath();
-            var fileBasePath = path.join(folderBasePath, folderName);
-        }
-        
-        if (fileName === undefined) {
-            var date = new Date;
-            var newFileName = "generatedTable-" + date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + "-" + date.getHours() + "-" + date.getMinutes() + "-" + date.getSeconds() + ".csv";
-            fileName = newFileName;
-        }
-        if(!fileName.endsWith(".csv")){
-            fileName += ".csv";
-        }
-        var thisRelPath = path.join(fileBasePath, fileName);
-        var thisPath = path.resolve(thisRelPath);//For cross Platform compatibility, makes absolute path from possibly relative one
-        var pathExists = await fs.existsSync(fileBasePath);
-        if(pathExists === false){
-            await this._helper.mkDir(fileBasePath);
-        }
-        var fd = fs.openSync(thisPath, 'w+'); //Open in "add"-Mode
-        fs.write(fd, content, (error) => {
-            if (error) {
-                vscode.window.showErrorMessage(this._language.get('writingCSVTableFileError'));
-                reject();
-            } else {
-                console.log(fileName + " " + this._language.get("hasBeenWritten"));
-                fs.closeSync(fd);
-                resolve(thisPath);
+            if (fileBasePath === undefined) {
+                var folderName: string = this.getGeneratedTablesFolderName();
+                var folderBasePath: any = await this._helper.getCurrentDocumentFolderPath();
+                var fileBasePath = path.join(folderBasePath, folderName);
             }
+
+            if (fileName === undefined) {
+                var date = new Date;
+                var newFileName = "generatedTable-" + date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + "-" + date.getHours() + "-" + date.getMinutes() + "-" + date.getSeconds() + ".csv";
+                fileName = newFileName;
+            }
+            if (!fileName.endsWith(".csv")) {
+                fileName += ".csv";
+            }
+            var thisRelPath = path.join(fileBasePath, fileName);
+            var thisPath = path.resolve(thisRelPath);//For cross Platform compatibility, makes absolute path from possibly relative one
+            var pathExists = await fs.existsSync(fileBasePath);
+            if (pathExists === false) {
+                await this._helper.mkDir(fileBasePath);
+            }
+            var fd = fs.openSync(thisPath, 'w+'); //Open in "add"-Mode
+            fs.write(fd, content, (error) => {
+                if (error) {
+                    vscode.window.showErrorMessage(this._language.get('writingCSVTableFileError'));
+                    reject();
+                } else {
+                    console.log(fileName + " " + this._language.get("hasBeenWritten"));
+                    fs.closeSync(fd);
+                    resolve(thisPath);
+                }
+            });
         });
-    });
     }
 
     /**
@@ -458,7 +458,7 @@ export default class TableHelper {
         return "generatedTables";
     }
 
-    public async loadSelectedTable (selection:vscode.Selection,currentTextEditor?:vscode.TextEditor){
+    public async loadSelectedTable(selection: vscode.Selection, currentTextEditor?: vscode.TextEditor) {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
         }
@@ -468,27 +468,28 @@ export default class TableHelper {
             console.log(startLineText);
             var parts = startLineText.match(tableStartRegex);
             console.log(parts);
-            if(parts.length!==4){ //If The number of matched string parts from the first line is too long or too short
+            if (parts.length !== 4) { //If The number of matched string parts from the first line is too long or too short
                 resolve(false);
-            } else { 
+            } else {
                 var tableType = parts[1];
                 var tableHeader = parts[2] === "HAS HEADER";
                 var tableSource = parts[3];
-                var basePath:any = await this._helper.getCurrentDocumentFolderPath();
-                var pathToFile = path.join(basePath,tableSource); 
+                var basePath: any = await this._helper.getCurrentDocumentFolderPath();
+                var pathToFile = path.join(basePath, tableSource);
                 var fileExists = await this._helper.fileExists(pathToFile);
-                if(fileExists === false){
+                if (fileExists === false) {
                     vscode.window.showErrorMessage(this._language.get("errorTableFileNonExistant"));
-                    resolve (false);
-                } 
-                var content:any = await this._helper.getContentOfFile(pathToFile);
+                    resolve(false);
+                }
+                var content: any = await this._helper.getContentOfFile(pathToFile);
+                content  = content.replace(/\n+$/gm, ""); //removes trailing line breaks. Important, otherwise the resulting array will have weird empty arrays (like [""]) at the end.
                 var json = await this._helper.parseCSVtoJSON(content);
-                if(json===false){
+                if (json === false) {
                     vscode.window.showErrorMessage(this._language.get("parsingError"));
                     resolve(false);
                 }
                 console.log(json);
-                if(!json.hasOwnProperty("data")){ //If the Result has no "data"-property 
+                if (!json.hasOwnProperty("data")) { //If the Result has no "data"-property 
                     vscode.window.showErrorMessage(this._language.get("parsingError"));
                     resolve(false);
                 }
@@ -500,10 +501,10 @@ export default class TableHelper {
                 returnDataObject["data"] = json["data"];
                 returnObject["data"] = returnDataObject;
                 returnObject["file"] = pathToFile;
-                 console.log(JSON.stringify(returnObject));
+                console.log(JSON.stringify(returnObject));
                 resolve(returnObject);
 
-                
+
             }
 
         });

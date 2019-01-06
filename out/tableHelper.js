@@ -471,6 +471,7 @@ class TableHelper {
                         resolve(false);
                     }
                     var content = yield this._helper.getContentOfFile(pathToFile);
+                    content = content.replace(/\n+$/gm, ""); //removes trailing line breaks. Important, otherwise the resulting array will have weird empty arrays (like [""]) at the end.
                     var json = yield this._helper.parseCSVtoJSON(content);
                     if (json === false) {
                         vscode.window.showErrorMessage(this._language.get("parsingError"));

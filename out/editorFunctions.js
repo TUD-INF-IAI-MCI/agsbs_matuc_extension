@@ -111,8 +111,18 @@ class EditorFunctions {
             console.log("TABLEData" + tableData);
             //console.log(params.hiddenFileName);
             var fileName = params.hiddenFileName.value.replace(/^.*[\\\/]/, '');
+            var folderName = params.hiddenFileName.value.substr(0, params.hiddenFileName.value.lastIndexOf("/") - 1);
+            var defaultGeneratedFolderName = yield this._tableHelper.getTableFolderName();
             console.log("TABLE DATA", tableData, "END");
-            var savedTable = yield this._tableHelper.writeCSVFile(tableData, fileName);
+            if (folderName === defaultGeneratedFolderName) {
+                var savedTable = yield this._tableHelper.writeCSVFile(tableData, fileName);
+            }
+            else {
+                var savedTable = yield this._tableHelper.writeCSVFile(tableData);
+                //if table exists in other folder, generate new Name, because the file could potentially already exists
+                // with that name so no other file will be overridden by accident
+            }
+            vscode.window.showInformationMessage(this._language.get("filehasBeenWritten") + params.hiddenFileName.value);
             var extraText = "";
             if (savedTable !== false) {
                 var relSavedTablePathParts = savedTable.split(path.sep);
