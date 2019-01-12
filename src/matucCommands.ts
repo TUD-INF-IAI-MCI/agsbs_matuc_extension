@@ -2,15 +2,70 @@ import * as vscode from 'vscode';
 // import * as path from 'path';
 // import * as fs from 'fs';
 import Language from './languages';
+import Helper from './helper';
+const path = require('path');
+
 const exec = require('child_process').exec;
 
 
 export default class MatucCommands {
 
 	private _language: Language;
+	private _helper: Helper;
 	constructor() {
 		this._language = new Language;
+		this._helper = new Helper;
 	}
+
+	/**
+	 * Check if Matuc is installed on the device.
+	 * @returns true if installed, otherwise false.
+	 */
+	public async matucIsInstalled () {
+		var result = await this.getMatucVersion();
+		if(result !== false){
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Get the installed Version of Matuc.
+	 * @returns version of Matuc if installed, otherwise false.
+	 */
+	public async getMatucVersion (){
+		var cmd = "";
+		cmd += `matuc_js version`;
+		
+		return new Promise(function (resolve, reject) {
+			try{
+			exec(cmd, (error, stdout, stderr) => {
+				if (error) {
+					resolve(false);
+				}
+				if(stdout.includes("result") && stdout.includes("version")){
+					var fragment:JSON;
+					try {
+						fragment = JSON.parse(stdout);
+					} catch (e){
+						resolve(false);
+					}
+					let result = fragment["result"]["version"];
+					if(result !== undefined && result !== null){
+						resolve(result);
+					}
+				} else {
+					resolve(false);
+				}
+			});
+		} catch (e){
+			resolve(false);
+		}
+		});
+	}
+	
+
     /**
      * Generats an image description using matuc.
      * @param desc Description of the image
@@ -34,17 +89,56 @@ export default class MatucCommands {
 		cmd += `${relPathToImg}`;
 
 
+
 		console.log(cmd);
 		return new Promise(function (resolve, reject) {
 			exec(cmd, { cwd: currentPath }, (error, stdout, stderr) => {
 				if (error) {
 					console.error(`exec error: ${error}`);
 					let fragment = JSON.parse(stdout);
-					return reject(fragment.error + "\n" + fragment.usage);
+					reject(fragment.error + "\n" + fragment.usage);
 				}
 				let fragment = JSON.parse(stdout);
 				resolve(fragment.result);
 			});
+		});
+	}
+
+	public async addPageNumber (selection?:vscode.Selection,currentTextEditor?:vscode.TextEditor){
+		
+        if (currentTextEditor === undefined) {
+            currentTextEditor = await this._helper.getCurrentTextEditor();
+        }
+        if (selection === undefined) {
+            selection = this._helper.getWordsSelection(currentTextEditor);
+		}
+		var line = selection.start.line;
+		var thisPath = currentTextEditor.document.uri.path;
+
+
+		var cmd = `matuc_js addpnum -f ${thisPath} ${line}`;
+		return new Promise(function (resolve, reject) {
+			try {
+				exec(cmd, (error, stdout, stderr) => {
+					if (error) {
+						console.error(`exec error: ${error}`);
+						try{
+						let fragment = JSON.parse(stdout);
+						reject(fragment.error + "\n" + fragment.usage);
+						} catch(e){
+							resolve(false);
+						}
+					}
+					try{
+					let fragment = JSON.parse(stdout);
+					resolve(fragment.result.pagenumber);
+					} catch(e){
+						resolve(false);
+					}
+				});
+			} catch (e){
+				resolve(false);
+			}
 		});
 	}
 
@@ -53,16 +147,16 @@ export default class MatucCommands {
 	 * @param path 
 	 * @param convertAll
 	 */
-	public convertHtml(path: string, convertAll: boolean) {
+	public async convertHtml(path: string, convertAll: boolean) {
 		// see matuc-commands.js line 283
 		// and matuc-commands.js line 349
 	}
 
-	public initMetaData(path: string) {
+	public async initMetaData(path: string) {
 		// see matuc-commands.js line 183
 	}
 
-	public updateMetaData(alternatePrefix, outputFormat, editor, institution,
+	public async updateMetaData(alternatePrefix, outputFormat, editor, institution,
 		title, language, source, sourceAuthor, semYear, tocDepth, workingGroup, path) {
 		// multiple parameters are needed
 		//
@@ -71,7 +165,7 @@ export default class MatucCommands {
 	/**
 	* Checks all markdown files in the project folder invoking mistkerl and saves the currend opened file, executes `matuc_js mk`
 	*/
-	public checkEntireProject(path: string) {
+	public async checkEntireProject(path: string) {
 		// see matuc-commands.js line 256
 	}
 

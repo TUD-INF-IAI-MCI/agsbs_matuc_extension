@@ -42,48 +42,48 @@ class EditorFunctions {
             this._taskbarCallback.addButton('image.svg', this._language.get('insertGraphic'), this.insertImage, this._language.get('insert'));
             this._taskbarCallback.addButton('footnote.svg', this._language.get('insertFootnote'), this.insertFootnote, this._language.get('insert'));
             this._taskbarCallback.addButton('annotation.svg', this._language.get('authorAnnotation'), this.insertAnnotation, this._language.get('insert'));
+            this._taskbarCallback.addButton('hr.svg', this._language.get('horizontalRule'), this.insertHorizontalRule, this._language.get('separator'));
+            this._taskbarCallback.addButton('new_page.svg', this._language.get('newPage'), this.addNewPage, this._language.get('separator'));
         };
+        this.addNewPage = () => __awaiter(this, void 0, void 0, function* () {
+            var currentTextEditor = yield this._helper.getCurrentTextEditor();
+            if (currentTextEditor.document.isDirty) {
+                yield currentTextEditor.document.save();
+                vscode.window.showInformationMessage(this._language.get("documentHasBeenSaved"));
+            }
+            var matucIsInstalled = yield this._matucCommands.matucIsInstalled();
+            if (matucIsInstalled === false) {
+                vscode.window.showErrorMessage(this._language.get("matucNotInstalled"));
+                return;
+            }
+            var result = yield this._matucCommands.addPageNumber();
+            if (result.includes("|| - ") === false) {
+                vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
+                return;
+            }
+            var insertText = "\n" + result + "\n";
+            this._helper.insertStringAtStartOfLine(insertText);
+            this._helper.focusDocument(); //Puts focus back to the text editor
+        });
+        this.insertHorizontalRule = () => __awaiter(this, void 0, void 0, function* () {
+            var text = "\n---\n\n";
+            var insertPosition = yield this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+            if (insertPosition === false) {
+                yield this._helper.insertStringAtStartOfLineOrLinebreak(text);
+                return;
+            }
+            else {
+                vscode.window.showWarningMessage(this._language.get("tableInsertionPositionConflictWarning"));
+                var thisCurrentEditor = yield this._helper.getCurrentTextEditor();
+                var newEndPosition = new vscode.Selection(insertPosition.end, insertPosition.end);
+                this._helper.insertStringAtStartOfLineOrLinebreak(text, thisCurrentEditor, newEndPosition);
+            }
+            this._helper.focusDocument(); //Puts focus back to the text editor
+        });
         this.insertAnnotation = () => __awaiter(this, void 0, void 0, function* () {
-            var form = `
-        <label for="annotationType">${this._language.get("selectType")}</label><br>
-        <select name='annotationType' id='annotationType' onchange="typeChange(this)"><br>
-            <option value='textFrame'>${this._language.get("textFrameCheckbox")}</option>
-            <option value='textBox'>${this._language.get("textBoxCheckbox")}</option>
-            <option value='annotation'>${this._language.get("annotation")}</option>
-        </select>
-        <div class="spacing"></div>
-         <label for="color" >${this._language.get("color")}</label><br>
-        <select name='color' id='color'><br>
-         <option value='red'>${this._language.get("colorRed")}</option>
-         <option value='blue'>${this._language.get("colorBlue")}</option>
-         <option value='brown'>${this._language.get("colorBrown")}</option>
-         <option value='grey'>${this._language.get("colorGrey")}</option>
-         <option value='black'>${this._language.get("colorBlack")}</option>
-         <option value='green'>${this._language.get("colorGreen")}</option>
-         <option value='yellow'>${this._language.get("colorYellow")}</option>
-         <option value='orange'>${this._language.get("colorOrange")}</option>
-         <option value='violet'>${this._language.get("colorViolet")}</option>
-      </select>
-      <div class="spacing"></div>
-      <label for="titleOfBox">${this._language.get("titleOfTextbox")}</label><br>
-      <input type="text" name="titleOfBox" id="titleOfBox" placeholder="${this._language.get("titleOfTextbox")}"/><br>
-      <div class="spacing"></div>
-      <label for="contentOfBox">${this._language.get("contentOfTextbox")}</label><br>
-      <input type="text" name="contentOfBox" id="contentOfBox" placeholder="${this._language.get("contentOfTextbox")}"/>
-      <script>
-    function typeChange(){
-        var selector = document.getElementById("annotationType");
-        var titleBox = document.getElementById("titleOfBox");
-        if(selector.value === "annotation"){
-          titleBox.disabled = true;
-        } else {
-          titleBox.disabled = false; 
-        }
-    }
-    </script>
-        `;
-            this._sidebarCallback.addToSidebar(form, this._language.get("insertTextbox"), this.insertAnnotationSidebarCallback, this._language.get("insert"));
-            //insertTextbox
+            var form = this._snippets.get("insertAnnotationHTML");
+            var script = this._snippets.get("insertAnnotationSCRIPT");
+            this._sidebarCallback.addToSidebar(form, this._language.get("insertTextbox"), this.insertAnnotationSidebarCallback, this._language.get("insert"), "", script);
         });
         this.insertAnnotationSidebarCallback = (params) => __awaiter(this, void 0, void 0, function* () {
             var annotationType = params.annotationType.value;
@@ -109,6 +109,7 @@ class EditorFunctions {
                     vscode.window.showWarningMessage(this._language.get("annotationNoTitleError"));
                 }
             }
+            //Check if Annotation will be placed in Table (optional, but additional check);
             var insertPosition = yield this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
             if (insertPosition === false) {
                 yield this._helper.insertStringAtStartOfLineOrLinebreak(text);
@@ -120,6 +121,7 @@ class EditorFunctions {
                 var newEndPosition = new vscode.Selection(insertPosition.end, insertPosition.end);
                 this._helper.insertStringAtStartOfLineOrLinebreak(text, thisCurrentEditor, newEndPosition);
             }
+            this._helper.focusDocument(); //Puts focus back to the text editor
         });
         this.insertFootnote = () => __awaiter(this, void 0, void 0, function* () {
             var form = this._snippets.get("insertFootnoteHTML");
@@ -364,11 +366,17 @@ class EditorFunctions {
          * Inserts an Image
          */
         this.insertImage = () => __awaiter(this, void 0, void 0, function* () {
+            var matucIsInstalled = yield this._matucCommands.matucIsInstalled();
+            if (matucIsInstalled === false) {
+                vscode.window.showErrorMessage(this._language.get("matucNotInstalled"));
+                return;
+            }
             var thisPicturesFolderName = yield this._imageHelper.getPictureFolderName();
             var thisPath = yield this._helper.getCurrentDocumentFolderPath();
             var thisPicturesArray = yield this._imageHelper.getAllPicturesInFolder(thisPath, thisPicturesFolderName);
             var allPicturesHTMLString = yield this._imageHelper.generateSelectImagesOptionsHTML(thisPicturesArray);
-            var form = this._snippets.get('insertImageFormPart1') + allPicturesHTMLString + this._snippets.get('insertImageFormPart2');
+            var form = "";
+            form += this._snippets.get('insertImageFormPart1') + allPicturesHTMLString + this._snippets.get('insertImageFormPart2');
             this._sidebarCallback.addToSidebar(form, this._language.get("insertGraphic"), this.insertImageSidebarCallback, this._language.get("insert"));
         });
         /**

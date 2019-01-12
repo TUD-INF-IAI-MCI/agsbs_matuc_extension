@@ -81,7 +81,7 @@ export default class En {
 		this.d['titleOfTextbox'] = "Title of the textbox/textframe";
 		this.d['contentOfTextbox'] = "Content of the textbox/textframe or annotation";
 		// this.d['allColors'] =  "colorRed, colorBlack, colorGreen, colorYellow, colorOrange, colorBlue, colorBrown, colorGrey, colorViolet";
-		this.d['annotationNoTitleError'] ="there is no title for an annotation. The given title will be ignored.";
+		this.d['annotationNoTitleError'] ="there is no title or color for an annotation. These attributes will be ignored.";
 
 		// //footer-panel
 		 this.d['emphasis'] =  'Emphasis';
@@ -191,10 +191,12 @@ export default class En {
 		// this.d['noMdDetailPreview'] =  'Please open a markdown file (*.md) to preview.';
 
 		// //matuc
+		this.d['matucNotInstalled'] = "Matuc is not installed. You have to install the latest Matuc version to use this feature.";
 		// this.d['noMdWarningGenerate'] =  'No markdown file';
 		// this.d['noMdDetailGenerate'] =  'Please select a markdown file (*.md) to generate a html file.';
 		// this.d['noConfiguration'] =  "No configuration, .lecture_meta_data.dcxml, in a directory exists in this project";
-		// this.d['unExpectedMatucError'] =  'An unexpected matuc error occured';
+		this.d['unExpectedMatucError'] =  'An unexpected matuc error occured';
+		this.d['documentHasBeenSaved'] = 'The current document has been saved, as it was neccessary for the execution of this action.';
 
 		// //editor functions
 		// this.d['headlineError'] =  'No headline possible';

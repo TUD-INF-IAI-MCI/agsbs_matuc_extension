@@ -7,19 +7,23 @@ class EditorFunctionSnippets {
         this.d = [];
         this.d['insertLinkForm'] = `<label for='url'>${this._language.get("link")}</label><br>
                       <input type='text' id='url' name='url' required><br>
+                      <div class="spacing"></div>
                       <label for='linkText'>${this._language.get("linkText")}</label><br>
                       <input type='text' id='linkText' name='linkText'><br>
+                      <div class="spacing"></div>
                       <label for='linkTitle'>${this._language.get("linkTitle")}</label><br>
                       <input type='text' id='linkTitle' name='linkTitle'>`;
         this.d['insertImageFormPart1'] = `<input type='checkbox' id='outsourceCheckbox' name='outsourceCheckbox'>
-                                        <label for='outsourceCheckbox'>${this._language.get("outsourceCheckbox")}</label><br>
-                                        <div class="spacing"></div>
-                                        <label for='selectPicture'>${this._language.get("selectPictureFromHere")}</label><br>
+                                    <label for='outsourceCheckbox'>${this._language.get("outsourceCheckbox")}</label><br>
+                                    
+                                    <label for='selectPicture'>${this._language.get("selectPictureFromHere")}</label><br>
                                         <select name='selectPicture'>
                                         <option selected="true" disabled="disabled" value=''>${this._language.get("selectImageFile")}</option> `;
         this.d['insertImageFormPart2'] = `</select><br>
+                                        <div class="spacing"></div>
                                         <label for='altText'>${this._language.get("altText")}</label><br>
                                         <input type='text' id='altText' name='altText'><br>
+                                        <div class="spacing"></div>
                                         <label for='graphicTitle'>${this._language.get("graphicTitle")}</label><br>
                                         <input type='text' id='graphicTitle' name='graphicTitle'><br> `;
         // this.d['insertTableHTML'] = `<input name="tableHeadCheckbox" id="tableHeadCheckbox" type="checkbox" onchange="tableHeaderToggle(this)">
@@ -232,8 +236,10 @@ class EditorFunctionSnippets {
                                         
                                         
                                     </select><br>
+                                    <div class="spacing"></div>
                                     <label>${this._language.get("rows")}</label>
                                     <input type="number" name='rows' , id='rows' min="1" placeholder="1" value="1" onclick="onRowChange(this)" onkeyup="onRowChange(this)">
+                                    <div class="spacing"></div>
                                     <label>${this._language.get("columns")}</label>
                                     <input type="number" name='columns' , id='columns' min="1" placeholder="1" value="1" onclick="onColumsChange(this)" onkeyup="onColumsChange(this)">
                                     <input type="hidden" value="" name="tableJSON" id="tableJSON">
@@ -454,8 +460,10 @@ class EditorFunctionSnippets {
                                         
                                         
                                     </select><br>
+                                    <div class="spacing"></div>
                                     <label>${this._language.get("rows")}</label>
                                     <input type="number" name='rows' , id='rows' min="1" placeholder="1" value="1" onclick="onRowChange(this)" onkeyup="onRowChange(this)">
+                                    <div class="spacing"></div>
                                     <label>${this._language.get("columns")}</label>
                                     <input type="number" name='columns' , id='columns' min="1" placeholder="1" value="1" onclick="onColumsChange(this)" onkeyup="onColumsChange(this)">
                                     <input type="hidden" value="" name="tableJSON" id="tableJSON">
@@ -769,6 +777,47 @@ class EditorFunctionSnippets {
             <div class="spacing"></div>
             <label for='footText'>${this._language.get("footText")}</label><br>
             <input type="text" name="footText" id="footText" placeholder="${this._language.get("footText")}" required="true"/><br>
+            `;
+        this.d['insertAnnotationHTML'] = `
+            <label for="annotationType">${this._language.get("selectType")}</label><br>
+        <select name='annotationType' id='annotationType' onchange="typeChange(this)"><br>
+            <option value='textFrame'>${this._language.get("textFrameCheckbox")}</option>
+            <option value='textBox'>${this._language.get("textBoxCheckbox")}</option>
+            <option value='annotation'>${this._language.get("annotation")}</option>
+        </select>
+        <div class="spacing"></div>
+         <label for="color" >${this._language.get("color")}</label><br>
+        <select name='color' id='color'><br>
+         <option value='red'>${this._language.get("colorRed")}</option>
+         <option value='blue'>${this._language.get("colorBlue")}</option>
+         <option value='brown'>${this._language.get("colorBrown")}</option>
+         <option value='grey'>${this._language.get("colorGrey")}</option>
+         <option value='black'>${this._language.get("colorBlack")}</option>
+         <option value='green'>${this._language.get("colorGreen")}</option>
+         <option value='yellow'>${this._language.get("colorYellow")}</option>
+         <option value='orange'>${this._language.get("colorOrange")}</option>
+         <option value='violet'>${this._language.get("colorViolet")}</option>
+      </select>
+      <div class="spacing"></div>
+      <label for="titleOfBox">${this._language.get("titleOfTextbox")}</label><br>
+      <input type="text" name="titleOfBox" id="titleOfBox" placeholder="${this._language.get("titleOfTextbox")}"/><br>
+      <div class="spacing"></div>
+      <label for="contentOfBox">${this._language.get("contentOfTextbox")}</label><br>
+      <input type="text" name="contentOfBox" id="contentOfBox" placeholder="${this._language.get("contentOfTextbox")}"/>
+            `;
+        this.d['insertAnnotationSCRIPT'] = `
+            function typeChange(){
+                var selector = document.getElementById("annotationType");
+                var titleBox = document.getElementById("titleOfBox");
+                var colorSelector = document.getElementById("color");
+                if(selector.value === "annotation"){
+                  titleBox.disabled = true;
+                  colorSelector.disabled = true;
+                } else {
+                  titleBox.disabled = false; 
+                  colorSelector.disabled = false;
+                }
+            }
             `;
     }
     get(snippetName) {
