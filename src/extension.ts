@@ -32,13 +32,14 @@ export function deactivate() {
  */
 class ExtensionController {
     private _layout: Object;
+    private _defaultLayout: Object;
     private _helper: Helper;
 
      private _taskbar: Taskbar;
-     private _taskbarPanel:vscode.WebviewPanel;
+     private _taskbarPanel:any;
 
      private _sidebar: Sidebar;
-     private _sidebarPanel: vscode.WebviewPanel;
+     private _sidebarPanel: any;
 
      private _disposable: vscode.Disposable;
      public getSidebarPanel(params){
@@ -54,7 +55,7 @@ class ExtensionController {
         let taskbar = new Taskbar(sidebar,context);
         let helper = new Helper();
         this._layout= { orientation: 1, groups: [{groups:[{size:0.8},{  size: 0.2 }], size:0.85}, {  size: 0.15 }] };
-
+        this._defaultLayout = { orientation: 1, groups: [{}]};
         this._helper = helper;
 
         this._taskbar = taskbar;
@@ -86,16 +87,21 @@ class ExtensionController {
         let doc = editor.document;
         if (doc.languageId === "markdown" || doc.languageId==="multimarkdown") {//This gets executed if a Markdown File gets opened
             //First, reset Workspace
+            await this._helper.setEditorLayout(this._layout);
             if(this._sidebar.isVisible()===false && this._taskbar.isVisible()===true){
                 //If Sidebar is closed but Taskbar is open, close Taskbar to reset
                 await this._taskbar.hide(this._taskbarPanel);
+                //vscode.window.showInformationMessage('HIDE Taskbar after');
+                //await this._helper.setEditorLayout(this._defaultLayout);
             }
             if(this._sidebar.isVisible()===true && this._taskbar.isVisible()===false){
                 //If Sidebar is open but Taskbar is closed, close Sidebar to reset
                 await this._sidebar.hide(this._sidebarPanel);
+                //vscode.window.showInformationMessage('HIDE Sidebar after');
+                //await this._helper.setEditorLayout(this._defaultLayout);
             }
-
-
+            
+            
             if(this._sidebar.isVisible() === false){
                 this._sidebarPanel = await this._sidebar.show();
             }
@@ -103,7 +109,7 @@ class ExtensionController {
                 this._taskbarPanel = await this._taskbar.show();
             }
             
-            this._helper.setEditorLayout(this._layout);
+            
             
             
         } else { 

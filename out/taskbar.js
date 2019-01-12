@@ -36,10 +36,12 @@ class Taskbar {
                 this._addToHTML("BODY_END", newSectionHTML);
             }
             var icon = this._helper.getWebviewResourceIconURI(iconName, this._context);
-            var html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')">
-                        <img src="${icon}" style="width:100%"/><br>
+            //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
+            var html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')" style ="-webkit-mask-image: url(${icon});mask-image: url(${icon})">
+                        
                     </button>
                     `;
+            //<img src="${icon}" style="width:100%"/><br>
             //<br><label for="${name}">${name}</label>
             this._callbacks[id] = callback;
             newSection = "SECTION-" + newSection;
@@ -85,27 +87,30 @@ class Taskbar {
      */
     show() {
         return __awaiter(this, void 0, void 0, function* () {
-            this._taskbarIsVisible = true;
-            var panel = vscode.window.createWebviewPanel('agsbstaskbar', // Identifies the type of the webview. Used internally
-            "AGSBS Toolbar", // Title of the panel displayed to the user
-            //vscode.ViewColumn.X, // Editor column to show the new webview panel in.
-            { viewColumn: vscode.ViewColumn.Three,
-                preserveFocus: true
-            }, {
-                enableScripts: true
-            } // Webview options. More on these later.
-            );
-            this._panel = panel;
-            panel.webview.html = this._getBaseHTML();
-            panel.onDidDispose(() => {
-                this._taskbarIsVisible = false; //When panel is closed
-                this._panel = null;
-            }, null);
-            panel.webview.onDidReceiveMessage(message => {
-                this._messageFromWebviewHandler(message);
-            }, undefined);
-            this._editorFunctions.setup();
-            return panel;
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                this._taskbarIsVisible = true;
+                var panel = vscode.window.createWebviewPanel('agsbstaskbar', // Identifies the type of the webview. Used internally
+                "AGSBS Toolbar", // Title of the panel displayed to the user
+                //vscode.ViewColumn.X, // Editor column to show the new webview panel in.
+                {
+                    viewColumn: vscode.ViewColumn.Three,
+                    preserveFocus: true
+                }, {
+                    enableScripts: true
+                } // Webview options. More on these later.
+                );
+                this._panel = panel;
+                panel.webview.html = this._getBaseHTML();
+                panel.onDidDispose(() => {
+                    this._taskbarIsVisible = false; //When panel is closed
+                    this._panel = null;
+                }, null);
+                panel.webview.onDidReceiveMessage(message => {
+                    this._messageFromWebviewHandler(message);
+                }, undefined);
+                this._editorFunctions.setup();
+                resolve(panel); //return panel;
+            }));
         });
     }
     /**
@@ -114,10 +119,13 @@ class Taskbar {
      */
     hide(panel) {
         return __awaiter(this, void 0, void 0, function* () {
-            vscode.window.showInformationMessage('HIDE');
-            panel.dispose();
-            this._taskbarIsVisible = false;
-            this._panel = null;
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                yield panel.dispose();
+                this._taskbarIsVisible = false;
+                this._panel = null;
+                //vscode.window.showInformationMessage('HIDE Taskbar');
+                resolve(true);
+            }));
         });
     }
     /** Checks if a section is in the Webview HTML

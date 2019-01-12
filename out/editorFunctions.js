@@ -18,6 +18,8 @@ const editorFunctionsSnippets_1 = require("./editorFunctionsSnippets");
 const tableHelper_1 = require("./tableHelper");
 const Papa = require("papaparse");
 const path = require("path");
+const listHelper_1 = require("./listHelper");
+const insertHelper_1 = require("./insertHelper");
 class EditorFunctions {
     constructor(taskbarCallback, sidebarCallback, context) {
         /**
@@ -27,6 +29,7 @@ class EditorFunctions {
             this._taskbarCallback.addButton("bold.svg", this._language.get("bold"), this.bold, this._language.get("emphasis"));
             this._taskbarCallback.addButton("italic.svg", this._language.get("italic"), this.italic, this._language.get("emphasis"));
             this._taskbarCallback.addButton("strikethrough.svg", this._language.get("strikethrough"), this.strikethrough, this._language.get("emphasis"));
+            this._taskbarCallback.addButton('numbered_list.svg', this._language.get('orderedList'), this.orderedList, this._language.get('list'));
             this._taskbarCallback.addButton('list.svg', this._language.get('unorderedList'), this.unorderedList, this._language.get('list'));
             this._taskbarCallback.addButton('table.svg', this._language.get('insertTable'), this.insertTable, this._language.get('table'));
             this._taskbarCallback.addButton('import_table_csv.svg', this._language.get('importTableCsv'), this.insertCSVTable, this._language.get('table'));
@@ -37,7 +40,122 @@ class EditorFunctions {
             this._taskbarCallback.addButton("quote.svg", this._language.get("blockquote"), this.blockquote, this._language.get("formatting"));
             this._taskbarCallback.addButton("link.svg", this._language.get("insertLink"), this.insertLink, this._language.get("insert"));
             this._taskbarCallback.addButton('image.svg', this._language.get('insertGraphic'), this.insertImage, this._language.get('insert'));
+            this._taskbarCallback.addButton('footnote.svg', this._language.get('insertFootnote'), this.insertFootnote, this._language.get('insert'));
+            this._taskbarCallback.addButton('annotation.svg', this._language.get('authorAnnotation'), this.insertAnnotation, this._language.get('insert'));
         };
+        this.insertAnnotation = () => __awaiter(this, void 0, void 0, function* () {
+            var form = `
+        <label for="annotationType">${this._language.get("selectType")}</label><br>
+        <select name='annotationType' id='annotationType' onchange="typeChange(this)"><br>
+            <option value='textFrame'>${this._language.get("textFrameCheckbox")}</option>
+            <option value='textBox'>${this._language.get("textBoxCheckbox")}</option>
+            <option value='annotation'>${this._language.get("annotation")}</option>
+        </select>
+        <div class="spacing"></div>
+         <label for="color" >${this._language.get("color")}</label><br>
+        <select name='color' id='color'><br>
+         <option value='red'>${this._language.get("colorRed")}</option>
+         <option value='blue'>${this._language.get("colorBlue")}</option>
+         <option value='brown'>${this._language.get("colorBrown")}</option>
+         <option value='grey'>${this._language.get("colorGrey")}</option>
+         <option value='black'>${this._language.get("colorBlack")}</option>
+         <option value='green'>${this._language.get("colorGreen")}</option>
+         <option value='yellow'>${this._language.get("colorYellow")}</option>
+         <option value='orange'>${this._language.get("colorOrange")}</option>
+         <option value='violet'>${this._language.get("colorViolet")}</option>
+      </select>
+      <div class="spacing"></div>
+      <label for="titleOfBox">${this._language.get("titleOfTextbox")}</label><br>
+      <input type="text" name="titleOfBox" id="titleOfBox" placeholder="${this._language.get("titleOfTextbox")}"/><br>
+      <div class="spacing"></div>
+      <label for="contentOfBox">${this._language.get("contentOfTextbox")}</label><br>
+      <input type="text" name="contentOfBox" id="contentOfBox" placeholder="${this._language.get("contentOfTextbox")}"/>
+      <script>
+    function typeChange(){
+        var selector = document.getElementById("annotationType");
+        var titleBox = document.getElementById("titleOfBox");
+        if(selector.value === "annotation"){
+          titleBox.disabled = true;
+        } else {
+          titleBox.disabled = false; 
+        }
+    }
+    </script>
+        `;
+            this._sidebarCallback.addToSidebar(form, this._language.get("insertTextbox"), this.insertAnnotationSidebarCallback, this._language.get("insert"));
+            //insertTextbox
+        });
+        this.insertAnnotationSidebarCallback = (params) => __awaiter(this, void 0, void 0, function* () {
+            var annotationType = params.annotationType.value;
+            var color = params.color.value;
+            var title = params.titleOfBox.value;
+            var content = params.contentOfBox.value;
+            var text = "";
+            if (annotationType === "textFrame") {
+                text = `<div class="frame ${color}">
+                    <span class="title">${title}</span>
+                    ${content}
+                    </div>`;
+            }
+            if (annotationType === "textBox") {
+                text = `<div class="box ${color}">
+                    <span class="title">${title}</span>
+                    ${content}
+                    </div>`;
+            }
+            if (annotationType === "annotation") {
+                text = `<div class="annotation">${content}</div>`;
+                if (title !== "") {
+                    vscode.window.showWarningMessage(this._language.get("annotationNoTitleError"));
+                }
+            }
+            var insertPosition = yield this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+            if (insertPosition === false) {
+                yield this._helper.insertStringAtStartOfLineOrLinebreak(text);
+                return;
+            }
+            else {
+                vscode.window.showWarningMessage(this._language.get("tableInsertionPositionConflictWarning"));
+                var thisCurrentEditor = yield this._helper.getCurrentTextEditor();
+                var newEndPosition = new vscode.Selection(insertPosition.end, insertPosition.end);
+                this._helper.insertStringAtStartOfLineOrLinebreak(text, thisCurrentEditor, newEndPosition);
+            }
+        });
+        this.insertFootnote = () => __awaiter(this, void 0, void 0, function* () {
+            var form = this._snippets.get("insertFootnoteHTML");
+            this._sidebarCallback.addToSidebar(form, this._language.get("insertFootnote"), this.insertFootnoteSidebarCallback, this._language.get("insertFootnote"));
+        });
+        this.insertFootnoteSidebarCallback = (params) => __awaiter(this, void 0, void 0, function* () {
+            var label = params.footLabel.value;
+            var text = params.footText.value;
+            var currentLineLabel = "[^" + label + "]";
+            var includesLabel = yield this._insertHelper.checkDocumentForString(currentLineLabel);
+            if (text.includes("[") || text.includes("]") || text.includes("^")) {
+                vscode.window.showErrorMessage(this._language.get("footLabelError"));
+                return false;
+            }
+            if (includesLabel === true) {
+                vscode.window.showErrorMessage(this._language.get("footLabelErrorDetail"));
+                return false;
+            }
+            // var currentTextEditor = await this._helper.getCurrentTextEditor();
+            // var currentSelection = await this._helper.getWordsSelection(currentTextEditor);
+            var pageEndLabel = currentLineLabel + ": " + text;
+            var endPoint = yield this._insertHelper.getPageEndLine();
+            console.log(endPoint);
+            if (endPoint === false) {
+                yield this._helper.insertStringAtStartOfLine(currentLineLabel + "\n" + pageEndLabel + "\n");
+            }
+            else {
+                yield this._helper.insertStringAtStartOfLineOrLinebreak(currentLineLabel);
+                endPoint = yield this._insertHelper.getPageEndLine();
+                console.log(endPoint);
+                var currentTextEditor = yield this._helper.getCurrentTextEditor();
+                var newEndSelection = new vscode.Selection(endPoint, endPoint);
+                yield this._helper.insertStringAtStartOfLineOrLinebreak(pageEndLabel, currentTextEditor, newEndSelection);
+            }
+            this._helper.focusDocument(); //Puts focus back to the text editor
+        });
         this.blockquote = () => __awaiter(this, void 0, void 0, function* () {
             yield this._helper.toggleCharactersAtBeginningOfLine("> ");
             this._helper.focusDocument(); //Puts focus back to the text editor
@@ -61,6 +179,10 @@ class EditorFunctions {
             yield this._helper.toggleCharactersAtBeginningOfLine("- ");
             this._helper.focusDocument(); //Puts focus back to the text editor
         });
+        this.orderedList = () => __awaiter(this, void 0, void 0, function* () {
+            this._listHelper.orderedList();
+            this._helper.focusDocument(); //Puts focus back to the text editor
+        });
         /**
          * Editing a existing Table
          */
@@ -68,6 +190,7 @@ class EditorFunctions {
             var insertPosition = yield this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
             if (insertPosition === false) {
                 vscode.window.showErrorMessage(this._language.get("noTableFound"));
+                return;
             }
             else {
                 var tableData = yield this._tableHelper.loadSelectedTable(insertPosition);
@@ -114,11 +237,12 @@ class EditorFunctions {
             var folderName = params.hiddenFileName.value.substr(0, params.hiddenFileName.value.lastIndexOf("/") - 1);
             var defaultGeneratedFolderName = yield this._tableHelper.getTableFolderName();
             console.log("TABLE DATA", tableData, "END");
+            var savedTable;
             if (folderName === defaultGeneratedFolderName) {
-                var savedTable = yield this._tableHelper.writeCSVFile(tableData, fileName);
+                savedTable = yield this._tableHelper.writeCSVFile(tableData, fileName);
             }
             else {
-                var savedTable = yield this._tableHelper.writeCSVFile(tableData);
+                savedTable = yield this._tableHelper.writeCSVFile(tableData);
                 //if table exists in other folder, generate new Name, because the file could potentially already exists
                 // with that name so no other file will be overridden by accident
             }
@@ -323,6 +447,8 @@ class EditorFunctions {
         this._matucCommands = new matucCommands_1.default;
         this._snippets = new editorFunctionsSnippets_1.default;
         this._tableHelper = new tableHelper_1.default;
+        this._listHelper = new listHelper_1.default;
+        this._insertHelper = new insertHelper_1.default;
     }
 }
 exports.default = EditorFunctions;

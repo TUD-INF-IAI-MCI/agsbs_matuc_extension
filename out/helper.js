@@ -22,7 +22,12 @@ class Helper {
      * @param layout Object of the Editor Layout
      */
     setEditorLayout(layout) {
-        vscode.commands.executeCommand('vscode.setEditorLayout', layout);
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                yield vscode.commands.executeCommand('vscode.setEditorLayout', layout);
+                resolve(true);
+            }));
+        });
     }
     focusDocument(editor) {
         var editor;
@@ -30,7 +35,7 @@ class Helper {
             if (editor === undefined) {
                 editor = yield this.getCurrentTextEditor();
             }
-            vscode.window.showTextDocument(editor.document, editor.viewColumn);
+            vscode.window.showTextDocument(editor.document, editor.viewColumn, false);
         });
     }
     /**
@@ -538,6 +543,7 @@ class Helper {
      * @param testString text to check if the selection ends with
      * @param currentTextEditor optional. The given text editor
      * @param selection optional. A custom selection
+     * @returns false if nothing is found, otherwise a new selection ending with the line
      */
     iterateDownwardsToCheckForString(testString, currentTextEditor, selection) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -633,6 +639,28 @@ class Helper {
             const workSpaceEdit = new vscode.WorkspaceEdit();
             workSpaceEdit.replace(currentTextEditor.document.uri, selection, replacetext);
             yield vscode.workspace.applyEdit(workSpaceEdit);
+        });
+    }
+    /**
+     * gets the content of the previous line
+     * @param line number of the line
+     * @param currentTextEditor optional. The editor the Document is in
+     * @returns string of content or null if not possible
+     */
+    getLineContent(line, currentTextEditor) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (currentTextEditor === undefined) {
+                currentTextEditor = yield this.getCurrentTextEditor();
+            }
+            if (line < 0) {
+                return null;
+            }
+            var lengthOfDocument = currentTextEditor.document.lineCount;
+            if (line >= lengthOfDocument) {
+                return null;
+            }
+            var content = yield currentTextEditor.document.lineAt(line).text;
+            return content;
         });
     }
 }

@@ -1,3 +1,23 @@
+label {
+    padding-top: 1em;
+    margin-top: 1em;
+}
+.spacing {
+    width: 100%!important;
+    height: 1em!important;
+}
+.noMarginNoPadding {
+    margin: 0px;
+    padding: 0px;
+}
+
+hr{
+    background-color: var(--vscode-dropdown-border);
+    border-color: var(--vscode-dropdown-border);
+    margin-top: 1em;
+
+}
+
 input {
     width: 90%;
 }
@@ -17,14 +37,22 @@ input[type=submit] {
     outline-offset: 2px!important;
     font-size: 13px;
     line-height: 1.4em;
-    border:0px;
+    //border-color: var(--vscode-contrastBorder);
+    border:1px solid;
+    border-color: var(--vscode-dropdown-border); //Using Dropdown border color because input border color is buggy right now 
+    
+    margin-top: 1em;
 }
 input[type=submit]:hover {
 
     background-color: var(--vscode-button-hoverBackground);
 
 }
+input[type=submit]:focus {
 
+    border-color:var(--vscode-contrastActiveBorder);
+
+}
 
 input[type=checkbox]{
     -webkit-appearance: none;
@@ -35,6 +63,7 @@ input[type=checkbox]{
     height:18px;
     border-color: var(--vscode-settings-checkboxBorder);
     display: inline-block;
+    vertical-align: middle;
     
 }
 input[type=checkbox]:checked{
@@ -43,18 +72,23 @@ input[type=checkbox]:checked{
   
   input[type=text] {
     background-color: var(--vscode-input-background);
-    border-color: var(--vscode-input-border);
+    border: 1px solid;
+    //border-color: var(--vscode-input-border);
+    border-color: var(--vscode-dropdown-border); //Using Dropdown border color because input border color is buggy right now 
     color: var(--vscode-input-foreground);
     width:100%;
     padding:4px;
     text-overflow: ellipsis;
     user-select: text;
     margin: 0em;
-    border:none;
-    outline-color: var(--vscode-input-border);
+    
+    margin-top: 1em;
   }
   input[type=text]:focus {
     outline-color: var(--vscode-inputOption-activeBorder);
+  }
+  input[type=text]:disabled {
+    opacity: 0.4;
   }
   textarea {
     background-color: var(--vscode-input-background);
@@ -65,8 +99,8 @@ input[type=checkbox]:checked{
     text-overflow: ellipsis;
     user-select: text;
     margin: 0em;
-    border:none;
-    outline-color: var(--vscode-input-border);
+    border:1px solid;
+    border-color: var(--vscode-dropdown-border); //Using Dropdown border color because input border color is buggy right now 
   }
   textarea:focus {
     outline-color: var(--vscode-inputOption-activeBorder);
@@ -81,8 +115,11 @@ input[type=checkbox]:checked{
     text-overflow: ellipsis;
     user-select: text;
     margin: 0em;
-    border:none;
     outline-color: var(--vscode-input-border);
+    margin-top: 1em;
+    border: 1px solid;
+    //border-color: var(--vscode-input-border);
+    border-color: var(--vscode-dropdown-border); //Using Dropdown border color because input border color is buggy right now 
   }
   input[type=number]:focus {
     outline-color: var(--vscode-inputOption-activeBorder);
@@ -117,15 +154,16 @@ select {
     background-color: var(--vscode-dropdown-background); //TODO: INSERT VARS!
     color: var(--vscode-dropdown-foreground);
     border-color: var(--vscode-dropdown-border);
+    margin-top: 1em;
 }
 
 select:not(:-internal-list-box) {
     overflow: visible !important;
 }
 
-body {
-    //border: 1px solid white;
-}
+// body {
+//     //border: 1px solid white;
+// }
 
 #cancel {
     height: 30px;
@@ -139,3 +177,4 @@ body {
     width: 100%;
     height: 100%;
 }
+

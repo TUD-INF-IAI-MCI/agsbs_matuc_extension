@@ -45,6 +45,7 @@ class ExtensionController {
         let taskbar = new taskbar_1.default(sidebar, context);
         let helper = new helper_1.default();
         this._layout = { orientation: 1, groups: [{ groups: [{ size: 0.8 }, { size: 0.2 }], size: 0.85 }, { size: 0.15 }] };
+        this._defaultLayout = { orientation: 1, groups: [{}] };
         this._helper = helper;
         this._taskbar = taskbar;
         this._sidebar = sidebar;
@@ -69,13 +70,18 @@ class ExtensionController {
             let doc = editor.document;
             if (doc.languageId === "markdown" || doc.languageId === "multimarkdown") { //This gets executed if a Markdown File gets opened
                 //First, reset Workspace
+                yield this._helper.setEditorLayout(this._layout);
                 if (this._sidebar.isVisible() === false && this._taskbar.isVisible() === true) {
                     //If Sidebar is closed but Taskbar is open, close Taskbar to reset
                     yield this._taskbar.hide(this._taskbarPanel);
+                    //vscode.window.showInformationMessage('HIDE Taskbar after');
+                    //await this._helper.setEditorLayout(this._defaultLayout);
                 }
                 if (this._sidebar.isVisible() === true && this._taskbar.isVisible() === false) {
                     //If Sidebar is open but Taskbar is closed, close Sidebar to reset
                     yield this._sidebar.hide(this._sidebarPanel);
+                    //vscode.window.showInformationMessage('HIDE Sidebar after');
+                    //await this._helper.setEditorLayout(this._defaultLayout);
                 }
                 if (this._sidebar.isVisible() === false) {
                     this._sidebarPanel = yield this._sidebar.show();
@@ -83,7 +89,6 @@ class ExtensionController {
                 if (this._taskbar.isVisible() === false) {
                     this._taskbarPanel = yield this._taskbar.show();
                 }
-                this._helper.setEditorLayout(this._layout);
             }
             else {
                 console.log("PANELS");

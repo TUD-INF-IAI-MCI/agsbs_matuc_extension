@@ -160,36 +160,41 @@ class Sidebar {
      */
     show() {
         return __awaiter(this, void 0, void 0, function* () {
-            this._sidebarIsVisible = true;
-            //vscode.window.showInformationMessage('UPDATE');
-            var panel = vscode.window.createWebviewPanel('agsbssidebar', // Identifies the type of the webview. Used internally
-            "AGSBS Sidebar", // Title of the panel displayed to the user
-            //vscode.ViewColumn.X, // Editor column to show the new webview panel in.
-            { viewColumn: vscode.ViewColumn.Two,
-                preserveFocus: true
-            }, {
-                enableScripts: true
-            } // Webview options. More on these later.
-            );
-            //globalSidebarPanel = panel;
-            panel.webview.html = this._getBaseHTML();
-            panel.onDidDispose(() => {
-                this._sidebarIsVisible = false; //When panel is closed
-                this._panel = null;
-            }, null);
-            panel.webview.onDidReceiveMessage(message => {
-                if (message.hasOwnProperty('text')) {
-                    this._messageFromWebviewHandler(message);
-                    return;
-                }
-                if (message.hasOwnProperty('cancel')) {
-                    console.log("RESET");
-                    this._panel.webview.html = this._getBaseHTML();
-                    return;
-                }
-            }, undefined);
-            this._panel = panel;
-            return panel;
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                this._sidebarIsVisible = true;
+                //vscode.window.showInformationMessage('UPDATE');
+                var panel = vscode.window.createWebviewPanel('agsbssidebar', // Identifies the type of the webview. Used internally
+                "AGSBS Sidebar", // Title of the panel displayed to the user
+                //vscode.ViewColumn.X, // Editor column to show the new webview panel in.
+                {
+                    viewColumn: vscode.ViewColumn.Two,
+                    preserveFocus: true
+                }, {
+                    enableScripts: true
+                } // Webview options. More on these later.
+                );
+                //globalSidebarPanel = panel;
+                panel.webview.html = this._getBaseHTML();
+                panel.onDidDispose(() => {
+                    this._sidebarIsVisible = false; //When panel is closed
+                    this._panel = null;
+                }, null);
+                panel.webview.onDidReceiveMessage(message => {
+                    if (message.hasOwnProperty('text')) {
+                        this._messageFromWebviewHandler(message);
+                        //reject (false);//return;
+                    }
+                    else {
+                        if (message.hasOwnProperty('cancel')) {
+                            console.log("RESET");
+                            this._panel.webview.html = this._getBaseHTML();
+                            //reject (false);//return;
+                        }
+                    }
+                }, undefined);
+                this._panel = panel;
+                resolve(panel); //return panel;
+            }));
         });
     }
     /**
@@ -198,10 +203,13 @@ class Sidebar {
      */
     hide(panel) {
         return __awaiter(this, void 0, void 0, function* () {
-            vscode.window.showInformationMessage('HIDE Sidebar');
-            panel.dispose();
-            this._sidebarIsVisible = false;
-            this._panel = null;
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                yield panel.dispose();
+                this._sidebarIsVisible = false;
+                this._panel = null;
+                //vscode.window.showInformationMessage('HIDE Sidebar');
+                resolve(true);
+            }));
         });
     }
 }

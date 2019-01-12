@@ -57,26 +57,32 @@ export default class En {
 		// this.d['german'] =  'German';
 
 		// //insert textboxes
-		// this.d['insertTextbox'] =  "Add annotation/text box ";
-		// this.d['insertTextboxContent'] =  "Content of annotation or title of textbox/textframe";
+		 this.d['insertTextbox'] =  "Add annotation/text box ";
+		 this.d['insertTextboxContent'] =  "Content of annotation or title of textbox/textframe";
 
 		// this.d['textboxContentPlaceholder'] =  "Only required for annotation of the transcriber";
-		// this.d['textFrameCheckbox'] =  "text frame";
-		// this.d['textBoxCheckbox'] = "text box";
-		// this.d['textBox'] =  "text frame";
+		this.d['textFrameCheckbox'] =  "text frame";
+		this.d['textBoxCheckbox'] = "text box";
+		//this.d['textBox'] =  "text frame";
 		// this.d['textFrame'] =  "text box";
-		// this.d['annotation'] =  "Annotation of the transcriber";
-		// this.d['color'] =  "Color";
-		// this.d['colorRed'] =  "Red";
-		// this.d['colorBlue'] =  "Blue";
-		// this.d['colorBrown'] =  "Brown";
-		// this.d['colorGrey'] =  "Grey";
-		// this.d['colorBlack'] =  "Black";
-		// this.d['colorGreen'] =  "Green";
-		// this.d['colorYellow'] =  "Yellow";
-		// this.d['colorOrange'] =  "Orange";
-		// this.d['colorViolet'] =  "Violett";
+		 this.d['annotation'] =  "Annotation of the transcriber";
+		 this.d['color'] =  "Color";
+		this.d['colorRed'] =  "Red";
+		this.d['colorBlue'] =  "Blue";
+		this.d['colorBrown'] =  "Brown";
+		this.d['colorGrey'] =  "Grey";
+		this.d['colorBlack'] =  "Black";
+		this.d['colorGreen'] =  "Green";
+		this.d['colorYellow'] =  "Yellow";
+		this.d['colorOrange'] =  "Orange";
+		this.d['colorViolet'] =  "Violett";
+
+		this.d['selectType'] = "Select type:";
+		this.d['titleOfTextbox'] = "Title of the textbox/textframe";
+		this.d['contentOfTextbox'] = "Content of the textbox/textframe or annotation";
 		// this.d['allColors'] =  "colorRed, colorBlack, colorGreen, colorYellow, colorOrange, colorBlue, colorBrown, colorGrey, colorViolet";
+		this.d['annotationNoTitleError'] ="there is no title for an annotation. The given title will be ignored.";
+
 		// //footer-panel
 		 this.d['emphasis'] =  'Emphasis';
 		 
@@ -105,7 +111,7 @@ export default class En {
 		this.d['errorTableFileNonExistant'] ="File of the table does not exist";
 		this.d['parsingError'] = "Error parsing Table";
 
-		this.d['tableInsertionPositionConflictWarning'] = "Warning: Table cannot be placed inside a table. Instead, it was appended after this table.";
+		this.d['tableInsertionPositionConflictWarning'] = "Warning: This content cannot be placed inside a table. Instead, it was appended after this table.";
 		this.d['insert'] =  'Insert';
 		this.d['formula'] =  'Insert formula';
 		this.d['formulaInline'] =  'Insert inline formula';
@@ -259,10 +265,10 @@ export default class En {
 		 this.d['selectPictureFromHere'] =  'select from here:';
 
 		// //insert footnote dialog
-		// this.d['footLabel'] =  'Label for footnote';
-		// this.d['footText'] =  'Text in footnote';
-		// this.d['footLabelError'] =  'Invalid label';
-		// this.d['footLabelErrorDetail'] =  'Label is already used. Please enter another label.';
+		 this.d['footLabel'] =  'Label for footnote';
+		 this.d['footText'] =  'Text in footnote';
+		 this.d['footLabelError'] =  'Invalid label';
+		 this.d['footLabelErrorDetail'] =  'Label is already used. Please enter another label.';
 
 		// //import csv dialog
 		// this.d['import'] =  'Import';

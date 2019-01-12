@@ -14,8 +14,12 @@ export default class Helper {
      * Sets the Editor layout to the given specifications
      * @param layout Object of the Editor Layout
      */
-    public setEditorLayout(layout: Object) {
-        vscode.commands.executeCommand('vscode.setEditorLayout', layout);
+    public async setEditorLayout(layout: Object) {
+        return new Promise(async (resolve, reject) => {
+        await vscode.commands.executeCommand('vscode.setEditorLayout', layout);
+        resolve(true);
+        });
+
     }
 
     public async focusDocument(editor?: vscode.TextEditor) {
@@ -23,7 +27,7 @@ export default class Helper {
             var editor = await this.getCurrentTextEditor();
         }
 
-        vscode.window.showTextDocument(editor.document, editor.viewColumn);
+        vscode.window.showTextDocument(editor.document, editor.viewColumn,false);
     }
 
     /**
@@ -572,6 +576,7 @@ export default class Helper {
      * @param testString text to check if the selection ends with
      * @param currentTextEditor optional. The given text editor
      * @param selection optional. A custom selection
+     * @returns false if nothing is found, otherwise a new selection ending with the line
      */
     public async iterateDownwardsToCheckForString(testString: string, currentTextEditor?: vscode.TextEditor, selection?: vscode.Selection) {
         if (currentTextEditor === undefined) {
@@ -668,5 +673,28 @@ export default class Helper {
         await vscode.workspace.applyEdit(workSpaceEdit);
 
     }
+
+    /**
+     * gets the content of the previous line
+     * @param line number of the line
+     * @param currentTextEditor optional. The editor the Document is in
+     * @returns string of content or null if not possible
+     */
+    public async getLineContent(line:number,currentTextEditor?:vscode.TextEditor) {
+        if (currentTextEditor === undefined) {
+            currentTextEditor = await this.getCurrentTextEditor();
+        }
+        if(line<0){
+            return null;
+        }
+        var lengthOfDocument = currentTextEditor.document.lineCount;
+        if(line>=lengthOfDocument){
+            return null;
+        }
+        var content:string = await currentTextEditor.document.lineAt(line).text;
+        return content;
+    }
+
+
 
 }

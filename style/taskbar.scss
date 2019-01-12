@@ -9,8 +9,8 @@ body{
 
 }
 fieldset {
-    color: white;
-    border: 1px solid white;// #9da5b4
+    color: var(--vscode-foreground);
+    border: 1px solid var(--vscode-foreground);// #9da5b4
     border-left-width: 0px;
     border-right-width: 0px;
      border-bottom-width: 0px;
@@ -22,6 +22,12 @@ fieldset {
     margin-left: 0.4rem;
     vertical-align:top;
 }
+// svg path{
+//     fill: blue!important;
+//     background-color: red!important;
+// }
+
+// style="fill:rgb(157,165,180);fill-opacity:0.81;"
 legend {
     margin: 0px auto;
 }
@@ -29,12 +35,13 @@ button{
     display: inline;
     margin: 0px;
     padding:0px;
-    background-color: rgba(0,0,0,0);
+    //background-color: rgba(0,0,0,0);
+    background-color: var(--vscode-foreground);
     overflow: hidden;
-    width:40px;
-    height:40px;
-    border:1px solid white;
-    color: white;
+    width:30px;
+    height:30px;
+    border:1px solid var(--vscode-foreground);
+    color: var(--vscode-foreground);
     margin-left: 0.2rem;
     margin-right: 0.2rem;
     border:0px;

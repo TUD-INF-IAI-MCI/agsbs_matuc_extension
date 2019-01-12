@@ -71,7 +71,7 @@ export default class MatucCommands {
 	/**
 	* Checks all markdown files in the project folder invoking mistkerl and saves the currend opened file, executes `matuc_js mk`
 	*/
-	public checkEntireProject(path: String) {
+	public checkEntireProject(path: string) {
 		// see matuc-commands.js line 256
 	}
 
@@ -80,7 +80,7 @@ export default class MatucCommands {
 	 * Loads and show config, .lecture_meta_data.dcxml, of project.
 	 * @param path 
 	 */
-	public showConfig(path: String) {
+	public showConfig(path: string) {
 		// see matuc-commands.js line 197
 	}
 }

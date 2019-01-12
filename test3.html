@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGSBS</title>
+<link rel="stylesheet" href="./style/sidebar.css">
+</head>
+<body>
+<!-- <input class="pushForAlignment" type="checkbox" id="check" name="check">
+<label for="check">Test</label> -->
+<script>
+    console.log("things");
+    function typeChange(){
+
+        console.log("onchange");
+        var selector = document.getElementById("annotationType");
+        var titleBox = document.getElementById("titleOfBox");
+        if(selector.value === "annotation"){
+          titleBox.disabled = true;
+        } else {
+          titleBox.disabled = false; 
+        }
+    }
+    </script>
+<label for="annotationType">${this._language.get("selectType")}</label><br>
+        <select name='annotationType' id='annotationType' onchange="typeChange()"><br>
+            <option value='textFrame'>${this._language.get("textFrameCheckbox")}</option>
+            <option value='textBox'>${this._language.get("textBoxCheckbox")}</option>
+            <option value='annotation'>${this._language.get("annotation")}</option>
+        </select>
+        <div class="spacing"></div>
+         <label for="color" >${this._language.get("color")}</label><br>
+        <select name='color' id='color'><br>
+         <option value='red'>${this._language.get("colorRed")}</option>
+         <option value='blue'>${this._language.get("colorBlue")}</option>
+         <option value='brown'>${this._language.get("colorBrown")}</option>
+         <option value='grey'>${this._language.get("colorGrey")}</option>
+         <option value='black'>${this._language.get("colorBlack")}</option>
+         <option value='green'>${this._language.get("colorGreen")}</option>
+         <option value='yellow'>${this._language.get("colorYellow")}</option>
+         <option value='orange'>${this._language.get("colorOrange")}</option>
+         <option value='violet'>${this._language.get("colorViolet")}</option>
+      </select>
+      <div class="spacing"></div>
+      <label>${this._language.get("insertTextboxContent")}</label><br>
+      <input type="text" name="title" id="titleOfBox" placeholder="${this._language.get("titleOfTextbox")}"/><br>
+      <input type="text" name="content" id="contentOfBox" placeholder="${this._language.get("contentOfTextbox")}"/>
+      
+</body>
+</html>
