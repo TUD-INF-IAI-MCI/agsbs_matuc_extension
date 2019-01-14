@@ -8,45 +8,70 @@
 <link rel="stylesheet" href="./style/sidebar.css">
 </head>
 <body>
-<!-- <input class="pushForAlignment" type="checkbox" id="check" name="check">
-<label for="check">Test</label> -->
-<script>
-    console.log("things");
-    function typeChange(){
 
-        console.log("onchange");
-        var selector = document.getElementById("annotationType");
-        var titleBox = document.getElementById("titleOfBox");
-        if(selector.value === "annotation"){
-          titleBox.disabled = true;
-        } else {
-          titleBox.disabled = false; 
+
+<script>
+//         function change(){
+//             element = document.getElementById("text");
+//             console.log(element.value);
+//             pattern = /^\#{1,6}\ ?|\#{1,6}$/;
+//             var result = element.value.match(pattern);
+//             console.log(result);
+//             console.log();
+//         }
+     </script>
+<!-- <input type="text" id="text" onchange="change()" onkeyup="change()"> -->
+<script>
+        function onFileSelectorChange(){
+            console.log("change");
+            var folderselector = document.getElementById("folder");
+            console.log(folderselector);
         }
-    }
-    </script>
-<label for="annotationType">${this._language.get("selectType")}</label><br>
-        <select name='annotationType' id='annotationType' onchange="typeChange()"><br>
-            <option value='textFrame'>${this._language.get("textFrameCheckbox")}</option>
-            <option value='textBox'>${this._language.get("textBoxCheckbox")}</option>
-            <option value='annotation'>${this._language.get("annotation")}</option>
-        </select>
-        <div class="spacing"></div>
-         <label for="color" >${this._language.get("color")}</label><br>
-        <select name='color' id='color'><br>
-         <option value='red'>${this._language.get("colorRed")}</option>
-         <option value='blue'>${this._language.get("colorBlue")}</option>
-         <option value='brown'>${this._language.get("colorBrown")}</option>
-         <option value='grey'>${this._language.get("colorGrey")}</option>
-         <option value='black'>${this._language.get("colorBlack")}</option>
-         <option value='green'>${this._language.get("colorGreen")}</option>
-         <option value='yellow'>${this._language.get("colorYellow")}</option>
-         <option value='orange'>${this._language.get("colorOrange")}</option>
-         <option value='violet'>${this._language.get("colorViolet")}</option>
-      </select>
-      <div class="spacing"></div>
-      <label>${this._language.get("insertTextboxContent")}</label><br>
-      <input type="text" name="title" id="titleOfBox" placeholder="${this._language.get("titleOfTextbox")}"/><br>
-      <input type="text" name="content" id="contentOfBox" placeholder="${this._language.get("contentOfTextbox")}"/>
-      
+        </script>
+<label for="folder">folder</label><br>
+
+<input id="open-project" type="file" name="folder" id="folder" class="custom-file-input" onchange="onFileSelectorChange()" webkitdirectory directory multiple="multiple"/><br>
+
+<span id="filesSelected">No Folder selected.</span><br>
+<input type="checkbox" name="preface" id="preface"><br>
+<label for="preface">preface</label><br>
+
+<label for="chapters">chapters</label><br>
+<input type="number" name="chapters" id="chapters"><br>
+
+<label for="appendixChapters">appendixChapters</label><br>
+<input type="number" name="appendixChapters" id="appendixChapters"><br>
+
+<label for="projectLanguage">projectLanguage</label><br>
+<select>
+<option selected>en</option>
+<option>de</option>
+<option>fr</option>
+</select><br>
+
+<input type="checkbox" name="tableOfContents" id="tableOfContents"><br>
+<label for="tableOfContents">tableOfContents</label><br>
+
+<label for="tocDepth">tocDepth</label><br>
+<input type="number" name="tocDepth" id="tocDepth"><br>
+
+<label for="title">title</label><br>
+<input type="text" name="title" id="title"><br>
+
+<label for="author">author</label><br>
+<input type="text" name="author" id="author"><br>
+
+<label for="institution">institution</label><br>
+<input type="text" name="institution" id="institution"><br>
+
+<label for="materialSource">materialSource</label><br>
+<input type="text" name="materialSource" id="materialSource"><br>
+
+<label for="sourceAuthor">sourceAuthor</label><br>
+<input type="text" name="sourceAuthor" id="sourceAuthor"><br>
+
+
+
+
 </body>
 </html>

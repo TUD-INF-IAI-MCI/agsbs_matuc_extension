@@ -1,13 +1,14 @@
-body{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    align-content: flex-start;
-    align-items: flex-start; 
-    //background-color: black;
-
+html,body{
+    width: 99vw!important;
+    margin: 0px;
+    padding: 0px;
+    overflow-x: hidden;
 }
+// body{
+
+//     //background-color: black;
+
+// }
 fieldset {
     color: var(--vscode-foreground);
     border: 1px solid var(--vscode-foreground);// #9da5b4
@@ -28,6 +29,20 @@ fieldset {
 // }
 
 // style="fill:rgb(157,165,180);fill-opacity:0.81;"
+.projectContainer{
+    width: 99vw;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    align-items: flex-start; 
+    margin: 0px;
+    
+}
+.projectContainer:first-child{
+    margin-bottom: 0.7em;
+}
 legend {
     margin: 0px auto;
 }

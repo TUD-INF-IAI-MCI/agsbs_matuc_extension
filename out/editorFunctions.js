@@ -20,6 +20,7 @@ const Papa = require("papaparse");
 const path = require("path");
 const listHelper_1 = require("./listHelper");
 const insertHelper_1 = require("./insertHelper");
+const headlineHelper_1 = require("./headlineHelper");
 class EditorFunctions {
     constructor(taskbarCallback, sidebarCallback, context) {
         /**
@@ -29,6 +30,13 @@ class EditorFunctions {
             this._taskbarCallback.addButton("bold.svg", this._language.get("bold"), this.bold, this._language.get("emphasis"));
             this._taskbarCallback.addButton("italic.svg", this._language.get("italic"), this.italic, this._language.get("emphasis"));
             this._taskbarCallback.addButton("strikethrough.svg", this._language.get("strikethrough"), this.strikethrough, this._language.get("emphasis"));
+            this._taskbarCallback.addButton("h.svg", this._language.get("headline"), this.headline, this._language.get("headline"));
+            this._taskbarCallback.addButton("h1.svg", this._language.get("headline1"), this.h1, this._language.get("headline"));
+            this._taskbarCallback.addButton("h2.svg", this._language.get("headline2"), this.h2, this._language.get("headline"));
+            this._taskbarCallback.addButton("h3.svg", this._language.get("headline3"), this.h3, this._language.get("headline"));
+            this._taskbarCallback.addButton("h4.svg", this._language.get("headline4"), this.h4, this._language.get("headline"));
+            this._taskbarCallback.addButton("h5.svg", this._language.get("headline5"), this.h5, this._language.get("headline"));
+            this._taskbarCallback.addButton("h6.svg", this._language.get("headline6"), this.h6, this._language.get("headline"));
             this._taskbarCallback.addButton('numbered_list.svg', this._language.get('orderedList'), this.orderedList, this._language.get('list'));
             this._taskbarCallback.addButton('list.svg', this._language.get('unorderedList'), this.unorderedList, this._language.get('list'));
             this._taskbarCallback.addButton('table.svg', this._language.get('insertTable'), this.insertTable, this._language.get('table'));
@@ -45,6 +53,30 @@ class EditorFunctions {
             this._taskbarCallback.addButton('hr.svg', this._language.get('horizontalRule'), this.insertHorizontalRule, this._language.get('separator'));
             this._taskbarCallback.addButton('new_page.svg', this._language.get('newPage'), this.addNewPage, this._language.get('separator'));
         };
+        this.headline = () => __awaiter(this, void 0, void 0, function* () {
+            var result = yield this._headlineHelper.getNextHeadlineString();
+            var headlineGrade = (result.match(/\#/g) || []).length;
+            vscode.window.showInformationMessage(this._language.get("headlineInsertedWithGrade") + headlineGrade);
+            this._headlineHelper.setSpecificHeadline(headlineGrade);
+        });
+        this.h1 = () => __awaiter(this, void 0, void 0, function* () {
+            this._headlineHelper.setSpecificHeadline(1);
+        });
+        this.h2 = () => __awaiter(this, void 0, void 0, function* () {
+            this._headlineHelper.setSpecificHeadline(2);
+        });
+        this.h3 = () => __awaiter(this, void 0, void 0, function* () {
+            this._headlineHelper.setSpecificHeadline(3);
+        });
+        this.h4 = () => __awaiter(this, void 0, void 0, function* () {
+            this._headlineHelper.setSpecificHeadline(4);
+        });
+        this.h5 = () => __awaiter(this, void 0, void 0, function* () {
+            this._headlineHelper.setSpecificHeadline(5);
+        });
+        this.h6 = () => __awaiter(this, void 0, void 0, function* () {
+            this._headlineHelper.setSpecificHeadline(6);
+        });
         this.addNewPage = () => __awaiter(this, void 0, void 0, function* () {
             var currentTextEditor = yield this._helper.getCurrentTextEditor();
             if (currentTextEditor.document.isDirty) {
@@ -92,16 +124,16 @@ class EditorFunctions {
             var content = params.contentOfBox.value;
             var text = "";
             if (annotationType === "textFrame") {
-                text = `<div class="frame ${color}">
-                    <span class="title">${title}</span>
-                    ${content}
-                    </div>`;
+                text = `<div class="frame ${color}">\n`;
+                text += `<span class="title">${title}</span>\n`;
+                text += `${content}\n`;
+                text += `</div>\n`;
             }
             if (annotationType === "textBox") {
-                text = `<div class="box ${color}">
-                    <span class="title">${title}</span>
-                    ${content}
-                    </div>`;
+                text = `<div class="box ${color}">\n`;
+                text += `<span class="title">${title}</span>\n`;
+                text += `${content}\n`;
+                text += `</div>\n`;
             }
             if (annotationType === "annotation") {
                 text = `<div class="annotation">${content}</div>`;
@@ -457,6 +489,7 @@ class EditorFunctions {
         this._tableHelper = new tableHelper_1.default;
         this._listHelper = new listHelper_1.default;
         this._insertHelper = new insertHelper_1.default;
+        this._headlineHelper = new headlineHelper_1.default;
     }
 }
 exports.default = EditorFunctions;

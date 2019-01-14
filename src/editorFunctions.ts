@@ -12,6 +12,7 @@ import * as Papa from 'papaparse';
 import * as path from 'path';
 import ListHelper from './listHelper';
 import InsertHelper from './insertHelper';
+import HeadlineHelper from './headlineHelper';
 
 export default class EditorFunctions {
     private _helper: Helper;
@@ -24,6 +25,7 @@ export default class EditorFunctions {
     private _tableHelper: TableHelper;
     private _listHelper:ListHelper;
     private _insertHelper:InsertHelper;
+    private _headlineHelper:HeadlineHelper;
 
     constructor(taskbarCallback, sidebarCallback, context) {
         this._helper = new Helper;
@@ -36,6 +38,7 @@ export default class EditorFunctions {
         this._tableHelper = new TableHelper;
         this._listHelper = new ListHelper;
         this._insertHelper = new InsertHelper;
+        this._headlineHelper = new HeadlineHelper;
     }
 
 
@@ -47,6 +50,14 @@ export default class EditorFunctions {
         this._taskbarCallback.addButton("bold.svg", this._language.get("bold"), this.bold, this._language.get("emphasis"));
         this._taskbarCallback.addButton("italic.svg", this._language.get("italic"), this.italic, this._language.get("emphasis"));
         this._taskbarCallback.addButton("strikethrough.svg", this._language.get("strikethrough"), this.strikethrough, this._language.get("emphasis"));
+
+        this._taskbarCallback.addButton("h.svg", this._language.get("headline"), this.headline, this._language.get("headline"));
+        this._taskbarCallback.addButton("h1.svg", this._language.get("headline1"), this.h1, this._language.get("headline"));
+        this._taskbarCallback.addButton("h2.svg", this._language.get("headline2"), this.h2, this._language.get("headline"));
+        this._taskbarCallback.addButton("h3.svg", this._language.get("headline3"), this.h3, this._language.get("headline"));
+        this._taskbarCallback.addButton("h4.svg", this._language.get("headline4"), this.h4, this._language.get("headline"));
+        this._taskbarCallback.addButton("h5.svg", this._language.get("headline5"), this.h5, this._language.get("headline"));
+        this._taskbarCallback.addButton("h6.svg", this._language.get("headline6"), this.h6, this._language.get("headline"));
 
         this._taskbarCallback.addButton('numbered_list.svg', this._language.get('orderedList'), this.orderedList, this._language.get('list'));
         this._taskbarCallback.addButton('list.svg', this._language.get('unorderedList'), this.unorderedList, this._language.get('list'));
@@ -68,6 +79,35 @@ export default class EditorFunctions {
         this._taskbarCallback.addButton('hr.svg', this._language.get('horizontalRule'), this.insertHorizontalRule, this._language.get('separator'));
         this._taskbarCallback.addButton('new_page.svg', this._language.get('newPage'), this.addNewPage, this._language.get('separator'));
     }
+
+    public headline = async () => {
+        var result = await this._headlineHelper.getNextHeadlineString();
+
+            var headlineGrade:number = (result.match(/\#/g) || []).length;
+            vscode.window.showInformationMessage(this._language.get("headlineInsertedWithGrade")+headlineGrade);
+            this._headlineHelper.setSpecificHeadline(headlineGrade);
+
+        
+    }
+    public h1 = async () => {
+        this._headlineHelper.setSpecificHeadline(1);
+    }
+    public h2 = async () => {
+        this._headlineHelper.setSpecificHeadline(2);
+    }
+    public h3 = async () => {
+        this._headlineHelper.setSpecificHeadline(3);
+    }
+    public h4 = async () => {
+        this._headlineHelper.setSpecificHeadline(4);
+    }
+    public h5 = async () => {
+        this._headlineHelper.setSpecificHeadline(5);
+    }
+    public h6 = async () => {
+        this._headlineHelper.setSpecificHeadline(6);
+    }
+
 
     public addNewPage = async () => {
         var currentTextEditor = await this._helper.getCurrentTextEditor();
@@ -120,16 +160,16 @@ export default class EditorFunctions {
         var content = params.contentOfBox.value;
         var text = "";
         if(annotationType === "textFrame"){
-            text = `<div class="frame ${color}">
-                    <span class="title">${title}</span>
-                    ${content}
-                    </div>`;
+            text = `<div class="frame ${color}">\n`;
+            text += `<span class="title">${title}</span>\n`;
+            text += `${content}\n`;
+            text += `</div>\n`;
         } 
         if(annotationType === "textBox"){
-            text = `<div class="box ${color}">
-                    <span class="title">${title}</span>
-                    ${content}
-                    </div>`;
+            text = `<div class="box ${color}">\n`;
+            text += `<span class="title">${title}</span>\n`;
+            text += `${content}\n`;
+            text += `</div>\n`;
         }
         if(annotationType ==="annotation"){
             text = `<div class="annotation">${content}</div>`;

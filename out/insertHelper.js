@@ -26,7 +26,7 @@ class InsertHelper {
                 if (selection === undefined) {
                     selection = this._helper.getWordsSelection(currentTextEditor);
                 }
-                var newpageString = this._getNewPageIdentifier();
+                var newpageString = this.getNewPageIdentifier();
                 var newSelection = yield this.iterateDownwardsToCheckForStringStart(newpageString);
                 console.log(newSelection);
                 if (newSelection !== false) {
@@ -52,9 +52,15 @@ class InsertHelper {
     /**
      * Returns the page identifier
      */
-    _getNewPageIdentifier() {
+    getNewPageIdentifier() {
         return ("|| - Seite ");
     }
+    /**
+     * Iterates downwards starting at the current selection and checks if a line starts with a given string
+     * @param testString String to test with
+     * @param currentTextEditor optional. The Editor to work with
+     * @param selection optional. The Selection to work with
+     */
     iterateDownwardsToCheckForStringStart(testString, currentTextEditor, selection) {
         return __awaiter(this, void 0, void 0, function* () {
             if (currentTextEditor === undefined) {
@@ -83,6 +89,12 @@ class InsertHelper {
             return false;
         });
     }
+    /**
+     * Checks the whole Document ot it includes a specific string.
+     * @param testString String to test with
+     * @param currentTextEditor optional. The Editor to work with.
+     * @returns true if the string was found, otherwise false
+     */
     checkDocumentForString(testString, currentTextEditor) {
         return __awaiter(this, void 0, void 0, function* () {
             if (currentTextEditor === undefined) {

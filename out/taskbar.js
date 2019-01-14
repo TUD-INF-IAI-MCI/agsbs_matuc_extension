@@ -11,6 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
 const helper_1 = require("./helper");
 const editorFunctions_1 = require("./editorFunctions");
+const projectToolsFunctions_1 = require("./projectToolsFunctions");
 class Taskbar {
     constructor(sidebarCallback, context) {
         /** this Function gets called from the Webview when a button is clicked.
@@ -33,7 +34,7 @@ class Taskbar {
             }
             if (this._sectionIsInWebview(newSection) === false) {
                 var newSectionHTML = this._generateSectionHTML(section);
-                this._addToHTML("BODY_END", newSectionHTML);
+                this._addToHTML("TOOLS_END", newSectionHTML);
             }
             var icon = this._helper.getWebviewResourceIconURI(iconName, this._context);
             //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
@@ -43,6 +44,31 @@ class Taskbar {
                     `;
             //<img src="${icon}" style="width:100%"/><br>
             //<br><label for="${name}">${name}</label>
+            this._callbacks[id] = callback;
+            newSection = "SECTION-" + newSection;
+            this._addToHTML(newSection, html);
+        };
+        /** Adds a Button to the Taskbar Project Tools
+         * @param iconName the Name of the Icon in the Icon Folder, with file extension (so for example "icon.svg")
+         * @param name Displayname of the Icon
+         * @param section optional section the button is displayed in
+         */
+        this.addProjectTool = (iconName, name, callback, section) => {
+            var id = this._helper.generateUuid();
+            var newSection = "";
+            if (section !== undefined) {
+                newSection = section;
+            }
+            if (this._sectionIsInWebview(newSection) === false) {
+                var newSectionHTML = this._generateSectionHTML(section);
+                this._addToHTML("PROJECTTOOLS_END", newSectionHTML);
+            }
+            var icon = this._helper.getWebviewResourceIconURI(iconName, this._context);
+            //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
+            var html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')" style ="-webkit-mask-image: url(${icon});mask-image: url(${icon})">
+                        
+                    </button>
+                    `;
             this._callbacks[id] = callback;
             newSection = "SECTION-" + newSection;
             this._addToHTML(newSection, html);
@@ -71,6 +97,7 @@ class Taskbar {
         this._sidebarCallback = sidebarCallback;
         this._helper = new helper_1.default;
         this._editorFunctions = new editorFunctions_1.default(this, this._sidebarCallback, context);
+        this._projectToolsFunctions = new projectToolsFunctions_1.default(this, this._sidebarCallback, context);
         this._panel = null;
         this._callbacks = [];
     }
@@ -109,6 +136,7 @@ class Taskbar {
                     this._messageFromWebviewHandler(message);
                 }, undefined);
                 this._editorFunctions.setup();
+                this._projectToolsFunctions.setup();
                 resolve(panel); //return panel;
             }));
         });
@@ -160,8 +188,18 @@ class Taskbar {
              <!--HEAD_END-->
          </head>
          <body>
-            <!--BODY_START-->
+         <!--BODY_START-->
+         <div class="projectContainer">
+            <!--TOOLS_START-->
            
+            <!--TOOLS_END-->
+            </div>
+
+            <div class="projectContainer">
+            <!--PROJECTTOOLS_START-->
+
+            <!--PROJECTTOOLS_END-->
+            </div>
             <!--BODY_END-->
           <script>
              //const output = document.getElementById('output');

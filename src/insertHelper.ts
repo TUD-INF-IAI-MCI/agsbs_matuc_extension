@@ -10,7 +10,7 @@ export default class InsertHelper {
     /**
      * Returns the page identifier
      */
-    private _getNewPageIdentifier(){
+    public getNewPageIdentifier(){
         return("|| - Seite ");
     }
 
@@ -29,7 +29,7 @@ export default class InsertHelper {
         if (selection === undefined) {
             selection = this._helper.getWordsSelection(currentTextEditor);
         }
-        var newpageString = this._getNewPageIdentifier();
+        var newpageString = this.getNewPageIdentifier();
         var newSelection = await this.iterateDownwardsToCheckForStringStart(newpageString);
         console.log(newSelection);
         if(newSelection !== false){
@@ -49,7 +49,12 @@ export default class InsertHelper {
             
      });
     }
-
+    /**
+     * Iterates downwards starting at the current selection and checks if a line starts with a given string
+     * @param testString String to test with
+     * @param currentTextEditor optional. The Editor to work with
+     * @param selection optional. The Selection to work with
+     */
 
     public async iterateDownwardsToCheckForStringStart(testString: string, currentTextEditor?: vscode.TextEditor, selection?: vscode.Selection) {
         if (currentTextEditor === undefined) {
@@ -78,7 +83,12 @@ export default class InsertHelper {
         }
         return false;
     }
-
+    /**
+     * Checks the whole Document ot it includes a specific string.
+     * @param testString String to test with
+     * @param currentTextEditor optional. The Editor to work with.
+     * @returns true if the string was found, otherwise false
+     */
     public async checkDocumentForString (testString: string, currentTextEditor?: vscode.TextEditor){
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
