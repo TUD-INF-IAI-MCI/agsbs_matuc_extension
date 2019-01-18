@@ -21,6 +21,10 @@ hr{
 input {
     width: 90%;
 }
+input:disabled {
+    opacity: 0.4;
+    cursor:not-allowed;
+  }
 input[type=submit] {
     width: auto;
     margin: 5px;
@@ -87,9 +91,7 @@ input[type=checkbox]:checked{
   input[type=text]:focus {
     outline-color: var(--vscode-inputOption-activeBorder);
   }
-  input[type=text]:disabled {
-    opacity: 0.4;
-  }
+
   textarea {
     background-color: var(--vscode-input-background);
     border-color: var(--vscode-input-border);
@@ -155,6 +157,9 @@ select {
     color: var(--vscode-dropdown-foreground);
     border-color: var(--vscode-dropdown-border);
     margin-top: 1em;
+}
+select:disabled{
+    opacity: 0.5;
 }
 
 select:not(:-internal-list-box) {

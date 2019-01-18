@@ -663,6 +663,18 @@ class Helper {
             return content;
         });
     }
+    /**
+     * returns the directory of a path to a given file
+     * @param filepath the full path to the file
+     * @returns Folder/ Directory or error
+     */
+    getFolderFromFilePath(filepath) {
+        var filepath;
+        return __awaiter(this, void 0, void 0, function* () {
+            filepath = yield path.dirname(filepath);
+            return (filepath);
+        });
+    }
 }
 exports.default = Helper;
 //# sourceMappingURL=helper.js.map

@@ -15,6 +15,9 @@ class En {
         this.d['yes'] = 'Yes';
         this.d['no'] = 'No';
         this.d['ok'] = 'Ok';
+        this.d['en'] = 'English';
+        this.d['de'] = 'German';
+        this.d['fr'] = 'French';
         this.d['noOpenEditors'] = 'No open Editors.';
         this.d['tooManyOpenEditors'] = 'Too many open editors. Please just open one file and without a split view.';
         this.d['ActionErrorNotMarkdown'] = 'The current File is not a Markdown file and the current Action cannot be executed. Please open a Markdown File.';
@@ -34,6 +37,7 @@ class En {
         this.d['projectTitle'] = 'Project';
         // this.d['cloneExistingRepo'] =  "Clone an existing repo";
         this.d['newProject'] = 'Create new project';
+        this.d['selectFolder'] = 'Select Folder: (from the open workspace folders)';
         // this.d['repoName'] =  "Git repo name";
         // this.d['clone'] =  "Clone";
         this.d['editProject'] = 'Edit project data';
@@ -139,7 +143,8 @@ class En {
         this.d['institution'] = 'Institution';
         this.d['projectLanguage'] = 'Language';
         this.d['tableOfContents'] = 'Add a table of contents to the document.';
-        this.d['tocDepth'] = 'Depth';
+        //this.d['tocDepth'] =  'Depth';
+        this.d['tocDepthExplanation'] = 'Depth of table of contents, only changeable if table of contents is set';
         this.d['materialSource'] = 'Material source';
         // this.d['create'] =  'Create';
         // this.d['newProjectDialogMissingGitValue'] =  'Missing git value';
@@ -154,16 +159,19 @@ class En {
         // this.d['newProjectDialogMissingMetadataValueTitle'] =  'Please enter the name of your project.';
         // this.d['newProjectDialogMissingMetadataValueAuthor'] =  'Please enter your name, your nickname or the name of someone else.';
         // this.d['newProjectDialogMissingMetadataValueInstitution'] =  'Please enter the name of your Institution (i.e. university, company, mom).';
-        // this.d['somethingWentWrongDuringCreatingNewProject'] =  'An unexpected matuc error occured';
+        this.d['somethingWentWrongDuringCreatingNewProject'] = 'An unexpected matuc error occured';
+        this.d['createdProjectSuccessfully'] = "Creation of project successfull.";
         // //edit metadata
         // this.d['edit'] = 'Save';
         // this.d['alternatePrefix'] =  'Use "A" as prefix to appendix chapter numbering and turn the extra heading "appendix" (or translated equivalent) off';
         // this.d['outputFormat'] =  'Output format';
         // this.d['appendixPrefix'] =  'Appendix Prefix';
         this.d['sourceAuthor'] = 'Source author';
-        // this.d['semYear'] =  'Semester of edit';
-        // this.d['workingGroup'] =  'Working group';
-        // this.d['toc_Depth'] =  'Depth of table of content';
+        this.d['semYear'] = 'Semester of edit';
+        this.d['workingGroup'] = 'Working group';
+        this.d['updateEditedData'] = 'Update';
+        this.d['toc_Depth'] = 'Depth of table of content';
+        this.d['updateSuccessfull'] = 'The update was successfull.';
         // this.d['SelectedWrongFileError'] =  'File does not belong to your project';
         // this.d['somethingWentWrongDuringSavingProjectMetadata'] =  'An unexpected matuc error occured';
         // //commit-changes-dialog
@@ -273,6 +281,7 @@ class En {
         this.d['readingFileError'] = 'An unexpected error occured reading the file.';
         this.d['importedFrom'] = 'imported from';
         this.d['createFolderError'] = "Error creating folder.";
+        this.d['linuxNotSupportedYet'] = "Linux is not supported yet.";
     }
 }
 exports.default = En;

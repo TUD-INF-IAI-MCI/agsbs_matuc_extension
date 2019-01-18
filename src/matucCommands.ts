@@ -154,12 +154,45 @@ export default class MatucCommands {
 
 	public async initMetaData(path: string) {
 		// see matuc-commands.js line 183
+		return new Promise(function (resolve, reject) {
+			exec('matuc conf init', {cwd: path}, (error, stdout, stderr) => {
+				if (error) {
+					console.error(`exec error: ${error}`);
+					return reject(error);
+				}
+				resolve({out: stdout, err: stderr});
+				// console.log(`stdout: ${stdout}`);
+				// console.log(`stderr: ${stderr}`);
+			});
+		});
 	}
 
-	public async updateMetaData(alternatePrefix, outputFormat, editor, institution,
-		title, language, source, sourceAuthor, semYear, tocDepth, workingGroup, path) {
+	public async updateMetaData(alternatePrefix, outputFormat, editor:string, institution:string,
+		title:string, language:string, source:string, sourceAuthor:string, semYear, tocDepth:number, workingGroup, path) {
 		// multiple parameters are needed
 		//
+		var cmd;
+		cmd = 'matuc_js conf update ';
+		cmd = alternatePrefix ? cmd + '-a ' : cmd;
+		cmd = editor ? cmd + '-e "' + editor + '" ' : cmd;
+		cmd = institution ? cmd + '-i "' + institution + '" ' : cmd;
+		cmd = title ? cmd + '-l "' + title + '" ' : cmd;
+		cmd = language ? cmd + '-L "' + language + '" ' : cmd;
+		cmd = source  ? cmd + '-s "' + source + '" ' : cmd;
+		cmd = sourceAuthor  ? cmd + '-A "' + sourceAuthor + '" ' : cmd;
+		cmd = semYear ? cmd + '-S "' + semYear + '" ' : cmd;
+		cmd = tocDepth  ? cmd + '--toc-depth ' + tocDepth + ' ' : cmd;
+		cmd = workingGroup ? cmd + '-w "' + workingGroup + '" ' : cmd;
+		console.log("cmd update " + cmd);
+		return new Promise(function (resolve, reject) {
+			exec(cmd, {cwd: path}, (error, stdout, stderr) => {
+				if (error) {
+					console.error(`exec error: ${error}`);
+					return reject(error);
+				}
+				resolve({out: stdout, err: stderr});
+			});
+		});
 	}
 
 	/**
@@ -174,7 +207,60 @@ export default class MatucCommands {
 	 * Loads and show config, .lecture_meta_data.dcxml, of project.
 	 * @param path 
 	 */
-	public showConfig(path: string) {
-		// see matuc-commands.js line 197
+	public async showConfig(path:string) {
+		var cmd;
+		if(process.platform === 'win32'){
+				cmd = `matuc_js conf show`;
+		}
+		if(process.platform === 'darwin'){
+			cmd = 'matuc_js conf show ';
+		}
+		if(process.platform === 'linux'){
+			vscode.window.showErrorMessage(this._language.get("linuxNotSupportedYet"));
+			return false;
+		}
+		//var cmd = 'matuc_js conf show';
+		return new Promise(function (resolve, reject) {
+			console.log("Execute");
+			exec(cmd, {cwd: path}, (error, stdout, stderr) => {
+				if (error) {
+					console.error(`exec error: ${error}`);
+					vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
+					resolve(false);
+				}
+				var currentConfig = JSON.parse(stdout);
+				resolve(currentConfig.result['Current settings']);
+			});
+		});
+	}
+
+	/**
+	* Creates a new matuc project, executes `matuc_js new`
+	* @param {int} countOfAppendixChapters The count of chapters in appendix
+	* @param {int} countOfChapters The count of chapters
+	* @param {boolean} preface Whether a preface shall be added
+	* @param {string} language Sets the language for the matuc project
+	* @param {string} path Sets the path where the project shall be stored
+	*/
+	public async newProject(countOfAppendixChapters, countOfChapters, preface, language, path) {
+
+		var cmd = 'matuc new ';
+		cmd = countOfAppendixChapters ? cmd + '-a ' + countOfAppendixChapters + ' ' : cmd;
+		cmd = countOfChapters !== null ? cmd + '-c ' + countOfChapters + ' ' : cmd;
+		cmd = preface === true ? cmd + '-p ' : cmd;
+		cmd = language !== null ? cmd + '-l ' + language + ' ' : cmd;
+		cmd = path !== null ? cmd + "\"" + path + "\"" : cmd + '.';
+		console.log("command is  " +cmd);
+		return new Promise(function (resolve, reject) {
+			exec(cmd, (error, stdout, stderr) => {
+				if (error) {
+					console.error(`exec error: ${error}`);
+					return reject(error);
+				}
+				resolve({out: stdout, err: stderr});
+				// console.log(`stdout: ${stdout}`);
+				// console.log(`stderr: ${stderr}`);
+			});
+		});
 	}
 }

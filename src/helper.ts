@@ -695,6 +695,14 @@ export default class Helper {
         return content;
     }
 
-
+    /**
+     * returns the directory of a path to a given file
+     * @param filepath the full path to the file
+     * @returns Folder/ Directory or error
+     */
+    public async getFolderFromFilePath (filepath:string){
+        var filepath = await path.dirname(filepath);
+        return (filepath);
+    }
 
 }
