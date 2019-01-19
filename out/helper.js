@@ -30,12 +30,14 @@ class Helper {
         });
     }
     focusDocument(editor) {
-        var editor;
         return __awaiter(this, void 0, void 0, function* () {
-            if (editor === undefined) {
-                editor = yield this.getCurrentTextEditor();
-            }
-            vscode.window.showTextDocument(editor.document, editor.viewColumn, false);
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                if (editor === undefined) {
+                    var editor = yield this.getCurrentTextEditor();
+                }
+                yield vscode.window.showTextDocument(editor.document, editor.viewColumn, false);
+                resolve(true);
+            }));
         });
     }
     /**

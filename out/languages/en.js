@@ -15,6 +15,7 @@ class En {
         this.d['yes'] = 'Yes';
         this.d['no'] = 'No';
         this.d['ok'] = 'Ok';
+        this.d['result'] = 'Result';
         this.d['en'] = 'English';
         this.d['de'] = 'German';
         this.d['fr'] = 'French';
@@ -25,7 +26,7 @@ class En {
         // this.d['changesFromEditProjectDialogSaved'] =  'Your changes has been saved.';
         this.d['error'] = 'A error occurs';
         // this.d['wrongMatucVersion'] =  "You have to install the latest Matuc version. Latest version is ${version}.";
-        // this.d['checkFile'] =  'Check file ';
+        this.d['checkFile'] = 'Check file ';
         // this.d['begin'] =  "Begin";
         // this.d['end'] =  "End";
         // this.d['errorMessage'] =  'Error message is:';
@@ -49,15 +50,17 @@ class En {
         this.d['preview'] = 'Show html preview';
         this.d['generateFile'] = 'Generate HTML';
         this.d['convertEntireProject'] = 'Generate HTML for all project files';
-        // this.d['conversionProfile'] =  'conversion profile';
-        // this.d['blind'] =  'blind';
-        // this.d['visuallyImpaired'] =  'visually impaired';
+        this.d['generate'] = 'Generate';
+        this.d['conversionProfile'] = 'conversion profile';
+        this.d['blind'] = 'blind';
+        this.d['visuallyImpaired'] = 'visually impaired';
         this.d['publishTitle'] = 'Publish';
         this.d['checkProject'] = 'Check entire project';
         // this.d['commitChanges'] =  'Upload changes';
         // this.d['languageTitle'] =  'Language';
         // this.d['english'] =  'Englisch';
         // this.d['german'] =  'German';
+        this.d['notInsideLecture'] = "This Document is not inside a lecture.";
         // //insert textboxes
         this.d['insertTextbox'] = "Add annotation/text box ";
         this.d['insertTextboxContent'] = "Content of annotation or title of textbox/textframe";
@@ -267,7 +270,7 @@ class En {
         this.d['uriTable'] = 'Insert table link here';
         // //mistkerl
         // this.d['mistkerlFoundGlobalError'] =  'A global error in your markdown occured.';
-        // this.d['mistkerlDidNotFindAnyErrorAndSavedFile'] =  'Saved.';
+        this.d['mistkerlDidNotFindAnyErrorAndSavedFile'] = 'Saved.';
         // this.d['mistkerlDidNotFindAnyError'] =  'No errors have been detected.';
         // this.d['mistkerlFoundErrorInFile'] =  'There are errors in ';
         // this.d['line'] =  'Line ';
@@ -276,7 +279,7 @@ class En {
         // this.d['correct'] =  "Correct";
         this.d['abort'] = "Cancel";
         // this.d['textAutoCorrection'] =  "Press <strong>Correct</strong>if the page number\n should be corrected <strong>automatically</strong>.\n Press Abort for a manually correction!";
-        // this.d['checkLine'] =  'Check line: ';
+        this.d['checkLine'] = 'Check line: ';
         // Reading Files and Folders
         this.d['readingFileError'] = 'An unexpected error occured reading the file.';
         this.d['importedFrom'] = 'imported from';

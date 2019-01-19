@@ -146,6 +146,9 @@ class ProjectToolsFunctions {
          * creates a new file in the current Project
          */
         this.createNewFile = () => __awaiter(this, void 0, void 0, function* () {
+            yield this._helper.focusDocument(); //Puts focus back to the text editor
+            yield vscode.commands.executeCommand('workbench.action.files.newUntitledFile');
+            yield vscode.commands.executeCommand('workbench.action.files.save');
         });
         /**
          * Undoes the last step.
@@ -170,6 +173,14 @@ class ProjectToolsFunctions {
                 vscode.window.showErrorMessage(this._language.get("matucNotInstalled"));
                 return;
             }
+            yield this._helper.focusDocument(); //Puts focus back to the text editor
+            // try{
+            //     vscode.commands.executeCommand("markdown-preview-enhanced.openPreview");
+            //     return;
+            // } catch(e){
+            //     console.log(e);
+            // } // no Markdown enhanced because it ALLWAYS opens to the right. Bad :(
+            vscode.commands.executeCommand("markdown.showPreview");
         });
         /**
          * Generates the HTML for the current project
@@ -180,6 +191,28 @@ class ProjectToolsFunctions {
                 vscode.window.showErrorMessage(this._language.get("matucNotInstalled"));
                 return;
             }
+            var currentEditor = yield this._helper.getCurrentTextEditor();
+            var filePath = currentEditor.document.uri.fsPath;
+            var isInLecture = yield this._matuc.checkIfFileIsWithinLecture(filePath);
+            if (isInLecture === false) {
+                vscode.window.showErrorMessage(this._language.get("notInsideLecture"));
+                return;
+            }
+            var form = `
+            <div class="spacing" role="none"></div>
+            <label for="conversionProfile">${this._language.get("conversionProfile")}</label><br role="none">
+            <select name="conversionProfile" id="conversionProfile" required="true">
+                <option value="blind">${this._language.get("blind")}</option>
+                <option value="visually">${this._language.get("visuallyImpaired")}</option>
+            </select>
+        `;
+            //TODO: autoselect last selection
+            this._sidebarCallback.addToSidebar(form, this._language.get("generateFile"), this.generateHTMLSidebarCallback, this._language.get("generate"));
+        });
+        this.generateHTMLSidebarCallback = (params) => __awaiter(this, void 0, void 0, function* () {
+            var profile = params.conversionProfile.value;
+            yield this._matuc.checkAndSaveChanges();
+            yield this._matuc.convertFile(profile);
             this._helper.focusDocument(); //Puts focus back to the text editor
         });
         /**

@@ -23,11 +23,14 @@ export default class Helper {
     }
 
     public async focusDocument(editor?: vscode.TextEditor) {
+        return new Promise(async (resolve, reject) => {
         if (editor === undefined) {
             var editor = await this.getCurrentTextEditor();
         }
 
-        vscode.window.showTextDocument(editor.document, editor.viewColumn,false);
+        await vscode.window.showTextDocument(editor.document, editor.viewColumn,false);
+        resolve(true);
+    });
     }
 
     /**

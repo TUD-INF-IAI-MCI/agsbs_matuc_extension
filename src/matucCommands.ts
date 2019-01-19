@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 // import * as fs from 'fs';
 import Language from './languages';
 import Helper from './helper';
+const osLocale = require('os-locale');
 const path = require('path');
 
 const exec = require('child_process').exec;
@@ -104,6 +105,11 @@ export default class MatucCommands {
 		});
 	}
 
+	/**
+	 * Get what pagenumber has to be inserted at a specific point in a fole
+	 * @param selection optional. the selection, only the start-line of the selection will be handled
+	 * @param currentTextEditor optional. The TextEditor to work with.
+	 */
 	public async addPageNumber (selection?:vscode.Selection,currentTextEditor?:vscode.TextEditor){
 		
         if (currentTextEditor === undefined) {
@@ -152,6 +158,10 @@ export default class MatucCommands {
 		// and matuc-commands.js line 349
 	}
 
+	/**
+	 * Initializes a Metadata-File
+	 * @param path path to the document where the Metadata applies
+	 */
 	public async initMetaData(path: string) {
 		// see matuc-commands.js line 183
 		return new Promise(function (resolve, reject) {
@@ -200,6 +210,24 @@ export default class MatucCommands {
 	*/
 	public async checkEntireProject(path: string) {
 		// see matuc-commands.js line 256
+	}
+
+	public async checkIfFileIsWithinLecture(pathToFile) {
+		
+		var cmd;
+		cmd = `matuc_js iswithinlecture \"${pathToFile}\"`;
+		console.log("cmd checkIfFileIsWithinLecture : "+cmd);
+		var isWithinLecture;
+		return new Promise(function (resolve, reject) {
+			exec(cmd, (error, stdout, stderr) => {
+				if (error) {
+					vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
+					reject(error);
+				}
+				isWithinLecture = JSON.parse(stdout).result['is within a lecture'];
+				resolve(isWithinLecture);
+			});
+		});
 	}
 
 
@@ -263,4 +291,107 @@ export default class MatucCommands {
 			});
 		});
 	}
+
+	/**
+	 * Generates and returns a os locale
+	 */
+	getOsLocale(){
+		var env = Object.create( process.env );
+		var lang = "de_De";
+		osLocale().then(locale => { 
+			lang = locale;
+		});
+		env.LANG=`${lang}.UTF-8`; // form should be "de_DE.UTF-8";
+		return env;
+	}
+
+	/**
+	 * Converts a File 
+	 * @param profile the given profile, "visually" for the visually impaied or "blind" for the blind
+	 */
+	public async convertFile(profile:string,currentTextEditor?:vscode.TextEditor) {
+		if(currentTextEditor === undefined){
+			currentTextEditor = await this._helper.getCurrentTextEditor();
+		}
+		var path = currentTextEditor.document.uri.fsPath;
+		if(await currentTextEditor.document.isDirty) {
+			await currentTextEditor.document.save();
+		}
+		var cmd = `matuc_js conv "${path}"`;
+		if (profile==='visually'){
+			cmd += ` -p vid`;
+		}
+		//cmd += `matuc_js conv ${path}`;
+		console.log("matuc conv command " +cmd);
+		exec(cmd, {env: this.getOsLocale()}, ( error, stdout, stderr) => {
+			if (error) {
+
+				let fragment = JSON.parse(stdout);
+				let message = "";
+				if(fragment.error.hasOwnProperty('line')){
+						message += "\n\n\n" + this._language.get("checkLine") + fragment.error.line;
+				}
+				if(fragment.error.hasOwnProperty('path')){
+					message += "\n\n" + this._language.get("checkFile") +" " +fragment.error.path;
+				}
+				vscode.window.showErrorMessage(this._language.get("unExpectedMatucError") + message);
+				console.error(`exec error: ${error}`);
+				return;
+			}
+			console.log(`stdout: ${stdout}`);
+			console.log(`stderr: ${stderr}`);
+			//load generate HTML-file
+
+			this.loadGeneratedHtml(path);
+		});
+
+	}
+		// add quotes to path if necessary and loads generate Html afterthat
+		loadGeneratedHtml(path){
+			let cmd = '';
+			if(process.platform === 'win32'){
+				cmd =`\"${path.replace("md", "html")}\"`;
+			}else if(process.platform === 'darwin'){
+				cmd =`open ./\"${path.replace("md", "html")}\"`;
+			}
+			exec(cmd, (error, stdout, stderr) => {
+					if (error) {
+						console.error(`load generate html`);
+						console.error(`exec error: ${error}`);
+						return;
+					}
+			});
+		}
+
+
+	/**
+	* Checks and saves changes in the current opened file invoking mistkerl, executes `matuc_js mk`
+	*/
+	public async checkAndSaveChanges(currentTextEditor?:vscode.TextEditor) {
+
+		if(currentTextEditor === undefined){
+			currentTextEditor = await this._helper.getCurrentTextEditor();
+		}
+		var path = currentTextEditor.document.uri.fsPath;
+		if(await currentTextEditor.document.isDirty) {
+			await currentTextEditor.document.save();
+		}
+		var	cmd = `matuc_js mk \"${path}\" `;
+		exec(cmd, (error, stdout, stderr) => {
+			if (error) {
+				console.error(`exec error: ${error}`);
+				return;
+			}
+			var mistkerl = JSON.parse(stdout);
+			if (typeof mistkerl.result === 'string') {
+				vscode.window.showInformationMessage(this._language.get("mistkerlDidNotFindAnyErrorAndSavedFile"));
+			} else {
+				vscode.window.showErrorMessage(mistkerl.result);
+			}
+			console.log(`stdout: ${stdout}`);
+			console.log(`stderr: ${stderr}`);
+		});
+		
+	}
 }
+
