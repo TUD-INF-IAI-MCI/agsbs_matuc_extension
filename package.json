@@ -39,6 +39,7 @@
         "@types/mocha": "^2.2.42"
     },
     "dependencies": {
+        "os-locale": "^3.1.0",
         "papaparse": "^4.6.2"
     }
 }
