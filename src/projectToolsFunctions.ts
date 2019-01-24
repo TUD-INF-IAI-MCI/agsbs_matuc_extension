@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
-import Helper from './helper';
+import Helper from './helper/helper';
 import Language from './languages';
 import Sidebar from './sidebar';
 import Taskbar from './taskbar';
 import MatucCommands from './matucCommands';
-import ProjectHelper from './projectHelper';
-import ProjectToolsFunctionSnippets from './projectToolsFunctionsSnippets';
+import ProjectHelper from './helper/projectHelper';
+import ProjectToolsFunctionSnippets from './snippets/projectToolsFunctionsSnippets';
 import * as path from 'path';
-import SettingsHelper from './settingsHelper';
+import SettingsHelper from './helper/settingsHelper';
 import GitCommands from './gitCommands';
 
 export default class ProjectToolsFunctions {

@@ -10,18 +10,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 //import * as vscode from 'vscode'
 const vscode = require("vscode");
-const helper_1 = require("./helper");
+const helper_1 = require("./helper/helper");
 const languages_1 = require("./languages");
-const imageHelper_1 = require("./imageHelper");
+const imageHelper_1 = require("./helper/imageHelper");
 const matucCommands_1 = require("./matucCommands");
-const editorFunctionsSnippets_1 = require("./editorFunctionsSnippets");
-const tableHelper_1 = require("./tableHelper");
+const editorFunctionsSnippets_1 = require("./snippets/editorFunctionsSnippets");
+const tableHelper_1 = require("./helper/tableHelper");
 const Papa = require("papaparse");
 const path = require("path");
-const listHelper_1 = require("./listHelper");
-const insertHelper_1 = require("./insertHelper");
-const headlineHelper_1 = require("./headlineHelper");
-const settingsHelper_1 = require("./settingsHelper");
+const listHelper_1 = require("./helper/listHelper");
+const insertHelper_1 = require("./helper/insertHelper");
+const headlineHelper_1 = require("./helper/headlineHelper");
+const settingsHelper_1 = require("./helper/settingsHelper");
 class EditorFunctions {
     constructor(taskbarCallback, sidebarCallback, context) {
         /**

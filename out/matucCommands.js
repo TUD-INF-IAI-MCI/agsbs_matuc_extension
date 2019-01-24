@@ -12,7 +12,7 @@ const vscode = require("vscode");
 // import * as path from 'path';
 // import * as fs from 'fs';
 const languages_1 = require("./languages");
-const helper_1 = require("./helper");
+const helper_1 = require("./helper/helper");
 const osLocale = require('os-locale');
 const path = require('path');
 const exec = require('child_process').exec;

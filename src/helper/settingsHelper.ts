@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import Helper from './helper';
-import Language from './languages';
+import Language from '../languages';
 import * as os from 'os';
 import * as path from 'path';
 

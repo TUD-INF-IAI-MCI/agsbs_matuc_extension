@@ -1,19 +1,19 @@
 //import * as vscode from 'vscode'
 import * as vscode from 'vscode';
-import Helper from './helper';
+import Helper from './helper/helper';
 import Language from './languages';
 import Sidebar from './sidebar';
 import Taskbar from './taskbar';
-import ImageHelper from './imageHelper';
+import ImageHelper from './helper/imageHelper';
 import MatucCommands from './matucCommands';
-import EditorFunctionSnippets from './editorFunctionsSnippets';
-import TableHelper from './tableHelper';
+import EditorFunctionSnippets from './snippets/editorFunctionsSnippets';
+import TableHelper from './helper/tableHelper';
 import * as Papa from 'papaparse';
 import * as path from 'path';
-import ListHelper from './listHelper';
-import InsertHelper from './insertHelper';
-import HeadlineHelper from './headlineHelper';
-import SettingsHelper from './settingsHelper';
+import ListHelper from './helper/listHelper';
+import InsertHelper from './helper/insertHelper';
+import HeadlineHelper from './helper/headlineHelper';
+import SettingsHelper from './helper/settingsHelper';
 
 
 export default class EditorFunctions {

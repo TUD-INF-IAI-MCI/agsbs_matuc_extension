@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import Helper from './helper';
+import Helper from './helper/helper';
 import Language from './languages';
 
 //declare var globalSidebarPanel:any;

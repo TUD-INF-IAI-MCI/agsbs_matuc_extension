@@ -10,10 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
-const helper_1 = require("./helper");
+const helper_1 = require("./helper/helper");
 const taskbar_1 = require("./taskbar");
 const sidebar_1 = require("./sidebar");
-const settingsHelper_1 = require("./settingsHelper");
+const settingsHelper_1 = require("./helper/settingsHelper");
 /**
  * Gets triggered when the Extension is activated
  * @param context Context of the extension, gets automatically handed over from VSCode at activation
@@ -73,7 +73,9 @@ class ExtensionController {
             let doc = editor.document;
             if (doc.languageId === "markdown" || doc.languageId === "multimarkdown") { //This gets executed if a Markdown File gets opened
                 //First, reset Workspace
-                yield this._helper.setEditorLayout(this._layout);
+                if (this._sidebar.isVisible() === false || this._taskbar.isVisible() === false) {
+                    yield this._helper.setEditorLayout(this._layout);
+                }
                 if (this._sidebar.isVisible() === false && this._taskbar.isVisible() === true) {
                     //If Sidebar is closed but Taskbar is open, close Taskbar to reset
                     yield this._taskbar.hide(this._taskbarPanel);

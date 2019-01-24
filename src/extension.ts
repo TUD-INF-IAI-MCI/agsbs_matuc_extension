@@ -1,10 +1,10 @@
 // 'use strict';
 
  import * as vscode from 'vscode';
-import Helper from './helper';
+import Helper from './helper/helper';
 import Taskbar from './taskbar';
 import Sidebar from './sidebar';
-import SettingsHelper from './settingsHelper';
+import SettingsHelper from './helper/settingsHelper';
 
 
 /**
@@ -93,7 +93,9 @@ class ExtensionController {
         let doc = editor.document;
         if (doc.languageId === "markdown" || doc.languageId==="multimarkdown") {//This gets executed if a Markdown File gets opened
             //First, reset Workspace
+            if(this._sidebar.isVisible()===false || this._taskbar.isVisible()===false){
             await this._helper.setEditorLayout(this._layout);
+            }
             if(this._sidebar.isVisible()===false && this._taskbar.isVisible()===true){
                 //If Sidebar is closed but Taskbar is open, close Taskbar to reset
                 await this._taskbar.hide(this._taskbarPanel);

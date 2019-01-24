@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import Helper from './helper';
+import Helper from './helper/helper';
 import Language from './languages';
-import SettingsHelper from './settingsHelper';
+import SettingsHelper from './helper/settingsHelper';
 import * as path from 'path'
 const exec = require('child_process').exec;
 

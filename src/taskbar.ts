@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import Helper from './helper';
+import Helper from './helper/helper';
 
 import EditorFunctions from './editorFunctions';
 import ProjectToolsFunctions from './projectToolsFunctions';
@@ -95,6 +95,7 @@ export default class Taskbar {
     /** Adds a Button to the Taskbar
      * @param iconName the Name of the Icon in the Icon Folder, with file extension (so for example "icon.svg")
      * @param name Displayname of the Icon
+     * @param callback callback to the function, must be an arrow function
      * @param section optional section the button is displayed in
      */
     public addButton = (iconName: string, name: string, callback: any, section: string) => {

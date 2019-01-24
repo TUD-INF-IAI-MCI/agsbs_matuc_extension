@@ -1,15 +1,10 @@
-import Language from './languages';
-
-
-
-export default class ProjectToolsFunctionSnippets {
-    private _language: Language;
-    private d: any;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const languages_1 = require("../languages");
+class ProjectToolsFunctionSnippets {
     constructor() {
-
-        this._language = new Language;
+        this._language = new languages_1.default;
         this.d = [];
-
         this.d['newProjectHTMLPart1'] = `
         <label for="folder">${this._language.get("selectFolder")}</label><br role="none">
 
@@ -68,7 +63,6 @@ export default class ProjectToolsFunctionSnippets {
         <input type="text" name="sourceAuthor" id="sourceAuthor" required="true"  disabled="true"><br  role="none">
 
         `;
-        
         this.d['newProjectSCRIPT'] = `
 
             function onFileSelectorChange(){
@@ -124,7 +118,9 @@ export default class ProjectToolsFunctionSnippets {
                 }
             }`;
     }
-    public get(snippetName) {
+    get(snippetName) {
         return (this.d[snippetName]);
     }
 }
+exports.default = ProjectToolsFunctionSnippets;
+//# sourceMappingURL=projectToolsFunctionsSnippets.js.map

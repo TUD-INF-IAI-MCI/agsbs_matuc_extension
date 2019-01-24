@@ -1,5 +1,5 @@
 
-import Language from './languages';
+import Language from '../languages';
 
 
 

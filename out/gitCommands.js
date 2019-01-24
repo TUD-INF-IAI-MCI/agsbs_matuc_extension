@@ -9,9 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
-const helper_1 = require("./helper");
+const helper_1 = require("./helper/helper");
 const languages_1 = require("./languages");
-const settingsHelper_1 = require("./settingsHelper");
+const settingsHelper_1 = require("./helper/settingsHelper");
 const path = require("path");
 const exec = require('child_process').exec;
 class GitCommands {

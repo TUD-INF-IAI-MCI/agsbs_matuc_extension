@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import Language from './languages';
+import Language from '../languages';
 import Helper from './helper';
 import InsertHelper from './insertHelper';
 

@@ -9,12 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
-const helper_1 = require("./helper");
+const helper_1 = require("./helper/helper");
 const languages_1 = require("./languages");
 const matucCommands_1 = require("./matucCommands");
-const projectHelper_1 = require("./projectHelper");
-const projectToolsFunctionsSnippets_1 = require("./projectToolsFunctionsSnippets");
-const settingsHelper_1 = require("./settingsHelper");
+const projectHelper_1 = require("./helper/projectHelper");
+const projectToolsFunctionsSnippets_1 = require("./snippets/projectToolsFunctionsSnippets");
+const settingsHelper_1 = require("./helper/settingsHelper");
 const gitCommands_1 = require("./gitCommands");
 class ProjectToolsFunctions {
     constructor(taskbarCallback, sidebarCallback, context) {

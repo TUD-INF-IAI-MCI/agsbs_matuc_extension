@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
-const helper_1 = require("./helper");
+const helper_1 = require("./helper/helper");
 //declare var globalSidebarPanel:any;
 class Sidebar {
     constructor(context) {

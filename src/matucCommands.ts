@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 // import * as path from 'path';
 // import * as fs from 'fs';
 import Language from './languages';
-import Helper from './helper';
+import Helper from './helper/helper';
 const osLocale = require('os-locale');
 const path = require('path');
 

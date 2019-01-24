@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import Language from './languages';
+import Language from '../languages';
 import * as Papa from 'papaparse';
 
 export default class Helper {
@@ -30,20 +30,18 @@ export default class Helper {
         await vscode.window.showTextDocument(editor.document, editor.viewColumn,false);
 
         
-        var currentTextEditor:vscode.TextEditor = await this.getCurrentTextEditor();
-        var selection = await this.getWordsSelection(currentTextEditor);
-        // console.log(selection);
-        // var newRange = new vscode.Range(selection.start,selection.end);
-        // await currentTextEditor.revealRange(newRange); //Focus cursor to current selection
-        // ABOVE DOWES NOT WORK! BAD BUG FROM VSCODE! :(
+        // var currentTextEditor:vscode.TextEditor = await this.getCurrentTextEditor();
+        // var selection = await this.getWordsSelection(currentTextEditor);
+        // // console.log(selection);
+        // // var newRange = new vscode.Range(selection.start,selection.end);
+        // // await currentTextEditor.revealRange(newRange); //Focus cursor to current selection
+        // // ABOVE DOWES NOT WORK! BAD BUG FROM VSCODE! :(
         
-            await vscode.commands.executeCommand('cursorLeft');
-            await vscode.commands.executeCommand('cursorRight');
 
-             currentTextEditor.selection = selection;
+        //      currentTextEditor.selection = selection;
 
-            //THIS is just a temprary fix.
-            //TODO: if vscode fixes this issue, revert to above solution or 
+        //     //THIS is just a temprary fix.
+        //     //TODO: if vscode fixes this issue, revert to above solution or 
         
         
         resolve(true);

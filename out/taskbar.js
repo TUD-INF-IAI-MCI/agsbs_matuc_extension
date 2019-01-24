@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
-const helper_1 = require("./helper");
+const helper_1 = require("./helper/helper");
 const editorFunctions_1 = require("./editorFunctions");
 const projectToolsFunctions_1 = require("./projectToolsFunctions");
 class Taskbar {
@@ -24,6 +24,7 @@ class Taskbar {
         /** Adds a Button to the Taskbar
          * @param iconName the Name of the Icon in the Icon Folder, with file extension (so for example "icon.svg")
          * @param name Displayname of the Icon
+         * @param callback callback to the function, must be an arrow function
          * @param section optional section the button is displayed in
          */
         this.addButton = (iconName, name, callback, section) => {
