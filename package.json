@@ -22,7 +22,51 @@
                 "command": "extension.agsbs",
                 "title": "Open AGSBS"
             }
-        ]
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "AGSBS",
+            "properties": {
+              "agsbs.csvDelimiter": {
+                "type": "string",
+                "default": ";",
+                "description": "Default: ;"
+              },
+              "agsbs.enableGitAutoCommit": {
+                "type": "boolean",
+                "default": false,
+                "description": "Enable Git Auto commit"
+              },
+              "agsbs.enableGitUseage": {
+                "type": "boolean",
+                "default": true,
+                "description": "Enable Git Useage (You have to restart the AGSBS Toolbar for this change to take effect)"
+              },
+              "agsbs.gitLocalPath": {
+                "type": "string",
+                "default": "",
+                "description": "Default is ...Documents/agsbs_git"
+              },
+              "agsbs.gitServerPath": {
+                "type": "string",
+                "default": "",
+                "description": "Enter the Path to the repo"
+              },
+              "agsbs.optionalTextboxContent": {
+                "type": "boolean",
+                "default": false,
+                "description": "If this is checked, the title and text of a textbox is not required and empty containers are inserted."
+              },
+              "agsbs.requiredVersion": {
+                "type": "string",
+                "default": "0.0.1",
+                "enum": [
+                    "0.0.1"
+                ],
+                "description": "Only the named Version supports all functions of Matuc"
+              }
+            }
+      }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

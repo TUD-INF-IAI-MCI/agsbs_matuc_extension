@@ -126,6 +126,17 @@ class ProjectHelper {
         `;
         return (form);
     }
+    getConversionProfileHTML() {
+        var form = `
+            <div class="spacing" role="none"></div>
+            <label for="conversionProfile">${this._language.get("conversionProfile")}</label><br role="none">
+            <select name="conversionProfile" id="conversionProfile" required="true">
+                <option value="blind">${this._language.get("blind")}</option>
+                <option value="visually">${this._language.get("visuallyImpaired")}</option>
+            </select>
+        `;
+        return form;
+    }
 }
 exports.default = ProjectHelper;
 //# sourceMappingURL=projectHelper.js.map

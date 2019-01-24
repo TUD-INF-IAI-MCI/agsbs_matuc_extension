@@ -36,6 +36,17 @@ class Helper {
                     var editor = yield this.getCurrentTextEditor();
                 }
                 yield vscode.window.showTextDocument(editor.document, editor.viewColumn, false);
+                var currentTextEditor = yield this.getCurrentTextEditor();
+                var selection = yield this.getWordsSelection(currentTextEditor);
+                // console.log(selection);
+                // var newRange = new vscode.Range(selection.start,selection.end);
+                // await currentTextEditor.revealRange(newRange); //Focus cursor to current selection
+                // ABOVE DOWES NOT WORK! BAD BUG FROM VSCODE! :(
+                yield vscode.commands.executeCommand('cursorLeft');
+                yield vscode.commands.executeCommand('cursorRight');
+                currentTextEditor.selection = selection;
+                //THIS is just a temprary fix.
+                //TODO: if vscode fixes this issue, revert to above solution or 
                 resolve(true);
             }));
         });
@@ -591,6 +602,21 @@ class Helper {
         }));
     }
     /**
+     * Checks if a path to a folder exists
+     * @param path string absolute path to the folder
+     * @returns promise that resolves to true if path exist, otherwise false.
+     */
+    folderExists(path) {
+        return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+            if (fs.existsSync(path)) {
+                resolve(true);
+            }
+            else {
+                resolve(false);
+            }
+        }));
+    }
+    /**
      * Checks if file Exists
      * @param path path to file
      * @returns true if file exists, otherwise false
@@ -675,6 +701,16 @@ class Helper {
         return __awaiter(this, void 0, void 0, function* () {
             filepath = yield path.dirname(filepath);
             return (filepath);
+        });
+    }
+    /**
+     * adds a Folder to the open Worspaces
+     * @param path string to the Folder
+     */
+    addWorkspaceFolder(path) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var uri = vscode.Uri.file(path);
+            yield vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, null, { uri: uri });
         });
     }
 }

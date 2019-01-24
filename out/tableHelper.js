@@ -14,10 +14,12 @@ const fs = require("fs");
 const languages_1 = require("./languages");
 const helper_1 = require("./helper");
 const Papa = require("papaparse");
+const settingsHelper_1 = require("./settingsHelper");
 class TableHelper {
     constructor() {
         this._language = new languages_1.default;
         this._helper = new helper_1.default;
+        this._settings = new settingsHelper_1.default;
         this.tableStartMarker = "TABLE START TYPE";
         this.tableEndMarker = "TABLE END";
     }
@@ -132,12 +134,13 @@ class TableHelper {
      */
     generateCSVfromJSON(data, header) {
         return __awaiter(this, void 0, void 0, function* () {
+            var delimiter = yield this._settings.get("csvDelimiter");
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                 if (header === undefined) {
                     header = false;
                 }
                 var result = yield Papa.unparse(data, {
-                    delimiter: ";",
+                    delimiter: delimiter,
                     header: header,
                 }); //TODO: change delimiter to an optional
                 resolve(result);

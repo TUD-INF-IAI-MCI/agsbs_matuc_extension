@@ -81,12 +81,10 @@ class HeadlineHelper {
                 selection = this._helper.getWordsSelection(currentTextEditor);
             }
             var startLineNumber = selection.start.line;
-            for (var i = startLineNumber; i >= 0; i--) {
-                console.log("Check line" + i);
+            for (var i = startLineNumber; i >= 0; i--) { //Go upwards from the current line
                 var currentLineText = yield currentTextEditor.document.lineAt(i).text;
                 var headlineRegex = /^\#{1,6}\ /;
                 var result = currentLineText.match(headlineRegex);
-                console.log(result);
                 if (result !== null && result !== undefined && result.length > 0) {
                     var resultText = result[0];
                     var headlineGrade = (resultText.match(/\#/g) || []).length;
@@ -100,7 +98,7 @@ class HeadlineHelper {
                 var newPageIdentifier = this._insertHelper.getNewPageIdentifier();
                 if (currentLineText.startsWith(newPageIdentifier)) {
                     //console.log("new Page found");
-                    return "# ";
+                    return "## ";
                 }
             }
             //console.log("not Found");

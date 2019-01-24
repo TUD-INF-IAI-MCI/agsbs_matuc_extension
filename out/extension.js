@@ -13,6 +13,7 @@ const vscode = require("vscode");
 const helper_1 = require("./helper");
 const taskbar_1 = require("./taskbar");
 const sidebar_1 = require("./sidebar");
+const settingsHelper_1 = require("./settingsHelper");
 /**
  * Gets triggered when the Extension is activated
  * @param context Context of the extension, gets automatically handed over from VSCode at activation
@@ -44,6 +45,8 @@ class ExtensionController {
         let sidebar = new sidebar_1.default(context);
         let taskbar = new taskbar_1.default(sidebar, context);
         let helper = new helper_1.default();
+        this._settingsHelper = new settingsHelper_1.default;
+        this._settingsHelper.setup(); //If settings are not set, this will initialize them
         this._layout = { orientation: 1, groups: [{ groups: [{ size: 0.8 }, { size: 0.2 }], size: 0.85 }, { size: 0.15 }] };
         this._defaultLayout = { orientation: 1, groups: [{}] };
         this._helper = helper;

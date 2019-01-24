@@ -5,15 +5,18 @@ import Language from './languages';
 import Helper from './helper';
 import * as Papa from 'papaparse';
 import { start } from 'repl';
+import SettingsHelper from './settingsHelper';
 
 export default class TableHelper {
     private _language: Language;
     private _helper: Helper;
     public tableStartMarker: string;
     public tableEndMarker: string;
+    private _settings :SettingsHelper;
     constructor() {
         this._language = new Language;
         this._helper = new Helper;
+        this._settings = new SettingsHelper;
         this.tableStartMarker = "TABLE START TYPE";
         this.tableEndMarker = "TABLE END";
     }
@@ -129,6 +132,7 @@ export default class TableHelper {
      * @returns JSON
      */
     public async generateCSVfromJSON(data: any, header?: boolean) {
+        var delimiter = await this._settings.get("csvDelimiter");
         return new Promise(async (resolve, reject) => {
 
             if (header === undefined) {
@@ -136,7 +140,7 @@ export default class TableHelper {
             }
             var result = await Papa.unparse(data,
                 {
-                    delimiter: ";",
+                    delimiter: delimiter,
                     header: header,
                 }); //TODO: change delimiter to an optional
             resolve(result);

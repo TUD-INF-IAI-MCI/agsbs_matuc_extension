@@ -21,6 +21,7 @@ const path = require("path");
 const listHelper_1 = require("./listHelper");
 const insertHelper_1 = require("./insertHelper");
 const headlineHelper_1 = require("./headlineHelper");
+const settingsHelper_1 = require("./settingsHelper");
 class EditorFunctions {
     constructor(taskbarCallback, sidebarCallback, context) {
         /**
@@ -113,7 +114,16 @@ class EditorFunctions {
             this._helper.focusDocument(); //Puts focus back to the text editor
         });
         this.insertAnnotation = () => __awaiter(this, void 0, void 0, function* () {
-            var form = this._snippets.get("insertAnnotationHTML");
+            var setttingsTextboxContentIsOptional = yield this._settings.get("optionalTextboxContent");
+            var form = this._snippets.get("insertAnnotationHTMLPart1");
+            if (setttingsTextboxContentIsOptional === false) {
+                form += "required='true'";
+            }
+            form += this._snippets.get("insertAnnotationHTMLPart2");
+            if (setttingsTextboxContentIsOptional === false) {
+                form += "required='true'";
+            }
+            form += this._snippets.get("insertAnnotationHTMLPart3");
             var script = this._snippets.get("insertAnnotationSCRIPT");
             this._sidebarCallback.addToSidebar(form, this._language.get("insertTextbox"), this.insertAnnotationSidebarCallback, this._language.get("insert"), "", script);
         });
@@ -195,7 +205,15 @@ class EditorFunctions {
             this._helper.focusDocument(); //Puts focus back to the text editor
         });
         this.code = () => __awaiter(this, void 0, void 0, function* () {
-            yield this._helper.toggleCharactersAtStartAndEnd("```\n", "\n```");
+            var currentTextEditor = yield this._helper.getCurrentTextEditor();
+            var selection = yield this._helper.getWordsSelection(currentTextEditor);
+            var startInsertText = "```";
+            var endInsertText = "```";
+            if (selection.start.line !== selection.end.line) {
+                startInsertText = "\n" + startInsertText + "\n";
+                endInsertText = "\n" + endInsertText;
+            }
+            yield this._helper.toggleCharactersAtStartAndEnd(startInsertText, endInsertText);
             this._helper.focusDocument(); //Puts focus back to the text editor
         });
         this.inlineFormula = () => __awaiter(this, void 0, void 0, function* () {
@@ -255,7 +273,7 @@ class EditorFunctions {
             var hasHeader = params.tableHeadCheckbox.checked;
             var tableType = params.tableType.value;
             var rawdata = params.tableJSON.value;
-            console.log("rawdata " + rawdata);
+            //console.log("rawdata " + rawdata);
             var data;
             try {
                 data = JSON.parse(rawdata);
@@ -490,6 +508,7 @@ class EditorFunctions {
         this._listHelper = new listHelper_1.default;
         this._insertHelper = new insertHelper_1.default;
         this._headlineHelper = new headlineHelper_1.default;
+        this._settings = new settingsHelper_1.default;
     }
 }
 exports.default = EditorFunctions;

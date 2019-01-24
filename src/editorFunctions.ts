@@ -13,6 +13,8 @@ import * as path from 'path';
 import ListHelper from './listHelper';
 import InsertHelper from './insertHelper';
 import HeadlineHelper from './headlineHelper';
+import SettingsHelper from './settingsHelper';
+
 
 export default class EditorFunctions {
     private _helper: Helper;
@@ -26,6 +28,7 @@ export default class EditorFunctions {
     private _listHelper:ListHelper;
     private _insertHelper:InsertHelper;
     private _headlineHelper:HeadlineHelper;
+    private _settings:SettingsHelper;
 
     constructor(taskbarCallback, sidebarCallback, context) {
         this._helper = new Helper;
@@ -39,6 +42,7 @@ export default class EditorFunctions {
         this._listHelper = new ListHelper;
         this._insertHelper = new InsertHelper;
         this._headlineHelper = new HeadlineHelper;
+        this._settings = new SettingsHelper;
     }
 
 
@@ -148,7 +152,17 @@ export default class EditorFunctions {
     }
 
     public insertAnnotation = async () => {
-        var form = this._snippets.get("insertAnnotationHTML");
+        var setttingsTextboxContentIsOptional = await this._settings.get("optionalTextboxContent");
+        var form = this._snippets.get("insertAnnotationHTMLPart1");
+        if(setttingsTextboxContentIsOptional===false){
+            form += "required='true'";
+        }
+        form += this._snippets.get("insertAnnotationHTMLPart2");
+        if(setttingsTextboxContentIsOptional===false){
+            form += "required='true'";
+        }
+        form += this._snippets.get("insertAnnotationHTMLPart3");
+
         var script = this._snippets.get("insertAnnotationSCRIPT");
         this._sidebarCallback.addToSidebar(form, this._language.get("insertTextbox"), this.insertAnnotationSidebarCallback, this._language.get("insert"),"",script);
     }
@@ -237,7 +251,16 @@ export default class EditorFunctions {
     }
 
     public code = async () => {
-        await this._helper.toggleCharactersAtStartAndEnd("```\n", "\n```");
+        var currentTextEditor = await this._helper.getCurrentTextEditor();
+        var selection = await this._helper.getWordsSelection(currentTextEditor);
+        var startInsertText = "```";
+        var endInsertText = "```";
+        if(selection.start.line !== selection.end.line){
+            startInsertText = "\n" + startInsertText + "\n";
+            endInsertText = "\n" +endInsertText;
+        }
+        
+        await this._helper.toggleCharactersAtStartAndEnd(startInsertText,endInsertText);
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 
@@ -306,7 +329,7 @@ export default class EditorFunctions {
         var hasHeader = params.tableHeadCheckbox.checked;
         var tableType = params.tableType.value;
         var rawdata = params.tableJSON.value;
-        console.log("rawdata " + rawdata);
+        //console.log("rawdata " + rawdata);
         var data: any;
         try {
             data = JSON.parse(rawdata);

@@ -213,11 +213,41 @@ class MatucCommands {
     /**
     * Checks all markdown files in the project folder invoking mistkerl and saves the currend opened file, executes `matuc_js mk`
     */
-    checkEntireProject(path) {
+    checkEntireProject(path, currentTextEditor) {
+        var path;
         return __awaiter(this, void 0, void 0, function* () {
-            // see matuc-commands.js line 256
+            if (currentTextEditor === undefined) {
+                currentTextEditor = yield this._helper.getCurrentTextEditor();
+            }
+            var filepath = currentTextEditor.document.uri.fsPath;
+            var folderpath = yield this._helper.getFolderFromFilePath(filepath);
+            console.log(folderpath);
+            var folderpathAbove = folderpath.substr(0, folderpath.lastIndexOf("/")); //Go one Folder above to the root oh the project
+            console.log(folderpathAbove);
+            path = folderpathAbove;
+            //	var cmd = `matuc_js mk ${path}`;
+            var cmd = `matuc_js mk \"${path}\"`;
+            currentTextEditor.document.save();
+            exec(cmd, (error, stdout, stderr) => {
+                if (error) {
+                    console.log(cmd);
+                    console.error(`exec error: ${error}`);
+                    return;
+                }
+                var mistkerl = JSON.parse(stdout);
+                if (typeof mistkerl.result === 'string') {
+                    vscode.window.showInformationMessage(this._language.get("mistkerlDidNotFindAnyError"));
+                }
+                else {
+                    vscode.window.showErrorMessage(mistkerl.result);
+                }
+            });
         });
     }
+    /**
+     * Checks if a File is within the lecture
+     * @param pathToFile absolute path to the file
+     */
     checkIfFileIsWithinLecture(pathToFile) {
         return __awaiter(this, void 0, void 0, function* () {
             var cmd;
@@ -313,6 +343,7 @@ class MatucCommands {
     /**
      * Converts a File
      * @param profile the given profile, "visually" for the visually impaied or "blind" for the blind
+     * @param currentTextEditor optional. The current Text editor to work with.
      */
     convertFile(profile, currentTextEditor) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -394,6 +425,79 @@ class MatucCommands {
                 }
                 console.log(`stdout: ${stdout}`);
                 console.log(`stderr: ${stderr}`);
+            });
+        });
+    }
+    /**
+     * Converts a whole project.
+     * @param profile the given profile, "visually" for the visually impaied or "blind" for the blind
+     * @param currentTextEditor optional. The current Text editor to work with.
+     */
+    convertEntireProject(profile, currentTextEditor) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (currentTextEditor === undefined) {
+                currentTextEditor = yield this._helper.getCurrentTextEditor();
+            }
+            currentTextEditor.document.save();
+            var path = currentTextEditor.document.uri.fsPath;
+            var cmd;
+            if (process.platform === 'win32') {
+                cmd = 'matuc_js master';
+                cmd += ` \"${path}\\..\"`;
+            }
+            else {
+                // OS X and Linux
+                cmd = `matuc_js master ${path}/..`;
+            }
+            if (profile === 'visually') {
+                cmd += ` -p vid`;
+            }
+            console.log(cmd);
+            exec(cmd, { env: this.getOsLocale(), cwd: path }, (error, stdout, stderr) => {
+                if (error) {
+                    let fragment = JSON.parse(stdout);
+                    let message = "";
+                    if (fragment.error.message.startsWith("No configuration")) {
+                        message = this._language.get("noConfiguration");
+                    }
+                    else {
+                        message = fragment.error.message;
+                        if (fragment.error.hasOwnProperty('path')) {
+                            message += "\n\n\n" + this._language.get("checkFile") + " " + fragment.error.path;
+                        }
+                    }
+                    vscode.window.showErrorMessage(this._language.get("unExpectedMatucError") + message);
+                    console.error(`exec error: ${error}`);
+                    return;
+                }
+                else {
+                    this.loadGeneratedHtml(path);
+                }
+                console.log(`stdout: ${stdout}`);
+                console.log(`stderr: ${stderr}`);
+            });
+            //open file
+        });
+    }
+    /**
+     * Fixes the page numbering of a given file
+     * @param currentTextEditor optional. Current Text Editor to work with.
+     */
+    fixpnumInPlace(currentTextEditor) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (currentTextEditor === undefined) {
+                currentTextEditor = yield this._helper.getCurrentTextEditor();
+            }
+            currentTextEditor.document.save();
+            var path = currentTextEditor.document.uri.fsPath;
+            var cmd = `matuc_js fixpnums -i -f \"${path}\"`;
+            return new Promise(function (resolve, reject) {
+                exec(cmd, (error, stdout, stderr) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve({ out: "fixpnums inplace", err: stderr });
+                });
             });
         });
     }

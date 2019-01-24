@@ -814,7 +814,7 @@ export default class EditorFunctionSnippets {
             `;
 
 
-            this.d['insertAnnotationHTML'] = `
+            this.d['insertAnnotationHTMLPart1'] = `
             <label for="annotationType">${this._language.get("selectType")}</label><br  role="none">
         <select name='annotationType' id='annotationType' onchange="typeChange(this)"><br  role="none">
             <option value='textFrame'>${this._language.get("textFrameCheckbox")}</option>
@@ -836,10 +836,12 @@ export default class EditorFunctionSnippets {
       </select>
       <div class="spacing" role="none"></div>
       <label for="titleOfBox">${this._language.get("titleOfTextbox")}</label><br  role="none">
-      <input type="text" name="titleOfBox" id="titleOfBox" placeholder="${this._language.get("titleOfTextbox")}"/><br  role="none">
+      <input type="text" name="titleOfBox" id="titleOfBox" placeholder="${this._language.get("titleOfTextbox")}" `;
+      this.d['insertAnnotationHTMLPart2'] = `/><br  role="none">
       <div class="spacing" role="none"></div>
       <label for="contentOfBox">${this._language.get("contentOfTextbox")}</label><br  role="none">
-      <input type="text" name="contentOfBox" id="contentOfBox" placeholder="${this._language.get("contentOfTextbox")}"/>
+      <input type="text" name="contentOfBox" id="contentOfBox" placeholder="${this._language.get("contentOfTextbox")}" `;
+      this.d['insertAnnotationHTMLPart3'] = `/>
             `;
             this.d['insertAnnotationSCRIPT'] = `
             function typeChange(){

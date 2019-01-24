@@ -4,6 +4,8 @@
 import Helper from './helper';
 import Taskbar from './taskbar';
 import Sidebar from './sidebar';
+import SettingsHelper from './settingsHelper';
+
 
 /**
  * Gets triggered when the Extension is activated
@@ -40,6 +42,8 @@ class ExtensionController {
 
      private _sidebar: Sidebar;
      private _sidebarPanel: any;
+     
+     private _settingsHelper:SettingsHelper;
 
      private _disposable: vscode.Disposable;
      public getSidebarPanel(params){
@@ -54,6 +58,8 @@ class ExtensionController {
         let sidebar = new Sidebar(context);
         let taskbar = new Taskbar(sidebar,context);
         let helper = new Helper();
+        this._settingsHelper = new SettingsHelper;
+        this._settingsHelper.setup(); //If settings are not set, this will initialize them
         this._layout= { orientation: 1, groups: [{groups:[{size:0.8},{  size: 0.2 }], size:0.85}, {  size: 0.15 }] };
         this._defaultLayout = { orientation: 1, groups: [{}]};
         this._helper = helper;
