@@ -8,14 +8,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @author Jens Voegler
+ * @author Lucas Vogel
+ * This Code was written under the supervision of Jens Voegler and ported to VSCode from Lucas Vogel with minimal changes.
+ */
 const vscode = require("vscode");
-// import * as path from 'path';
-// import * as fs from 'fs';
 const languages_1 = require("./languages");
 const helper_1 = require("./helper/helper");
 const osLocale = require('os-locale');
 const path = require('path');
 const exec = require('child_process').exec;
+/**
+ * This Class contains all Functions regarding matuc
+ */
 class MatucCommands {
     constructor() {
         this._language = new languages_1.default;
@@ -88,8 +94,6 @@ class MatucCommands {
             outsourced = true;
             desc = desc.replace(/\n/g, '\\n'); //TODO: Check if neccessary
         }
-        //var pathToImg = relPath;
-        //var currentPath = currentPath;		
         cmd += `matuc_js imgdsc -d \"${desc}\" `;
         cmd = outsourced ? cmd + '-o ' : cmd;
         cmd = title ? cmd + '-t "' + title + '" ' : cmd;
@@ -152,17 +156,6 @@ class MatucCommands {
         });
     }
     /**
-     * Depending on convertAll a single will be converted of or the the whole project.
-     * @param path
-     * @param convertAll
-     */
-    convertHtml(path, convertAll) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // see matuc-commands.js line 283
-            // and matuc-commands.js line 349
-        });
-    }
-    /**
      * Initializes a Metadata-File
      * @param path path to the document where the Metadata applies
      */
@@ -176,16 +169,28 @@ class MatucCommands {
                         return reject(error);
                     }
                     resolve({ out: stdout, err: stderr });
-                    // console.log(`stdout: ${stdout}`);
-                    // console.log(`stderr: ${stderr}`);
                 });
             });
         });
     }
+    /**
+     * Updates the Metadata
+     * @param alternatePrefix if the Checkbox "Appendix Prefix" is checked. the type is not clear but most propably a boolean.
+     * @param outputFormat aparently not used and not documented in the original matuc code of Atom.
+     * @param editor Author of the Project
+     * @param institution Institution where this is written
+     * @param title Title of the Project
+     * @param language Language the Project is written in
+     * @param source Material source that is used
+     * @param sourceAuthor Source Author that is used
+     * @param semYear Semester this the project is written
+     * @param tocDepth depth of the table of content
+     * @param workingGroup Working Group of the Author
+     * @param path Path to the Folder
+     */
     updateMetaData(alternatePrefix, outputFormat, editor, institution, title, language, source, sourceAuthor, semYear, tocDepth, workingGroup, path) {
         return __awaiter(this, void 0, void 0, function* () {
             // multiple parameters are needed
-            //
             var cmd;
             cmd = 'matuc_js conf update ';
             cmd = alternatePrefix ? cmd + '-a ' : cmd;
@@ -221,11 +226,8 @@ class MatucCommands {
             }
             var filepath = currentTextEditor.document.uri.fsPath;
             var folderpath = yield this._helper.getFolderFromFilePath(filepath);
-            console.log(folderpath);
             var folderpathAbove = folderpath.substr(0, folderpath.lastIndexOf("/")); //Go one Folder above to the root oh the project
-            console.log(folderpathAbove);
             path = folderpathAbove;
-            //	var cmd = `matuc_js mk ${path}`;
             var cmd = `matuc_js mk \"${path}\"`;
             currentTextEditor.document.save();
             exec(cmd, (error, stdout, stderr) => {
@@ -283,7 +285,6 @@ class MatucCommands {
                 vscode.window.showErrorMessage(this._language.get("linuxNotSupportedYet"));
                 return false;
             }
-            //var cmd = 'matuc_js conf show';
             return new Promise(function (resolve, reject) {
                 console.log("Execute");
                 exec(cmd, { cwd: path }, (error, stdout, stderr) => {
@@ -322,14 +323,13 @@ class MatucCommands {
                         return reject(error);
                     }
                     resolve({ out: stdout, err: stderr });
-                    // console.log(`stdout: ${stdout}`);
-                    // console.log(`stderr: ${stderr}`);
                 });
             });
         });
     }
     /**
      * Generates and returns a os locale
+     * @returns the OS-Locale string
      */
     getOsLocale() {
         var env = Object.create(process.env);
@@ -358,7 +358,6 @@ class MatucCommands {
             if (profile === 'visually') {
                 cmd += ` -p vid`;
             }
-            //cmd += `matuc_js conv ${path}`;
             console.log("matuc conv command " + cmd);
             exec(cmd, { env: this.getOsLocale() }, (error, stdout, stderr) => {
                 if (error) {
@@ -400,6 +399,7 @@ class MatucCommands {
     }
     /**
     * Checks and saves changes in the current opened file invoking mistkerl, executes `matuc_js mk`
+    @param currentTextEditor optional. The Text Editor to work with.
     */
     checkAndSaveChanges(currentTextEditor) {
         return __awaiter(this, void 0, void 0, function* () {

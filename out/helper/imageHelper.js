@@ -1,4 +1,7 @@
 "use strict";
+/**
+ * @author  Lucas Vogel
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -12,9 +15,11 @@ const vscode = require("vscode");
 const path = require("path");
 const fs = require("fs");
 const languages_1 = require("../languages");
+const settingsHelper_1 = require("./settingsHelper");
 class ImageHelper {
     constructor() {
         this._language = new languages_1.default;
+        this._settings = new settingsHelper_1.default;
     }
     /**
      * Gets the name of the default picture folder
@@ -22,9 +27,12 @@ class ImageHelper {
      */
     getPictureFolderName() {
         return __awaiter(this, void 0, void 0, function* () {
-            return "bilder";
-            //return this._language.get("picuteFolderName");
-            //TODO: Add an alternative with config
+            var folderName = yield this._settings.get("pictureFolderName");
+            var folderString = folderName;
+            if (folderString === "") {
+                folderString = "pictures";
+            }
+            return folderString;
         });
     }
     /**
@@ -36,7 +44,6 @@ class ImageHelper {
     addImageDescriptionToFile(fileBasePath, fileName, content) {
         var thisRelPath = path.join(fileBasePath, fileName);
         var thisPath = path.resolve(thisRelPath); //For cross Platform compatibility, makes absolute path from possibly relative one
-        console.log(thisPath);
         content = "\n" + content; //Adding a Line Break at the beginning
         var fd = fs.openSync(thisPath, 'a+'); //Open in "add"-Mode
         fs.write(fd, content, (error) => {
@@ -88,7 +95,6 @@ class ImageHelper {
     getAllPicturesInFolder(pathToFolder, folder) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-                //var currentFolder = path;//await this.getCurrentDocumentFolderPath();
                 var folderPath = path.join(pathToFolder.toString(), folder);
                 var allFilesArray = [];
                 if (fs.existsSync(folderPath)) {

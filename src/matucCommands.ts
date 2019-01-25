@@ -1,18 +1,22 @@
+/**
+ * @author Jens Voegler
+ * @author Lucas Vogel
+ * This Code was written under the supervision of Jens Voegler and ported to VSCode from Lucas Vogel with minimal changes.
+ */
 import * as vscode from 'vscode';
-// import * as path from 'path';
-// import * as fs from 'fs';
 import Language from './languages';
 import Helper from './helper/helper';
 const osLocale = require('os-locale');
 const path = require('path');
-
 const exec = require('child_process').exec;
 
-
+/**
+ * This Class contains all Functions regarding matuc
+ */
 export default class MatucCommands {
-
 	private _language: Language;
 	private _helper: Helper;
+
 	constructor() {
 		this._language = new Language;
 		this._helper = new Helper;
@@ -22,9 +26,9 @@ export default class MatucCommands {
 	 * Check if Matuc is installed on the device.
 	 * @returns true if installed, otherwise false.
 	 */
-	public async matucIsInstalled () {
+	public async matucIsInstalled() {
 		var result = await this.getMatucVersion();
-		if(result !== false){
+		if (result !== false) {
 			return true;
 		} else {
 			return false;
@@ -35,37 +39,36 @@ export default class MatucCommands {
 	 * Get the installed Version of Matuc.
 	 * @returns version of Matuc if installed, otherwise false.
 	 */
-	public async getMatucVersion (){
+	public async getMatucVersion() {
 		var cmd = "";
 		cmd += `matuc_js version`;
-		
 		return new Promise(function (resolve, reject) {
-			try{
-			exec(cmd, (error, stdout, stderr) => {
-				if (error) {
-					resolve(false);
-				}
-				if(stdout.includes("result") && stdout.includes("version")){
-					var fragment:JSON;
-					try {
-						fragment = JSON.parse(stdout);
-					} catch (e){
+			try {
+				exec(cmd, (error, stdout, stderr) => {
+					if (error) {
 						resolve(false);
 					}
-					let result = fragment["result"]["version"];
-					if(result !== undefined && result !== null){
-						resolve(result);
+					if (stdout.includes("result") && stdout.includes("version")) {
+						var fragment: JSON;
+						try {
+							fragment = JSON.parse(stdout);
+						} catch (e) {
+							resolve(false);
+						}
+						let result = fragment["result"]["version"];
+						if (result !== undefined && result !== null) {
+							resolve(result);
+						}
+					} else {
+						resolve(false);
 					}
-				} else {
-					resolve(false);
-				}
-			});
-		} catch (e){
-			resolve(false);
-		}
+				});
+			} catch (e) {
+				resolve(false);
+			}
 		});
 	}
-	
+
 
     /**
      * Generats an image description using matuc.
@@ -79,18 +82,12 @@ export default class MatucCommands {
 		var cmd = "";
 		if (desc.includes("\n")) {
 			outsourced = true;
-			desc = desc.replace(/\n/g,'\\n'); //TODO: Check if neccessary
+			desc = desc.replace(/\n/g, '\\n'); //TODO: Check if neccessary
 		}
-
-		//var pathToImg = relPath;
-		//var currentPath = currentPath;		
 		cmd += `matuc_js imgdsc -d \"${desc}\" `;
 		cmd = outsourced ? cmd + '-o ' : cmd;
 		cmd = title ? cmd + '-t "' + title + '" ' : cmd;
 		cmd += `${relPathToImg}`;
-
-
-
 		console.log(cmd);
 		return new Promise(function (resolve, reject) {
 			exec(cmd, { cwd: currentPath }, (error, stdout, stderr) => {
@@ -110,53 +107,41 @@ export default class MatucCommands {
 	 * @param selection optional. the selection, only the start-line of the selection will be handled
 	 * @param currentTextEditor optional. The TextEditor to work with.
 	 */
-	public async addPageNumber (selection?:vscode.Selection,currentTextEditor?:vscode.TextEditor){
-		
-        if (currentTextEditor === undefined) {
-            currentTextEditor = await this._helper.getCurrentTextEditor();
-        }
-        if (selection === undefined) {
-            selection = this._helper.getWordsSelection(currentTextEditor);
+	public async addPageNumber(selection?: vscode.Selection, currentTextEditor?: vscode.TextEditor) {
+		if (currentTextEditor === undefined) {
+			currentTextEditor = await this._helper.getCurrentTextEditor();
+		}
+		if (selection === undefined) {
+			selection = this._helper.getWordsSelection(currentTextEditor);
 		}
 		var line = selection.start.line;
 		var thisPath = currentTextEditor.document.uri.path;
-
-
 		var cmd = `matuc_js addpnum -f ${thisPath} ${line}`;
 		return new Promise(function (resolve, reject) {
 			try {
 				exec(cmd, (error, stdout, stderr) => {
 					if (error) {
 						console.error(`exec error: ${error}`);
-						try{
-						let fragment = JSON.parse(stdout);
-						reject(fragment.error + "\n" + fragment.usage);
-						} catch(e){
+						try {
+							let fragment = JSON.parse(stdout);
+							reject(fragment.error + "\n" + fragment.usage);
+						} catch (e) {
 							resolve(false);
 						}
 					}
-					try{
-					let fragment = JSON.parse(stdout);
-					resolve(fragment.result.pagenumber);
-					} catch(e){
+					try {
+						let fragment = JSON.parse(stdout);
+						resolve(fragment.result.pagenumber);
+					} catch (e) {
 						resolve(false);
 					}
 				});
-			} catch (e){
+			} catch (e) {
 				resolve(false);
 			}
 		});
 	}
 
-	/**
-	 * Depending on convertAll a single will be converted of or the the whole project. 
-	 * @param path 
-	 * @param convertAll
-	 */
-	public async convertHtml(path: string, convertAll: boolean) {
-		// see matuc-commands.js line 283
-		// and matuc-commands.js line 349
-	}
 
 	/**
 	 * Initializes a Metadata-File
@@ -165,22 +150,34 @@ export default class MatucCommands {
 	public async initMetaData(path: string) {
 		// see matuc-commands.js line 183
 		return new Promise(function (resolve, reject) {
-			exec('matuc conf init', {cwd: path}, (error, stdout, stderr) => {
+			exec('matuc conf init', { cwd: path }, (error, stdout, stderr) => {
 				if (error) {
 					console.error(`exec error: ${error}`);
 					return reject(error);
 				}
-				resolve({out: stdout, err: stderr});
-				// console.log(`stdout: ${stdout}`);
-				// console.log(`stderr: ${stderr}`);
+				resolve({ out: stdout, err: stderr });
 			});
 		});
 	}
 
-	public async updateMetaData(alternatePrefix, outputFormat, editor:string, institution:string,
-		title:string, language:string, source:string, sourceAuthor:string, semYear, tocDepth:number, workingGroup, path) {
+	/**
+	 * Updates the Metadata
+	 * @param alternatePrefix if the Checkbox "Appendix Prefix" is checked. the type is not clear but most propably a boolean.
+	 * @param outputFormat aparently not used and not documented in the original matuc code of Atom.
+	 * @param editor Author of the Project
+	 * @param institution Institution where this is written
+	 * @param title Title of the Project
+	 * @param language Language the Project is written in
+	 * @param source Material source that is used
+	 * @param sourceAuthor Source Author that is used
+	 * @param semYear Semester this the project is written
+	 * @param tocDepth depth of the table of content
+	 * @param workingGroup Working Group of the Author
+	 * @param path Path to the Folder
+	 */
+	public async updateMetaData(alternatePrefix, outputFormat, editor: string, institution: string,
+		title: string, language: string, source: string, sourceAuthor: string, semYear, tocDepth: number, workingGroup: string, path: string) {
 		// multiple parameters are needed
-		//
 		var cmd;
 		cmd = 'matuc_js conf update ';
 		cmd = alternatePrefix ? cmd + '-a ' : cmd;
@@ -188,19 +185,19 @@ export default class MatucCommands {
 		cmd = institution ? cmd + '-i "' + institution + '" ' : cmd;
 		cmd = title ? cmd + '-l "' + title + '" ' : cmd;
 		cmd = language ? cmd + '-L "' + language + '" ' : cmd;
-		cmd = source  ? cmd + '-s "' + source + '" ' : cmd;
-		cmd = sourceAuthor  ? cmd + '-A "' + sourceAuthor + '" ' : cmd;
+		cmd = source ? cmd + '-s "' + source + '" ' : cmd;
+		cmd = sourceAuthor ? cmd + '-A "' + sourceAuthor + '" ' : cmd;
 		cmd = semYear ? cmd + '-S "' + semYear + '" ' : cmd;
-		cmd = tocDepth  ? cmd + '--toc-depth ' + tocDepth + ' ' : cmd;
+		cmd = tocDepth ? cmd + '--toc-depth ' + tocDepth + ' ' : cmd;
 		cmd = workingGroup ? cmd + '-w "' + workingGroup + '" ' : cmd;
 		console.log("cmd update " + cmd);
 		return new Promise(function (resolve, reject) {
-			exec(cmd, {cwd: path}, (error, stdout, stderr) => {
+			exec(cmd, { cwd: path }, (error, stdout, stderr) => {
 				if (error) {
 					console.error(`exec error: ${error}`);
 					return reject(error);
 				}
-				resolve({out: stdout, err: stderr});
+				resolve({ out: stdout, err: stderr });
 			});
 		});
 	}
@@ -208,17 +205,14 @@ export default class MatucCommands {
 	/**
 	* Checks all markdown files in the project folder invoking mistkerl and saves the currend opened file, executes `matuc_js mk`
 	*/
-	public async checkEntireProject(path: string, currentTextEditor?:vscode.TextEditor) {
-		if(currentTextEditor === undefined){
+	public async checkEntireProject(path: string, currentTextEditor?: vscode.TextEditor) {
+		if (currentTextEditor === undefined) {
 			currentTextEditor = await this._helper.getCurrentTextEditor();
 		}
 		var filepath = currentTextEditor.document.uri.fsPath;
 		var folderpath = await this._helper.getFolderFromFilePath(filepath);
-		console.log(folderpath);
 		var folderpathAbove = folderpath.substr(0, folderpath.lastIndexOf("/")); //Go one Folder above to the root oh the project
-		console.log(folderpathAbove);
 		var path = folderpathAbove;
-		//	var cmd = `matuc_js mk ${path}`;
 		var cmd = `matuc_js mk \"${path}\"`;
 		currentTextEditor.document.save();
 		exec(cmd, (error, stdout, stderr) => {
@@ -241,10 +235,10 @@ export default class MatucCommands {
 	 * @param pathToFile absolute path to the file
 	 */
 	public async checkIfFileIsWithinLecture(pathToFile) {
-		
+
 		var cmd;
 		cmd = `matuc_js iswithinlecture \"${pathToFile}\"`;
-		console.log("cmd checkIfFileIsWithinLecture : "+cmd);
+		console.log("cmd checkIfFileIsWithinLecture : " + cmd);
 		var isWithinLecture;
 		return new Promise(function (resolve, reject) {
 			exec(cmd, (error, stdout, stderr) => {
@@ -258,27 +252,25 @@ export default class MatucCommands {
 		});
 	}
 
-
 	/**
 	 * Loads and show config, .lecture_meta_data.dcxml, of project.
 	 * @param path 
 	 */
-	public async showConfig(path:string) {
+	public async showConfig(path: string) {
 		var cmd;
-		if(process.platform === 'win32'){
-				cmd = `matuc_js conf show`;
+		if (process.platform === 'win32') {
+			cmd = `matuc_js conf show`;
 		}
-		if(process.platform === 'darwin'){
+		if (process.platform === 'darwin') {
 			cmd = 'matuc_js conf show ';
 		}
-		if(process.platform === 'linux'){
+		if (process.platform === 'linux') {
 			vscode.window.showErrorMessage(this._language.get("linuxNotSupportedYet"));
 			return false;
 		}
-		//var cmd = 'matuc_js conf show';
 		return new Promise(function (resolve, reject) {
 			console.log("Execute");
-			exec(cmd, {cwd: path}, (error, stdout, stderr) => {
+			exec(cmd, { cwd: path }, (error, stdout, stderr) => {
 				if (error) {
 					console.error(`exec error: ${error}`);
 					vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
@@ -298,38 +290,36 @@ export default class MatucCommands {
 	* @param {string} language Sets the language for the matuc project
 	* @param {string} path Sets the path where the project shall be stored
 	*/
-	public async newProject(countOfAppendixChapters, countOfChapters, preface, language, path) {
-
+	public async newProject(countOfAppendixChapters: number, countOfChapters: number, preface: boolean, language: string, path: string) {
 		var cmd = 'matuc new ';
 		cmd = countOfAppendixChapters ? cmd + '-a ' + countOfAppendixChapters + ' ' : cmd;
 		cmd = countOfChapters !== null ? cmd + '-c ' + countOfChapters + ' ' : cmd;
 		cmd = preface === true ? cmd + '-p ' : cmd;
 		cmd = language !== null ? cmd + '-l ' + language + ' ' : cmd;
 		cmd = path !== null ? cmd + "\"" + path + "\"" : cmd + '.';
-		console.log("command is  " +cmd);
+		console.log("command is  " + cmd);
 		return new Promise(function (resolve, reject) {
 			exec(cmd, (error, stdout, stderr) => {
 				if (error) {
 					console.error(`exec error: ${error}`);
 					return reject(error);
 				}
-				resolve({out: stdout, err: stderr});
-				// console.log(`stdout: ${stdout}`);
-				// console.log(`stderr: ${stderr}`);
+				resolve({ out: stdout, err: stderr });
 			});
 		});
 	}
 
 	/**
 	 * Generates and returns a os locale
+	 * @returns the OS-Locale string
 	 */
-	getOsLocale(){
-		var env = Object.create( process.env );
+	getOsLocale() {
+		var env = Object.create(process.env);
 		var lang = "de_De";
-		osLocale().then(locale => { 
+		osLocale().then(locale => {
 			lang = locale;
 		});
-		env.LANG=`${lang}.UTF-8`; // form should be "de_DE.UTF-8";
+		env.LANG = `${lang}.UTF-8`; // form should be "de_DE.UTF-8";
 		return env;
 	}
 
@@ -338,30 +328,28 @@ export default class MatucCommands {
 	 * @param profile the given profile, "visually" for the visually impaied or "blind" for the blind
 	 * @param currentTextEditor optional. The current Text editor to work with.
 	 */
-	public async convertFile(profile:string,currentTextEditor?:vscode.TextEditor) {
-		if(currentTextEditor === undefined){
+	public async convertFile(profile: string, currentTextEditor?: vscode.TextEditor) {
+		if (currentTextEditor === undefined) {
 			currentTextEditor = await this._helper.getCurrentTextEditor();
 		}
 		var path = currentTextEditor.document.uri.fsPath;
-		if(await currentTextEditor.document.isDirty) {
+		if (await currentTextEditor.document.isDirty) {
 			await currentTextEditor.document.save();
 		}
 		var cmd = `matuc_js conv "${path}"`;
-		if (profile==='visually'){
+		if (profile === 'visually') {
 			cmd += ` -p vid`;
 		}
-		//cmd += `matuc_js conv ${path}`;
-		console.log("matuc conv command " +cmd);
-		exec(cmd, {env: this.getOsLocale()}, ( error, stdout, stderr) => {
+		console.log("matuc conv command " + cmd);
+		exec(cmd, { env: this.getOsLocale() }, (error, stdout, stderr) => {
 			if (error) {
-
 				let fragment = JSON.parse(stdout);
 				let message = "";
-				if(fragment.error.hasOwnProperty('line')){
-						message += "\n\n\n" + this._language.get("checkLine") + fragment.error.line;
+				if (fragment.error.hasOwnProperty('line')) {
+					message += "\n\n\n" + this._language.get("checkLine") + fragment.error.line;
 				}
-				if(fragment.error.hasOwnProperty('path')){
-					message += "\n\n" + this._language.get("checkFile") +" " +fragment.error.path;
+				if (fragment.error.hasOwnProperty('path')) {
+					message += "\n\n" + this._language.get("checkFile") + " " + fragment.error.path;
 				}
 				vscode.window.showErrorMessage(this._language.get("unExpectedMatucError") + message);
 				console.error(`exec error: ${error}`);
@@ -370,42 +358,42 @@ export default class MatucCommands {
 			console.log(`stdout: ${stdout}`);
 			console.log(`stderr: ${stderr}`);
 			//load generate HTML-file
-
 			this.loadGeneratedHtml(path);
 		});
 
 	}
-		// add quotes to path if necessary and loads generate Html afterthat
-		loadGeneratedHtml(path){
-			let cmd = '';
-			if(process.platform === 'win32'){
-				cmd =`\"${path.replace("md", "html")}\"`;
-			}else if(process.platform === 'darwin'){
-				cmd =`open ./\"${path.replace("md", "html")}\"`;
-			}
-			exec(cmd, (error, stdout, stderr) => {
-					if (error) {
-						console.error(`load generate html`);
-						console.error(`exec error: ${error}`);
-						return;
-					}
-			});
+	// add quotes to path if necessary and loads generate Html afterthat
+	loadGeneratedHtml(path) {
+		let cmd = '';
+		if (process.platform === 'win32') {
+			cmd = `\"${path.replace("md", "html")}\"`;
+		} else if (process.platform === 'darwin') {
+			cmd = `open ./\"${path.replace("md", "html")}\"`;
 		}
+		exec(cmd, (error, stdout, stderr) => {
+			if (error) {
+				console.error(`load generate html`);
+				console.error(`exec error: ${error}`);
+				return;
+			}
+		});
+	}
 
 
 	/**
 	* Checks and saves changes in the current opened file invoking mistkerl, executes `matuc_js mk`
+	@param currentTextEditor optional. The Text Editor to work with.
 	*/
-	public async checkAndSaveChanges(currentTextEditor?:vscode.TextEditor) {
+	public async checkAndSaveChanges(currentTextEditor?: vscode.TextEditor) {
 
-		if(currentTextEditor === undefined){
+		if (currentTextEditor === undefined) {
 			currentTextEditor = await this._helper.getCurrentTextEditor();
 		}
 		var path = currentTextEditor.document.uri.fsPath;
-		if(await currentTextEditor.document.isDirty) {
+		if (await currentTextEditor.document.isDirty) {
 			await currentTextEditor.document.save();
 		}
-		var	cmd = `matuc_js mk \"${path}\" `;
+		var cmd = `matuc_js mk \"${path}\" `;
 		exec(cmd, (error, stdout, stderr) => {
 			if (error) {
 				console.error(`exec error: ${error}`);
@@ -420,67 +408,61 @@ export default class MatucCommands {
 			console.log(`stdout: ${stdout}`);
 			console.log(`stderr: ${stderr}`);
 		});
-		
 	}
+
 	/**
 	 * Converts a whole project.
 	 * @param profile the given profile, "visually" for the visually impaied or "blind" for the blind
 	 * @param currentTextEditor optional. The current Text editor to work with.
 	 */
-	public async convertEntireProject(profile:string,currentTextEditor?:vscode.TextEditor) {
-		if(currentTextEditor === undefined){
+	public async convertEntireProject(profile: string, currentTextEditor?: vscode.TextEditor) {
+		if (currentTextEditor === undefined) {
 			currentTextEditor = await this._helper.getCurrentTextEditor();
 		}
-
-
 		currentTextEditor.document.save();
 		var path = currentTextEditor.document.uri.fsPath;
-
 		var cmd;
-		if(process.platform === 'win32'){
+		if (process.platform === 'win32') {
 			cmd = 'matuc_js master';
 			cmd += ` \"${path}\\..\"`;
-		}else{
+		} else {
 			// OS X and Linux
 			cmd = `matuc_js master ${path}/..`;
 		}
-		if(profile === 'visually'){
+		if (profile === 'visually') {
 			cmd += ` -p vid`;
 		}
 		console.log(cmd);
-		exec(cmd, {env: this.getOsLocale(), cwd: path}, (error, stdout, stderr) => {
+		exec(cmd, { env: this.getOsLocale(), cwd: path }, (error, stdout, stderr) => {
 			if (error) {
 				let fragment = JSON.parse(stdout);
 				let message = "";
-				if(fragment.error.message.startsWith("No configuration")){
+				if (fragment.error.message.startsWith("No configuration")) {
 					message = this._language.get("noConfiguration");
-				}else{
+				} else {
 					message = fragment.error.message;
-					if(fragment.error.hasOwnProperty('path')){
-						message += "\n\n\n" + this._language.get("checkFile") +" " +fragment.error.path;
+					if (fragment.error.hasOwnProperty('path')) {
+						message += "\n\n\n" + this._language.get("checkFile") + " " + fragment.error.path;
 					}
 				}
-
-				vscode.window.showErrorMessage(this._language.get("unExpectedMatucError")+ message);
+				vscode.window.showErrorMessage(this._language.get("unExpectedMatucError") + message);
 				console.error(`exec error: ${error}`);
-
 				return;
-			}else{
+			} else {
 				this.loadGeneratedHtml(path);
 			}
 			console.log(`stdout: ${stdout}`);
 			console.log(`stderr: ${stderr}`);
 		});
 		//open file
-
 	}
 
 	/**
 	 * Fixes the page numbering of a given file
 	 * @param currentTextEditor optional. Current Text Editor to work with.
 	 */
-	public async fixpnumInPlace(currentTextEditor?:vscode.TextEditor){
-		if(currentTextEditor === undefined){
+	public async fixpnumInPlace(currentTextEditor?: vscode.TextEditor) {
+		if (currentTextEditor === undefined) {
 			currentTextEditor = await this._helper.getCurrentTextEditor();
 		}
 		currentTextEditor.document.save();
@@ -491,12 +473,9 @@ export default class MatucCommands {
 				if (error) {
 					return reject(error);
 				}
-				resolve({out: "fixpnums inplace", err: stderr});
+				resolve({ out: "fixpnums inplace", err: stderr });
 			});
 		});
 	}
-
-
-
 }
 

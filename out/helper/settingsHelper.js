@@ -1,4 +1,7 @@
 "use strict";
+/**
+ * @author  Lucas Vogel
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -13,35 +16,56 @@ const helper_1 = require("./helper");
 const languages_1 = require("../languages");
 const os = require("os");
 const path = require("path");
+/**
+ * A Helper to get and set the Settings of this Extension.
+ * It contains wrapper to get and set, as well as a setup to
+ * set default parameters at first startup, like the git Path.
+ */
 class SettingsHelper {
     constructor() {
         this._helper = new helper_1.default;
         this._language = new languages_1.default;
     }
+    /**
+     * This setup will be executed at every launch of the extension. It just checks if the default parameters are set,
+     * and if there are not set, sets them.
+     */
     setup() {
         return __awaiter(this, void 0, void 0, function* () {
             var gitLocalPath = yield this.get("gitLocalPath");
             if (gitLocalPath === "") {
                 this.setAutoGitLocalPath();
             }
-            // console.log(await this.get("gitLocalPath"));
-            //var folders = await vscode.workspace.workspaceFolders;
-            //console.log(folders);
-            //agsbs.update(settingsIdentifier,value,true);
         });
     }
+    /**
+     * Get a Settings Value
+     * @param settingIdentifier The settings Identifier. This is only the last part of the identifier, after the point. So for "agsbs.gitLocalPath" it is just "gitLocalPath".
+     * @returns value of the Setting.
+     */
     get(settingIdentifier) {
         return __awaiter(this, void 0, void 0, function* () {
             var result = yield vscode.workspace.getConfiguration('agsbs').get(settingIdentifier);
             return (result);
         });
     }
+    /**
+     * Updates a Value of the Settings. It will automatically set the global (User)-Setting, not the workspace setting.
+     * If you don't know the difference of these both than you dont have to care about it, thats why there is a wrapper.
+     * @param settingsIdentifier  The settings Identifier. This is only the last part of the identifier, after the point. So for "agsbs.gitLocalPath" it is just "gitLocalPath".
+     * @param value new value of the Setting
+     */
     update(settingsIdentifier, value) {
         return __awaiter(this, void 0, void 0, function* () {
             var agsbs = yield vscode.workspace.getConfiguration('agsbs');
             agsbs.update(settingsIdentifier, value, true);
         });
     }
+    /**
+     * If it is not set, make a folder for the agsbs git module to push repos into and update the settings to the path.
+     * This Function is sp long because it checks different possibilities as it tries to make a agsbs folder in the Documents
+     * folder of the user. If it fails, it will just create a folder in the home directory.
+     */
     setAutoGitLocalPath() {
         return __awaiter(this, void 0, void 0, function* () {
             var homedir = os.homedir();

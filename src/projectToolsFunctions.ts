@@ -1,3 +1,6 @@
+/**
+ * @author  Lucas Vogel
+ */
 import * as vscode from 'vscode';
 import Helper from './helper/helper';
 import Language from './languages';
@@ -6,10 +9,12 @@ import Taskbar from './taskbar';
 import MatucCommands from './matucCommands';
 import ProjectHelper from './helper/projectHelper';
 import ProjectToolsFunctionSnippets from './snippets/projectToolsFunctionsSnippets';
-import * as path from 'path';
 import SettingsHelper from './helper/settingsHelper';
 import GitCommands from './gitCommands';
 
+/**
+ * This Class contains all functions of the project tools bar in the Taskbar. Here all Buttons are registered.
+ */
 export default class ProjectToolsFunctions {
     private _helper: Helper;
     private _language: Language;
@@ -33,28 +38,27 @@ export default class ProjectToolsFunctions {
         this._git = new GitCommands;
     }
 
+    /**
+     * Registering all Buttons.
+     */
     public setup = async () => {
         var gitIsEnabled = await this._settings.get("enableGitUseage");
-        this._taskbarCallback.addProjectTool("new_project.svg", this._language.get("newProject"), this.createNewProject, this._language.get("projectTitle"));
-        this._taskbarCallback.addProjectTool("edit.svg", this._language.get("editProject"), this.editProjectData, this._language.get("projectTitle"));
+        this._taskbarCallback.addProjectTool("new_project.svg", this._language.get("newProject"), this.createNewProject, this._language.get("projectTitle"), "agsbs.newProject");
+        this._taskbarCallback.addProjectTool("edit.svg", this._language.get("editProject"), this.editProjectData, this._language.get("projectTitle"), "agsbs.edit");
         if (gitIsEnabled === true) {
-            this._taskbarCallback.addProjectTool("clone.svg", this._language.get("cloneExistingRepo"), this.cloneRepo, this._language.get("projectTitle"));
+            this._taskbarCallback.addProjectTool("clone.svg", this._language.get("cloneExistingRepo"), this.cloneRepo, this._language.get("projectTitle"), "agsbs.clone");
         }
-
         this._taskbarCallback.addProjectTool("save.svg", this._language.get("saveChanges"), this.saveChanges, this._language.get("documentTitle"));
-        this._taskbarCallback.addProjectTool("new_file.svg", this._language.get("newFile"), this.createNewFile, this._language.get("documentTitle"));
+        this._taskbarCallback.addProjectTool("new_file.svg", this._language.get("newFile"), this.createNewFile, this._language.get("documentTitle"), "agsbs.newFile");
         this._taskbarCallback.addProjectTool("undo.svg", this._language.get("undo"), this.undo, this._language.get("documentTitle"));
         this._taskbarCallback.addProjectTool("redo.svg", this._language.get("redo"), this.redo, this._language.get("documentTitle"));
-        this._taskbarCallback.addProjectTool("preview.svg", this._language.get("preview"), this.showHTMLPreview, this._language.get("documentTitle"));
-        this._taskbarCallback.addProjectTool("generate.svg", this._language.get("generateFile"), this.generateHTML, this._language.get("documentTitle"));
-        this._taskbarCallback.addProjectTool("create_all.svg", this._language.get("convertEntireProject"), this.generateHTMLForAllProjects, this._language.get("documentTitle"));
-
-        this._taskbarCallback.addProjectTool("check_all.svg", this._language.get("checkProject"), this.publish, this._language.get("publishTitle"));
-
+        this._taskbarCallback.addProjectTool("preview.svg", this._language.get("preview"), this.showHTMLPreview, this._language.get("documentTitle"), "agsbs.preview");
+        this._taskbarCallback.addProjectTool("generate.svg", this._language.get("generateFile"), this.generateHTML, this._language.get("documentTitle"), "agsbs.generateFile");
+        this._taskbarCallback.addProjectTool("create_all.svg", this._language.get("convertEntireProject"), this.generateHTMLForAllProjects, this._language.get("documentTitle"), "agsbs.convertEntireProject");
+        this._taskbarCallback.addProjectTool("check_all.svg", this._language.get("checkProject"), this.publish, this._language.get("publishTitle"), "agsbs.checkProject");
         if (gitIsEnabled === true) {
-            this._taskbarCallback.addProjectTool("commit.svg", this._language.get("commitChanges"), this.commitChanges, this._language.get("publishTitle"));
+            this._taskbarCallback.addProjectTool("commit.svg", this._language.get("commitChanges"), this.commitChanges, this._language.get("publishTitle"), "agsbs.commitChanges");
         }
-
     }
 
     /**
@@ -67,7 +71,6 @@ export default class ProjectToolsFunctions {
             return;
         }
         var optionsHTML = await this._projectHelper.getAllWorkspaceFoldersAsHTMLWithSpeciallyEscapedJSON();
-        //updateWorkspaceFolders
         var form = '';
         form += this._snippets.get("newProjectHTMLPart1");
         form += optionsHTML;
@@ -75,11 +78,11 @@ export default class ProjectToolsFunctions {
         var script = this._snippets.get("newProjectSCRIPT");
         this._sidebarCallback.addToSidebar(form, this._language.get("newProject"), this.createNewProjectSidebarCallback, this._language.get("insert"), "", script);
     }
+
     /**
      * Callback for creating a new project
      */
     public createNewProjectSidebarCallback = async (params) => {
-        //console.log(params);
         var path, chapterCount, appendixChapterCount, preface, projectLanguage, tableOfContents, title, editor, institution, sourceMaterial, sourceAuthor, depthOfTableOfContents;
         var pathDataObject = this._projectHelper.convertSpeciallyEscapedJSONToObject(params.folder.value);
         path = pathDataObject.uri;
@@ -113,10 +116,8 @@ export default class ProjectToolsFunctions {
             return;
         }
         vscode.window.showInformationMessage(this._language.get("createdProjectSuccessfully"));
-
-
-
     }
+
     /**
      * Lets you edit the Metadata of the current project
      */
@@ -129,15 +130,12 @@ export default class ProjectToolsFunctions {
         var currentEditor: vscode.TextEditor = await this._helper.getCurrentTextEditor();
         var folder: string = await this._helper.getFolderFromFilePath(currentEditor.document.uri.fsPath);
         var config: any = await this._matuc.showConfig(folder);
-        console.log(config, folder);
         if (config === false) {
             vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
             return;
         }
         var form: string = this._projectHelper.getEditProjectHTMLForm(config, folder);
         this._sidebarCallback.addToSidebar(form, this._language.get("editProject"), this.editProjectDataSidebarCallback, this._language.get("updateEditedData"));
-
-
     }
 
     /**
@@ -167,7 +165,6 @@ export default class ProjectToolsFunctions {
         vscode.window.showInformationMessage(this._language.get("updateSuccessfull"));
     }
 
-
     /** 
      * Saves the changes made in the current file
      */
@@ -177,7 +174,6 @@ export default class ProjectToolsFunctions {
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 
-
     /**
      * creates a new file in the current Project
      */
@@ -185,9 +181,7 @@ export default class ProjectToolsFunctions {
         await this._helper.focusDocument(); //Puts focus back to the text editor
         await vscode.commands.executeCommand('workbench.action.files.newUntitledFile');
         await vscode.commands.executeCommand('workbench.action.files.save');
-
     }
-
 
     /**
      * Undoes the last step.
@@ -197,7 +191,6 @@ export default class ProjectToolsFunctions {
         await vscode.commands.executeCommand('undo');
     }
 
-
     /**
      * Redoes the last step
      */
@@ -205,7 +198,6 @@ export default class ProjectToolsFunctions {
         await this._helper.focusDocument(); //Puts focus back to the text editor
         await vscode.commands.executeCommand('redo');
     }
-
 
     /**
      * shows a HTML Preview if available.
@@ -226,7 +218,6 @@ export default class ProjectToolsFunctions {
         vscode.commands.executeCommand("markdown.showPreview");
     }
 
-
     /**
      * Generates the HTML for the current File
      */
@@ -243,13 +234,24 @@ export default class ProjectToolsFunctions {
             vscode.window.showErrorMessage(this._language.get("notInsideLecture"));
             return;
         }
-        var form = this._projectHelper.getConversionProfileHTML();
 
-        //TODO: autoselect last selection
-        this._sidebarCallback.addToSidebar(form, this._language.get("generateFile"), this.generateHTMLSidebarCallback, this._language.get("generate"));
+        var conversionProfilePromise: any = await this._settings.get("conversionProfile");
+        var conversionProfile: string = conversionProfilePromise;
+        if (conversionProfile !== "blind" && conversionProfile !== "visually impaired" && conversionProfile !== "visually") {
+            //Fallback if conversion profile cannot be resolved
+            var form = this._projectHelper.getConversionProfileHTML();
+            this._sidebarCallback.addToSidebar(form, this._language.get("generateFile"), this.generateHTMLSidebarCallback, this._language.get("generate"));
+        } else {
+            if (conversionProfile === "visually impaired") {
+                conversionProfile = "visually";
+            }
+            await this._matuc.checkAndSaveChanges();
+            await this._matuc.convertFile(conversionProfile);
+            this._helper.focusDocument(); //Puts focus back to the text editor
+        }
     }
     /**
-     * Callback for generating the HTML for the current File
+     * Callback for generating the HTML for the current File. Fallback if this is not set in the settings.
      */
     public generateHTMLSidebarCallback = async (params) => {
         var profile = params.conversionProfile.value;
@@ -275,15 +277,23 @@ export default class ProjectToolsFunctions {
             vscode.window.showErrorMessage(this._language.get("notInsideLecture"));
             return;
         }
-        var form = this._projectHelper.getConversionProfileHTML();
-
-        //TODO: autoselect last selection
-        this._sidebarCallback.addToSidebar(form, this._language.get("convertEntireProject"), this.generateHTMLForAllProjectsSidebarCallback, this._language.get("generate"));
-
+        var conversionProfilePromise: any = await this._settings.get("conversionProfile");
+        var conversionProfile: string = conversionProfilePromise;
+        if (conversionProfile !== "blind" && conversionProfile !== "visually impaired" && conversionProfile !== "visually") {
+            var form = this._projectHelper.getConversionProfileHTML();
+            this._sidebarCallback.addToSidebar(form, this._language.get("convertEntireProject"), this.generateHTMLForAllProjectsSidebarCallback, this._language.get("generate"));
+        } else {
+            if (conversionProfile === "visually impaired") {
+                conversionProfile = "visually";
+            }
+            await this._matuc.checkAndSaveChanges();
+            await this._matuc.convertEntireProject(conversionProfile);
+            this._helper.focusDocument(); //Puts focus back to the text editor
+        }
     }
 
     /**
-     * Callback for generating the HTML for all projects
+     * Callback for generating the HTML for all projects, as a fallback when the setting is manually selected every time 
      */
     public generateHTMLForAllProjectsSidebarCallback = async (params) => {
         var profile = params.conversionProfile.value;
@@ -292,7 +302,6 @@ export default class ProjectToolsFunctions {
         this._helper.focusDocument(); //Puts focus back to the text editor
 
     }
-
 
     /**
      * publishes the whole Project
@@ -310,8 +319,6 @@ export default class ProjectToolsFunctions {
             vscode.window.showErrorMessage(this._language.get("notInsideLecture"));
             return;
         }
-
-
         var form = `
         ${this._language.get("doYouWantToAutocorrect")}<br role="none">
         <div class="spacing" role="none"></div>
@@ -320,10 +327,12 @@ export default class ProjectToolsFunctions {
         <label for="autoCorrectPageNumbering">${this._language.get("autocorrectPagenumberingCheckbox")}</label>
         `;
         this._sidebarCallback.addToSidebar(form, this._language.get("pagenumbering"), this.publishSidebarCallback, this._language.get("generate"));
-
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 
+    /**
+     * Checks the whole project
+     */
     public publishSidebarCallback = async (params) => {
         if (params.autoCorrectPageNumbering.checked === true) {
             await this._matuc.fixpnumInPlace();
@@ -333,6 +342,9 @@ export default class ProjectToolsFunctions {
         this._matuc.checkEntireProject(filePath);
     }
 
+    /**
+     * Adds Form to sidebar to clone a project
+     */
     public cloneRepo = async () => {
         var gitIsEnabled = await this._settings.get("enableGitUseage");
         if (gitIsEnabled === false) {
@@ -349,12 +361,18 @@ export default class ProjectToolsFunctions {
         this._sidebarCallback.addToSidebar(form, this._language.get("cloneExistingRepo"), this.cloneRepoSidebarCallback, this._language.get("clone"));
     }
 
+    /**
+     * clones a project
+     */
     public cloneRepoSidebarCallback = async (params) => {
         var userName = params.gitUser.value;
         var repoName = params.repoName.value;
         this._git.clone(userName, repoName);
     }
 
+    /**
+     * Adds commt changes dialogue to the sidebar
+     */
     public commitChanges = async () => {
         var gitIsEnabled = await this._settings.get("enableGitUseage");
         if (gitIsEnabled === false) {
@@ -369,6 +387,9 @@ export default class ProjectToolsFunctions {
         this._sidebarCallback.addToSidebar(form, this._language.get("commitChanges"), this.commitChangesSidebarCallback, this._language.get("commit"));
     }
 
+    /**
+     * commits the changes, and pushes them.
+     */
     public commitChangesSidebarCallback = async (params) => {
         var commitMessage = params.commitChanges.value;
         var currentTexteditor = await this._helper.getCurrentTextEditor();

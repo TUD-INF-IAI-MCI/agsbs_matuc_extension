@@ -1,3 +1,7 @@
+/**
+ * @author  Lucas Vogel
+ */
+
 import * as vscode from 'vscode';
 import Language from '../languages';
 import Helper from './helper';
@@ -5,16 +9,14 @@ import InsertHelper from './insertHelper';
 
 
 export default class HeadlineHelper {
-
     private _language: Language;
     private _helper: Helper;
-    private _insertHelper:InsertHelper;
+    private _insertHelper: InsertHelper;
     constructor() {
         this._language = new Language;
         this._helper = new Helper;
         this._insertHelper = new InsertHelper;
     }
-
 
     /**
      * sets a specific headline grade at the current line. This is a abstraction of setHeadlineAtLine()
@@ -23,7 +25,6 @@ export default class HeadlineHelper {
     public setSpecificHeadline = async (number: number) => {
         var currentTextEditor = await this._helper.getCurrentTextEditor();
         var selection = await this._helper.getWordsSelection(currentTextEditor);
-
         this.setHeadlineAtLine(number, selection.start.line);
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
@@ -52,9 +53,7 @@ export default class HeadlineHelper {
         var result = thisLine.match(headlineRegex);
         var newHeadlineMarkerString: string = new Array(headlineGrade + 1).join("#") + " ";
         if (result !== null && result !== undefined) {
-
             var resultString: string = result[0];
-
             var startPosition = new vscode.Position(line, 0);
             var endPosition = new vscode.Position(line, resultString.length);
             var range = new vscode.Range(startPosition, endPosition);
@@ -69,7 +68,6 @@ export default class HeadlineHelper {
         else {
             this._helper.insertStringAtStartOfLine(newHeadlineMarkerString);
         }
-
     }
 
     /**
@@ -85,7 +83,6 @@ export default class HeadlineHelper {
         if (selection === undefined) {
             selection = this._helper.getWordsSelection(currentTextEditor);
         }
-
         var startLineNumber: number = selection.start.line;
         for (var i = startLineNumber; i >= 0; i--) { //Go upwards from the current line
             var currentLineText = await currentTextEditor.document.lineAt(i).text;
@@ -100,21 +97,12 @@ export default class HeadlineHelper {
                 } else {
                     return resultText;
                 }
-
             }
             var newPageIdentifier = this._insertHelper.getNewPageIdentifier();
-            if (currentLineText.startsWith(newPageIdentifier)){
-                //console.log("new Page found");
+            if (currentLineText.startsWith(newPageIdentifier)) {
                 return "## ";
             }
-
         }
-
-        //console.log("not Found");
         return "# ";
-
-
     }
-
-
 }

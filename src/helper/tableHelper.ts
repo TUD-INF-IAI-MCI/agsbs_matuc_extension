@@ -1,24 +1,56 @@
+/**
+ * @author  Lucas Vogel
+ */
+
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import Language from '../languages';
 import Helper from './helper';
 import * as Papa from 'papaparse';
-import { start } from 'repl';
 import SettingsHelper from './settingsHelper';
 
+/**
+ * A Helper for all the table functions.
+ */
 export default class TableHelper {
     private _language: Language;
     private _helper: Helper;
     public tableStartMarker: string;
     public tableEndMarker: string;
-    private _settings :SettingsHelper;
+    private _settings: SettingsHelper;
     constructor() {
         this._language = new Language;
         this._helper = new Helper;
         this._settings = new SettingsHelper;
-        this.tableStartMarker = "TABLE START TYPE";
-        this.tableEndMarker = "TABLE END";
+        this.tableStartMarker = "TABLE START TYPE"; //Marker to identify the start of a table
+        this.tableEndMarker = "TABLE END"; //Marker to identify the end of a table
+    }
+
+
+    /**
+     * Gets the name of the default table folder
+     * @returns String of the picture folder
+     */
+    public async getTableFolderName() {
+        var folderName: any = await this._settings.get("tableFolderName");
+        var folderString: string = folderName;
+        if (folderString === "") {
+            folderString = "Pictures";
+        }
+        return folderString;
+    }
+
+    /**
+     * @returns the name of the Folder where the generated tables are
+     */
+    public async getGeneratedTablesFolderName() {
+        var folderName: any = await this._settings.get("generatedTableFolderName");
+        var folderString: string = folderName;
+        if (folderString === "") {
+            folderString = "generatedTables";
+        }
+        return folderString;
     }
 
     /**
@@ -96,9 +128,13 @@ export default class TableHelper {
                 }
 
             }
-
-
-            returnString = "<!-- " + this.tableStartMarker + " " + tableTypeName + " " + hasHeaderString + "" + extraTableStartText + " -->\n\n" + returnString + "\n<!-- " + tableTypeName + " " + this.tableEndMarker + " -->";
+            returnString = "<!-- " + this.tableStartMarker + " " +
+                tableTypeName + " " +
+                hasHeaderString + "" +
+                extraTableStartText + " -->\n\n" +
+                returnString + "\n<!-- " +
+                tableTypeName + " " +
+                this.tableEndMarker + " -->";
             return returnString;
 
         }
@@ -142,7 +178,7 @@ export default class TableHelper {
                 {
                     delimiter: delimiter,
                     header: header,
-                }); //TODO: change delimiter to an optional
+                });
             resolve(result);
         });
     }
@@ -163,7 +199,8 @@ export default class TableHelper {
             if (verticalChar === null) {
                 verticalChar = ""; //fallback
             }
-            if (verticalChar !== "  ") { //using simple tables, the first blank spaces are not added, just while using the other ones
+            if (verticalChar !== "  ") {
+                //using simple tables, the first blank spaces are not added, just while using the other ones
                 returnString += verticalChar;
             }
             for (var j = 0; j < row.length; j++) {
@@ -213,7 +250,6 @@ export default class TableHelper {
                 maxRowLength = stringParts.length; //Max Rows
             }
         }
-
         for (var rowNumber = 0; rowNumber < maxRowLength; rowNumber++) {
             for (var colNumber = 0; colNumber < maxColLength; colNumber++) {
                 thisCell = returnArray[rowNumber][colNumber];
@@ -222,7 +258,6 @@ export default class TableHelper {
                 }
             }
         }
-
         return (returnArray);
     }
 
@@ -288,12 +323,12 @@ export default class TableHelper {
     }
 
     /**
- * Gets all tables in a folder relative to the currently open file
- * @param path path to the folder
- * @param folder optional. the name of the folder, for example 'tables'
- * @returns Array of objects of files. The objects have the structure 
- * {fileName:'tabelle.csv', folderPath:'/Users/.../dir/tabellen', completePath:'/Users/.../dir/tabellen/tabelle.csv', relativePath:'./tabellen/tabelle.csv'}
- */
+     * Gets all tables in a folder relative to the currently open file
+     * @param path path to the folder
+     * @param folder optional. the name of the folder, for example 'tables'
+     * @returns Array of objects of files. The objects have the structure 
+     * {fileName:'tabelle.csv', folderPath:'/Users/.../dir/tabellen', completePath:'/Users/.../dir/tabellen/tabelle.csv', relativePath:'./tabellen/tabelle.csv'}
+     */
     public async getAllTablesInFolder(pathToFolder: any, folder?: string) {
 
         return new Promise(async (resolve, reject) => {
@@ -312,7 +347,6 @@ export default class TableHelper {
                             allFilesArray.push(newFileObject);
                         }
                     });
-
                     if (err) {
                         vscode.window.showErrorMessage(this._language.get("error"));
                     }
@@ -321,27 +355,19 @@ export default class TableHelper {
                     }
                     resolve(allFilesArray);
                 });
-
             } else {
                 vscode.window.showErrorMessage(this._language.get('thereAreNoTableInFolder') + folderPath);
                 //If there is no picture folder
             }
         });
     }
-    /**
- * Gets the name of the default table folder
- * @returns String of the picture folder
- */
-    public async getTableFolderName() {
-        return "tabellen";
-        //TODO: Add an alternative with config
-    }
+
 
     /**
- * Checks if the given string of a file name is a file extension of a table
- * @param filename string of the file name
- * @returns true if the file is a table, otherwise false
- */
+     * Checks if the given string of a file name is a file extension of a table
+     * @param filename string of the file name
+     * @returns true if the file is a table, otherwise false
+     */
     public isTable(filename: string) {
         var ext = this._getFileExtension(filename);
         switch (ext.toLowerCase()) {
@@ -351,11 +377,12 @@ export default class TableHelper {
         }
         return false;
     }
+
     /**
- * Gets the extension of a given file, like 'table.csv' returns 'csv'
- * @param filename string of the file name
- * @returns the string of the file extension
- */
+     * Gets the extension of a given file, like 'table.csv' returns 'csv'
+     * @param filename string of the file name
+     * @returns the string of the file extension
+     */
     private _getFileExtension(filename: string) {
         var parts = filename.split('.');
         return parts[parts.length - 1];
@@ -370,9 +397,6 @@ export default class TableHelper {
         var returnString: string = '';
 
         files.forEach(fileObject => {
-            //var markdownReadyRelativePath = fileObject.relativePath.replace(" ","%20"); //Markdown cannot handle Spaces
-            //var markdownReadyFileName = fileObject.fileName.replace(" ", "%20");
-            //fileObject.markdownReadyRelativePath = markdownReadyRelativePath;
             var json = JSON.stringify(fileObject);
             var myEscapedJSONString = json.replace(/\\n/g, "\\n")
                 .replace(/\\'/g, "\\'")
@@ -409,8 +433,6 @@ export default class TableHelper {
         }
         var foundTableEnd = await this._helper.iterateDownwardsToCheckForString(tableEndMarker, currentTextEditor, foundTableStartSelection);
         return foundTableEnd;
-        //
-        //});
     }
 
     /**
@@ -422,7 +444,7 @@ export default class TableHelper {
     public async writeCSVFile(content: string, fileName?: string, fileBasePath?: string) {
         return new Promise(async (resolve, reject) => {
             if (fileBasePath === undefined) {
-                var folderName: string = this.getGeneratedTablesFolderName();
+                var folderName: string = await this.getGeneratedTablesFolderName();
                 var folderBasePath: any = await this._helper.getCurrentDocumentFolderPath();
                 var fileBasePath = path.join(folderBasePath, folderName);
             }
@@ -456,12 +478,11 @@ export default class TableHelper {
     }
 
     /**
-     * @returns the name of the Folder where the generated tables are
+     * Loads the table where the selection is currently in.
+     * @param selection current Selection.
+     * @param currentTextEditor optional. The TextEditor to work with.
+     * @returns a Promise, that resoves to false if no table is found, otherwise a Object with the Table content.
      */
-    public getGeneratedTablesFolderName() {
-        return "generatedTables";
-    }
-
     public async loadSelectedTable(selection: vscode.Selection, currentTextEditor?: vscode.TextEditor) {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
@@ -469,9 +490,7 @@ export default class TableHelper {
         return new Promise(async (resolve, reject) => {
             var tableStartRegex = /<!--\ ?TABLE\ ?START\ ?T?Y?P?E?\ ?(GRID|PIPE|SIMPLE)\ ?(HAS\ ?HEADER|NO\ ?HEADER)[a-zA-Z\ ?]*\ *(\.\/.*)\ -->/;
             var startLineText = currentTextEditor.document.lineAt(selection.start.line).text;
-            console.log(startLineText);
             var parts = startLineText.match(tableStartRegex);
-            console.log(parts);
             if (parts.length !== 4) { //If The number of matched string parts from the first line is too long or too short
                 resolve(false);
             } else {
@@ -486,18 +505,16 @@ export default class TableHelper {
                     resolve(false);
                 }
                 var content: any = await this._helper.getContentOfFile(pathToFile);
-                content  = content.replace(/\n+$/gm, ""); //removes trailing line breaks. Important, otherwise the resulting array will have weird empty arrays (like [""]) at the end.
+                content = content.replace(/\n+$/gm, ""); //removes trailing line breaks. Important, otherwise the resulting array will have weird empty arrays (like [""]) at the end.
                 var json = await this._helper.parseCSVtoJSON(content);
                 if (json === false) {
                     vscode.window.showErrorMessage(this._language.get("parsingError"));
                     resolve(false);
                 }
-                console.log(json);
                 if (!json.hasOwnProperty("data")) { //If the Result has no "data"-property 
                     vscode.window.showErrorMessage(this._language.get("parsingError"));
                     resolve(false);
                 }
-                //var jsonString = JSON.stringify(json["data"]);
                 var returnObject = {};
                 var returnDataObject = {};
                 returnDataObject["hasHeader"] = tableHeader;
@@ -505,19 +522,8 @@ export default class TableHelper {
                 returnDataObject["data"] = json["data"];
                 returnObject["data"] = returnDataObject;
                 returnObject["file"] = pathToFile;
-                console.log(JSON.stringify(returnObject));
                 resolve(returnObject);
-
-
             }
-
         });
-
-
-
     }
-
-
-
-
 }

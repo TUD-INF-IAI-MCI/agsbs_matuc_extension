@@ -11,7 +11,7 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.agsbs",
+        "onCommand:agsbs.open",
         "onLanguage:markdown",
         "onLanguage:multimarkdown"
     ],
@@ -19,9 +19,295 @@
     "contributes": {
         "commands": [
             {
-                "command": "extension.agsbs",
-                "title": "Open AGSBS"
+                "command": "agsbs.open",
+                "title": "AGSBS: Open AGSBS"
+            },
+            {
+                "command": "agsbs.bold",
+                "title": "AGSBS: Make Selection Bold"
+            },
+            {
+                "command": "agsbs.italic",
+                "title": "AGSBS: Make Selection Italic"
+            },
+            {
+                "command": "agsbs.strikethrough",
+                "title": "AGSBS: Makes a Selection Strikethrough"
+            },
+            {
+                "command": "agsbs.h",
+                "title": "AGSBS: Inserts the next logical Headline Grade"
+            },
+            {
+                "command": "agsbs.h1",
+                "title": "AGSBS: Inserts a Headline with Grade 1"
+            },
+            {
+                "command": "agsbs.h2",
+                "title": "AGSBS: Inserts a Headline with Grade 2"
+            },
+            {
+                "command": "agsbs.h3",
+                "title": "AGSBS: Inserts a Headline with Grade 3"
+            },
+            {
+                "command": "agsbs.h4",
+                "title": "AGSBS: Inserts a Headline with Grade 4"
+            },
+            {
+                "command": "agsbs.h5",
+                "title": "AGSBS: Inserts a Headline with Grade 5"
+            },
+            {
+                "command": "agsbs.h6",
+                "title": "AGSBS: Inserts a Headline with Grade 6"
+            },
+            {
+                "command": "agsbs.numberedLisst",
+                "title": "AGSBS: Inserts a marker for an numbered list"
+            },
+            {
+                "command": "agsbs.list",
+                "title": "AGSBS: Inserts a marker for an unordered list"
+            },
+            {
+                "command": "agsbs.table",
+                "title": "AGSBS: Opens a sidebar dialogue to insert a table"
+            },
+            {
+                "command": "agsbs.importTableCSV",
+                "title": "AGSBS: Opens a sidebar dialogue to import a table from a CSV file"
+            },
+            {
+                "command": "agsbs.editTable",
+                "title": "AGSBS: Opens a sidebar dialogue to edit the table the selection is currently in"
+            },
+            {
+                "command": "agsbs.formula",
+                "title": "AGSBS: Inserts marker to mark current selection as a formula"
+            },
+            {
+                "command": "agsbs.inlineFormula",
+                "title": "AGSBS: Inserts marker to mark current selection as a inline formula"
+            },
+            {
+                "command": "agsbs.code",
+                "title": "AGSBS: Inserts markers to mark current selection as code"
+            },
+            {
+                "command": "agsbs.quote",
+                "title": "AGSBS: Makes the current line a quote"
+            },
+            {
+                "command": "agsbs.link",
+                "title": "AGSBS: Opens a sidebar dialogue to insert a link"
+            },
+            {
+                "command": "agsbs.image",
+                "title": "AGSBS: Opens a sidebar dialogue to insert an image from the pictures folder"
+            },
+            {
+                "command": "agsbs.footnote",
+                "title": "AGSBS: Opens a sidebar dialogue to insert a footnote"
+            },
+            {
+                "command": "agsbs.annotation",
+                "title": "AGSBS: Opens a sidebar dialogue to add a annotation"
+            },
+            {
+                "command": "agsbs.hr",
+                "title": "AGSBS: Inserts a horrizontal line"
+            },
+            {
+                "command": "agsbs.newPage",
+                "title": "AGSBS: Inserts a 'new page' marker"
             }
+            
+            ,
+            {
+                "command": "agsbs.newProject",
+                "title": "AGSBS: Open a sidebar dialogue to add a new project"
+            },
+            {
+                "command": "agsbs.edit",
+                "title": "AGSBS: Opens a sidebar dialogue to edit the current project data"
+            },
+            {
+                "command": "agsbs.clone",
+                "title": "AGSBS: Opens a sidebar dialogue to clone a project"
+            },
+            {
+                "command": "agsbs.newFile",
+                "title": "AGSBS: Opens up a new File"
+            },
+            {
+                "command": "agsbs.preview",
+                "title": "AGSBS: Opens up the markdown preview"
+            },
+            {
+                "command": "agsbs.generateFile",
+                "title": "AGSBS: Generates HTML from the current file"
+            },
+            {
+                "command": "agsbs.convertEntireProject",
+                "title": "AGSBS: Converts entire project"
+            },
+            {
+                "command": "agsbs.checkProject",
+                "title": "AGSBS: Checks the whole project"
+            },
+            {
+                "command": "agsbs.commitChanges",
+                "title": "AGSBS: Commits and pushes all changes."
+            }
+        ],
+            "keybindings": [
+                {
+                    "command": "agsbs.bold",
+                    "key": "alt+shift+b",
+                    "mac": "alt+shift+b",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.italic",
+                    "key": "alt+shift+i",
+                    "mac": "alt+shift+i",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.strikethrough",
+                    "key": "alt+shift+s",
+                    "mac": "alt+shift+s",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.h",
+                    "key": "alt+shift+h",
+                    "mac": "alt+shift+h",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.h1",
+                    "key": "alt+shift+1",
+                    "mac": "alt+shift+1",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.h2",
+                    "key": "alt+shift+2",
+                    "mac": "alt+shift+2",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.h3",
+                    "key": "alt+shift+3",
+                    "mac": "alt+shift+3",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.h4",
+                    "key": "alt+shift+4",
+                    "mac": "alt+shift+4",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.h5",
+                    "key": "alt+shift+5",
+                    "mac": "alt+shift+5",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.h6",
+                    "key": "alt+shift+6",
+                    "mac": "alt+shift+6",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.numberedList",
+                    "key": "alt+shift+o",
+                    "mac": "alt+shift+o",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.list",
+                    "key": "alt+shift+u",
+                    "mac": "alt+shift+u",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.formula",
+                    "key": "alt+shift+f",
+                    "mac": "alt+shift+f",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.inlineFormula",
+                    "key": "ctrl+shift+f",
+                    "mac": "cmd+shift+f",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.code",
+                    "key": "alt+shift+c",
+                    "mac": "alt+shift+c",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.quote",
+                    "key": "alt+shift+q",
+                    "mac": "alt+shift+q",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.link",
+                    "key": "alt+shift+l",
+                    "mac": "alt+shift+l",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.hr",
+                    "key": "alt+shift+r",
+                    "mac": "alt+shift+r",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.newPage",
+                    "key": "alt+shift+p",
+                    "mac": "alt+shift+p",
+                    "when": "editorLangId == markdown"
+                }
+
+                ,
+                {
+                    "command": "agsbs.newProject",
+                    "key": "f2",
+                    "mac": "f2",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.newFile",
+                    "key": "alt+shift+n",
+                    "mac": "alt+shift+n",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.generateFile",
+                    "key": "f6",
+                    "mac": "f6",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.convertEntireProject",
+                    "key": "f7",
+                    "mac": "f7",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.checkProject",
+                    "key": "f4",
+                    "mac": "f4",
+                    "when": "editorLangId == markdown"
+                }
         ],
         "configuration": {
             "type": "object",
@@ -56,6 +342,31 @@
                 "type": "boolean",
                 "default": false,
                 "description": "If this is checked, the title and text of a textbox is not required and empty containers are inserted."
+              },
+              "agsbs.pictureFolderName": {
+                "type": "string",
+                "default": "Bilder",
+                "description": "The name of the Folder in the project that will be searched for pictures."
+              },
+              "agsbs.tableFolderName": {
+                "type": "string",
+                "default": "Tabellen",
+                "description": "The name of the Folder in the project that will be searched for tables."
+              },
+              "agsbs.generatedTableFolderName": {
+                "type": "string",
+                "default": "generatedTables",
+                "description": "The name of the Folder in the project that will save all the generated tables."
+              },
+              "agsbs.conversionProfile": {
+                "type": "string",
+                "default": "check manually every time",
+                "enum": [
+                    "check manually every time",
+                    "blind",
+                    "visually impaired"
+                ],
+                "description": "Only the named Version supports all functions of Matuc"
               },
               "agsbs.requiredVersion": {
                 "type": "string",

@@ -1,4 +1,7 @@
-label {
+// 
+//  @author  Lucas Vogel
+//  
+ label {
     padding-top: 1em;
     margin-top: 1em;
 }
@@ -41,7 +44,6 @@ input[type=submit] {
     outline-offset: 2px!important;
     font-size: 13px;
     line-height: 1.4em;
-    //border-color: var(--vscode-contrastBorder);
     border:1px solid;
     border-color: var(--vscode-dropdown-border); //Using Dropdown border color because input border color is buggy right now 
     
@@ -120,7 +122,6 @@ input[type=checkbox]:checked{
     outline-color: var(--vscode-input-border);
     margin-top: 1em;
     border: 1px solid;
-    //border-color: var(--vscode-input-border);
     border-color: var(--vscode-dropdown-border); //Using Dropdown border color because input border color is buggy right now 
   }
   input[type=number]:focus {
@@ -153,7 +154,7 @@ select {
     cursor: pointer;
     min-width: 110px;
     margin-right: 10px;
-    background-color: var(--vscode-dropdown-background); //TODO: INSERT VARS!
+    background-color: var(--vscode-dropdown-background);
     color: var(--vscode-dropdown-foreground);
     border-color: var(--vscode-dropdown-border);
     margin-top: 1em;
@@ -166,9 +167,6 @@ select:not(:-internal-list-box) {
     overflow: visible !important;
 }
 
-// body {
-//     //border: 1px solid white;
-// }
 
 #cancel {
     height: 30px;

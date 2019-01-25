@@ -8,10 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @author  Lucas Vogel
+ */
 const vscode = require("vscode");
 const helper_1 = require("./helper/helper");
 const editorFunctions_1 = require("./editorFunctions");
 const projectToolsFunctions_1 = require("./projectToolsFunctions");
+/**
+ * Main class of the taskbar
+ */
 class Taskbar {
     constructor(sidebarCallback, context) {
         /** this Function gets called from the Webview when a button is clicked.
@@ -26,8 +32,9 @@ class Taskbar {
          * @param name Displayname of the Icon
          * @param callback callback to the function, must be an arrow function
          * @param section optional section the button is displayed in
+         * @param commandIdentifier optional. The identifier used in the package.json command and key binding.
          */
-        this.addButton = (iconName, name, callback, section) => {
+        this.addButton = (iconName, name, callback, section, commandIdentifier) => {
             var id = this._helper.generateUuid();
             var newSection = "";
             if (section !== undefined) {
@@ -39,22 +46,26 @@ class Taskbar {
             }
             var icon = this._helper.getWebviewResourceIconURI(iconName, this._context);
             //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
-            var html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')" style ="-webkit-mask-image: url(${icon});mask-image: url(${icon})">
-                        
-                    </button>
-                    `;
-            //<img src="${icon}" style="width:100%"/><br>
-            //<br><label for="${name}">${name}</label>
+            var html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')" style ="-webkit-mask-image: url(${icon});mask-image: url(${icon})"></button>`;
             this._callbacks[id] = callback;
             newSection = "SECTION-" + newSection;
             this._addToHTML(newSection, html);
+            if (commandIdentifier !== undefined) {
+                if (!commandIdentifier.includes("agsbs.")) {
+                    commandIdentifier = "agsbs." + commandIdentifier;
+                }
+                let disposable = vscode.commands.registerCommand(commandIdentifier, () => {
+                    callback();
+                });
+            }
         };
         /** Adds a Button to the Taskbar Project Tools
          * @param iconName the Name of the Icon in the Icon Folder, with file extension (so for example "icon.svg")
          * @param name Displayname of the Icon
          * @param section optional section the button is displayed in
+         * @param commandIdentifier optional. The identifier used in the package.json command and key binding.
          */
-        this.addProjectTool = (iconName, name, callback, section) => {
+        this.addProjectTool = (iconName, name, callback, section, commandIdentifier) => {
             var id = this._helper.generateUuid();
             var newSection = "";
             if (section !== undefined) {
@@ -66,13 +77,18 @@ class Taskbar {
             }
             var icon = this._helper.getWebviewResourceIconURI(iconName, this._context);
             //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
-            var html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')" style ="-webkit-mask-image: url(${icon});mask-image: url(${icon})">
-                        
-                    </button>
-                    `;
+            var html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')" style ="-webkit-mask-image: url(${icon});mask-image: url(${icon})"></button>`;
             this._callbacks[id] = callback;
             newSection = "SECTION-" + newSection;
             this._addToHTML(newSection, html);
+            if (commandIdentifier !== undefined) {
+                if (!commandIdentifier.includes("agsbs.")) {
+                    commandIdentifier = "agsbs." + commandIdentifier;
+                }
+                let disposable = vscode.commands.registerCommand(commandIdentifier, () => {
+                    callback();
+                });
+            }
         };
         /** This adds HTML to the taskbars Webview, at the given point.
          * This point is predefined in the _getBaseHTML-Function and _generateSectionHTML, for example SECTION-*, HEAD_END, BODY_START or BODY_END
@@ -119,13 +135,13 @@ class Taskbar {
                 this._taskbarIsVisible = true;
                 var panel = vscode.window.createWebviewPanel('agsbstaskbar', // Identifies the type of the webview. Used internally
                 "AGSBS Toolbar", // Title of the panel displayed to the user
-                //vscode.ViewColumn.X, // Editor column to show the new webview panel in.
+                //vscode.ViewColumn.One, // Editor column to show the new webview panel in.
                 {
                     viewColumn: vscode.ViewColumn.Three,
                     preserveFocus: true
                 }, {
                     enableScripts: true
-                } // Webview options. More on these later.
+                } // Webview options
                 );
                 this._panel = panel;
                 panel.webview.html = this._getBaseHTML();
@@ -152,7 +168,6 @@ class Taskbar {
                 yield panel.dispose();
                 this._taskbarIsVisible = false;
                 this._panel = null;
-                //vscode.window.showInformationMessage('HIDE Taskbar');
                 resolve(true);
             }));
         });
@@ -177,8 +192,8 @@ class Taskbar {
     _getBaseHTML() {
         // var fontAwesomeFont = this._helper.getWebviewResourceURI("fontawesome-webfont.woff2","style/fonts",this._context);
         // var fontAwesome = this._helper.getWebviewResourceURI("fontawesome.css","style",this._context);
+        //If font Awesome is needed, it can be imported here.
         var style = this._helper.getWebviewResourceURI("taskbar.css", "style", this._context);
-        //var defaultSection = this._generateSectionHTML("");
         var html = `<!DOCTYPE html>
          <html lang="en">
          <head>
@@ -215,18 +230,6 @@ class Taskbar {
          </body>
          </html>`;
         return html;
-        /**
-         * ${defaultSection}
-         * <style>
-             @font-face {
-                font-family: 'Font Awesome 5 Free';
-                font-weight: normal;
-                font-style: normal;
-                src: url('${fontAwesomeFont}') format("woff2");
-              }
-             </style>
-             <link rel="stylesheet" href="${fontAwesome}">
-         */
     }
 }
 exports.default = Taskbar;

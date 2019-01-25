@@ -1,8 +1,14 @@
+/**
+ * @author  Lucas Vogel
+ */
+
 import * as vscode from 'vscode';
 import Language from '../languages';
 import Helper from './helper';
 
-
+/**
+ * A Helper for all the project tool functions 
+ */
 export default class ProjectHelper {
 
     private _language: Language;
@@ -12,66 +18,83 @@ export default class ProjectHelper {
         this._helper = new Helper;
     }
 
-    public async getAllWorkspaceFolders(){
+    /**
+     * gets all the open Workspace folders.
+     * @returns object with all folders
+     */
+    public async getAllWorkspaceFolders() {
         var folders = await vscode.workspace.workspaceFolders;
         return folders;
     }
 
-    public async getAllWorkspaceFoldersAsHTMLWithSpeciallyEscapedJSON(){
+    /**
+     * Returns a HTML String of <option> Elements to be used in a form with all Workspace Folders.
+     * The Values of the objects are specially escaped json-strings (see code) to the full path of the folders as well as extra information.
+     * @returns HTML-String of <option> Elements of all Workspace Folders
+     */
+    public async getAllWorkspaceFoldersAsHTMLWithSpeciallyEscapedJSON() {
         var folders = await vscode.workspace.workspaceFolders;
-        var html ="";
-        if(folders === null || folders === undefined || folders.length ===0){
+        var html = "";
+        if (folders === null || folders === undefined || folders.length === 0) {
             console.log("error no folders open");
             return html; //returns empty string
         } else {
             console.log(folders);
             folders.forEach(folder => {
-                var escapedName = folder["name"].replace("<","&lt;").replace(">","&gt;").replace('"',"&quot;");//For better reading 
+                var escapedName = folder["name"].replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;");//For better reading 
                 var thisValues = {};
-                console.log(folder["uri"]["fsPath"], folder.uri.path);
                 thisValues["uri"] = folder.uri.fsPath;
                 thisValues["scheme"] = folder.uri.scheme;
                 thisValues["index"] = folder.index;
-                // thisValues["escapedThings"] = `" . \` ' < > `;
-                console.log(thisValues);
                 var escapedValue = JSON.stringify(thisValues);
-                escapedValue = escapedValue.replace("'", "\\\\`"); //Escape ' as \\` because there is no clean way to escape a json string :(
-                // console.log(escapedValue);
-                // console.log(this.convertSpeciallyEscapedJSONToObject(escapedValue));
-                //console.log(JSON.parse(escapedValue));
+                escapedValue = escapedValue.replace("'", "\\\\`");
+                //Escape ' as \\` because there is no clean way to escape a json string :(
                 html += `<option value='${escapedValue}'>${escapedName}</option>`;
-                
+
             });
-            return(html);
+            return (html);
         }
     }
-    public convertSpeciallyEscapedJSONToObject (json:string){
-        var unescapedString = json.replace( "\\\\`","'");
+
+    /**
+     * Converts specially escaped JSON back to normal JSON
+     * @param json specially escaped json string
+     * @returns JSON-Object
+     */
+    public convertSpeciallyEscapedJSONToObject(json: string) {
+        var unescapedString = json.replace("\\\\`", "'");
         try {
             var result = JSON.parse(unescapedString);
             return result;
-        } catch(e){
+        } catch (e) {
             console.log(e);
             return false;
         }
     }
 
-    public getEditProjectHTMLForm(config:any,folder:string){
+    /**
+     * Returns the Form for Editing the Project Metadata.
+     * Because there are a lot of prefilled Input Fields, this cannot be outsourced as a snippet.
+     * @param config an config-Object with all the information to insert into the form.
+     * @param folder a passthrough of the folder to edit the metadata of. This is made to make it easier to work in the Sidebar Callback. The Information is passed as a hidden input field.
+     * @returns the HTML-Form
+     */
+    public getEditProjectHTMLForm(config: any, folder: string) {
         var appendixPrefix = config.AppendixPrefix === 1 ? true : false;
         var author = config.Editor === "Unknown" ? "" : config.Editor;
         var sourceAuthor = config.SourceAuthor === "Unknown" ? "" : config.SourceAuthor;
         var institution = config.Institution === "Unknown" ? "" : config.Institution;
         var title = config.LectureTitle === "Unknown" ? "" : config.LectureTitle;
         var language = config.Language === "Unknown" ? "" : config.Language;
-        var languageEN = language === "en" ? "selected='true'" :"";
-        var languageDE = language === "de" ? "selected='true'" :"";
-        var languageFR = language === "fr" ? "selected='true'" :"";
+        var languageEN = language === "en" ? "selected='true'" : "";
+        var languageDE = language === "de" ? "selected='true'" : "";
+        var languageFR = language === "fr" ? "selected='true'" : "";
         var tocDepth = config.TocDepth;
         var source = config.Source === "Unknown" ? "" : config.Source;
         var semesterOfEdit = config.SemesterOfEdit === "Unknown" ? "" : config.SemesterOfEdit;
         var workingGroup = config.WorkingGroup === "Unknown" ? "" : config.WorkingGroup;
-        var escapedPath = folder.replace("'","\\\\`");
-        var form:string = `
+        var escapedPath = folder.replace("'", "\\\\`");
+        var form: string = `
         <input type="checkbox" name="preface" id="preface" checked="${appendixPrefix}">
         <label for="preface">${this._language.get("preface")}</label><br role="none">
 
@@ -115,12 +138,16 @@ export default class ProjectHelper {
         <label for="workingGroup">${this._language.get("workingGroup")}</label><br role="none">
         <input type="text" name="workingGroup" id="workingGroup" placeholder="${workingGroup}"><br role="none">
 
-        <input type="hidden" value ='${escapedPath}' name="folder" id="folder">
+        <input type="hidden" value ='${escapedPath}' name="folder" id="folder" role="none">
         `;
-        return(form);
+        return (form);
     }
 
-    public getConversionProfileHTML(){
+    /**
+     * Get the Form for the Conversion profile. This will possibly be legacy soon, because it is no longer needed in further Version of Matuc.
+     * @returns Form HTML
+     */
+    public getConversionProfileHTML() {
         var form = `
             <div class="spacing" role="none"></div>
             <label for="conversionProfile">${this._language.get("conversionProfile")}</label><br role="none">

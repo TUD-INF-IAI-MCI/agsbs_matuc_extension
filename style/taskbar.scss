@@ -1,14 +1,12 @@
+// 
+//  @author  Lucas Vogel
+// 
 html,body{
     width: 99vw!important;
     margin: 0px;
     padding: 0px;
     overflow-x: hidden;
 }
-// body{
-
-//     //background-color: black;
-
-// }
 fieldset {
     color: var(--vscode-foreground);
     border: 1px solid var(--vscode-foreground);// #9da5b4
@@ -23,12 +21,7 @@ fieldset {
     margin-left: 0.4rem;
     vertical-align:top;
 }
-// svg path{
-//     fill: blue!important;
-//     background-color: red!important;
-// }
 
-// style="fill:rgb(157,165,180);fill-opacity:0.81;"
 .projectContainer{
     width: 99vw;
     display: flex;
@@ -50,7 +43,6 @@ button{
     display: inline;
     margin: 0px;
     padding:0px;
-    //background-color: rgba(0,0,0,0);
     background-color: var(--vscode-foreground);
     overflow: hidden;
     width:30px;

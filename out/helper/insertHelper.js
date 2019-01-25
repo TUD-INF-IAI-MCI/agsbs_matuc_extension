@@ -1,4 +1,7 @@
 "use strict";
+/**
+ * @author  Lucas Vogel
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -10,6 +13,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
 const helper_1 = require("./helper");
+/**
+ * Helper for the insert-functions.
+ */
 class InsertHelper {
     constructor() {
         /**
@@ -28,7 +34,6 @@ class InsertHelper {
                 }
                 var newpageString = this.getNewPageIdentifier();
                 var newSelection = yield this.iterateDownwardsToCheckForStringStart(newpageString);
-                console.log(newSelection);
                 if (newSelection !== false) {
                     if (selection.end.line > 0) { //if there is room above the line
                         var previousLineNumber = newSelection.end.line - 1;
@@ -41,8 +46,6 @@ class InsertHelper {
                     }
                 }
                 else {
-                    // var endPoint = new vscode.Position(selection.end.line,selection.end.character);
-                    // return(endPoint);
                     resolve(false);
                 }
             }));

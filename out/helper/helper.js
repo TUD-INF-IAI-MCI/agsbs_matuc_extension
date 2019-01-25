@@ -1,4 +1,7 @@
 "use strict";
+/**
+ * @author  Lucas Vogel
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -29,6 +32,10 @@ class Helper {
             }));
         });
     }
+    /**
+     * Puts the focus to the given editor
+     * @param editor optional. Editor to focus.
+     */
     focusDocument(editor) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
@@ -36,15 +43,6 @@ class Helper {
                     var editor = yield this.getCurrentTextEditor();
                 }
                 yield vscode.window.showTextDocument(editor.document, editor.viewColumn, false);
-                // var currentTextEditor:vscode.TextEditor = await this.getCurrentTextEditor();
-                // var selection = await this.getWordsSelection(currentTextEditor);
-                // // console.log(selection);
-                // // var newRange = new vscode.Range(selection.start,selection.end);
-                // // await currentTextEditor.revealRange(newRange); //Focus cursor to current selection
-                // // ABOVE DOWES NOT WORK! BAD BUG FROM VSCODE! :(
-                //      currentTextEditor.selection = selection;
-                //     //THIS is just a temprary fix.
-                //     //TODO: if vscode fixes this issue, revert to above solution or 
                 resolve(true);
             }));
         });
@@ -66,8 +64,7 @@ class Helper {
                 }
                 var currentTextEditor = textEditors[0];
                 var currentDocumentFileName = currentTextEditor.document.fileName;
-                var currentPath = currentDocumentFileName.substr(0, currentDocumentFileName.lastIndexOf(path.sep)); //Seperates the file name from the folder and returns only the folder string
-                //(currentPath.toString());
+                var currentPath = currentDocumentFileName.substr(0, currentDocumentFileName.lastIndexOf(path.sep));
                 resolve(currentPath.toString());
             }));
         });
@@ -213,11 +210,6 @@ class Helper {
             yield vscode.workspace.applyEdit(workSpaceEdit);
             var newStartPosition = new vscode.Position(startLine, startCharacter);
             var newEndPosition = newStartPosition;
-            // if(selection.isEmpty !== false ){
-            //     console.log("selection not empty");
-            //     newEndPosition = selection.end;
-            //     newEndPosition.translate(newLinesExtra,startCharacters.length);
-            // }
             if (selection.start.line !== selection.end.line) {
                 newEndPosition = new vscode.Position(selection.end.line + newLinesExtra, selection.end.character);
             }
@@ -226,7 +218,6 @@ class Helper {
                 newEndPosition = new vscode.Position(selection.start.line + newLinesExtra, startCharacter + selectionLength);
             }
             var newSelection = new vscode.Selection(newStartPosition, newEndPosition);
-            console.log("new Selection ", newSelection);
             currentTextEditor.selection = newSelection;
         });
     }
@@ -291,7 +282,6 @@ class Helper {
                 line = selection.start.line;
             }
             var lineText = currentTextEditor.document.lineAt(line).text;
-            console.log("LINETEXT", lineText);
             var startSubstring = lineText.substr(0, characters.length);
             if (startSubstring === characters) {
                 const workSpaceEdit = new vscode.WorkspaceEdit();
@@ -379,7 +369,6 @@ class Helper {
             }
             //If they are different and the selection is not longer than the length of the startCharacters
             yield this.wrapCharactersAroundSelection(currentTextEditor, selection, startCharacters, endCharacters);
-            //currentTextEditor.selection = 
             return true;
         });
     }
@@ -668,7 +657,7 @@ class Helper {
         });
     }
     /**
-     * gets the content of the previous line
+     * gets the content of a line
      * @param line number of the line
      * @param currentTextEditor optional. The editor the Document is in
      * @returns string of content or null if not possible

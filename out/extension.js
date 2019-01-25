@@ -1,5 +1,4 @@
 "use strict";
-// 'use strict';
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -9,6 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @author  Lucas Vogel
+ */
 const vscode = require("vscode");
 const helper_1 = require("./helper/helper");
 const taskbar_1 = require("./taskbar");
@@ -21,14 +23,16 @@ const settingsHelper_1 = require("./helper/settingsHelper");
 function activate(context) {
     console.log('AGSBS is now active!');
     let extensionController = new ExtensionController(context);
-    let disposable = vscode.commands.registerCommand('extension.agsbs', () => {
+    let disposable = vscode.commands.registerCommand('agsbs.open', () => {
         vscode.window.showInformationMessage('AGSBS is active.');
     });
     context.subscriptions.push(extensionController);
     context.subscriptions.push(disposable);
 }
 exports.activate = activate;
-// this method is called when your extension is deactivated
+/**
+ * this method is called when your extension is deactivated
+ */
 function deactivate() {
     vscode.window.showInformationMessage('AGSBS deactivated.');
 }
@@ -79,14 +83,10 @@ class ExtensionController {
                 if (this._sidebar.isVisible() === false && this._taskbar.isVisible() === true) {
                     //If Sidebar is closed but Taskbar is open, close Taskbar to reset
                     yield this._taskbar.hide(this._taskbarPanel);
-                    //vscode.window.showInformationMessage('HIDE Taskbar after');
-                    //await this._helper.setEditorLayout(this._defaultLayout);
                 }
                 if (this._sidebar.isVisible() === true && this._taskbar.isVisible() === false) {
                     //If Sidebar is open but Taskbar is closed, close Sidebar to reset
                     yield this._sidebar.hide(this._sidebarPanel);
-                    //vscode.window.showInformationMessage('HIDE Sidebar after');
-                    //await this._helper.setEditorLayout(this._defaultLayout);
                 }
                 if (this._sidebar.isVisible() === false) {
                     this._sidebarPanel = yield this._sidebar.show();
@@ -96,15 +96,12 @@ class ExtensionController {
                 }
             }
             else {
-                console.log("PANELS");
-                console.log(this._taskbarPanel);
-                console.log(this._sidebarPanel);
                 //TODO: BUG when closing both panels, this should be reported as an Issue to VSCODE because an error is thrown in the core
                 //This will crash the Extension debugging Host forever and will force you to reinstall VSCODE from scratch. Seriously.
+                //Read the docs.
                 //await this._sidebar.hide(this._sidebarPanel);
                 //await this._taskbar.hide(this._taskbarPanel); 
             }
-            //vscode.window.showInformationMessage('UPDATE');
         });
     }
 }

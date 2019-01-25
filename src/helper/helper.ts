@@ -1,3 +1,7 @@
+/**
+ * @author  Lucas Vogel
+ */
+
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -15,37 +19,24 @@ export default class Helper {
      */
     public async setEditorLayout(layout: Object) {
         return new Promise(async (resolve, reject) => {
-        await vscode.commands.executeCommand('vscode.setEditorLayout', layout);
-        resolve(true);
+            await vscode.commands.executeCommand('vscode.setEditorLayout', layout);
+            resolve(true);
         });
 
     }
 
+    /**
+     * Puts the focus to the given editor
+     * @param editor optional. Editor to focus.
+     */
     public async focusDocument(editor?: vscode.TextEditor) {
         return new Promise(async (resolve, reject) => {
-        if (editor === undefined) {
-            var editor = await this.getCurrentTextEditor();
-        }
-
-        await vscode.window.showTextDocument(editor.document, editor.viewColumn,false);
-
-        
-        // var currentTextEditor:vscode.TextEditor = await this.getCurrentTextEditor();
-        // var selection = await this.getWordsSelection(currentTextEditor);
-        // // console.log(selection);
-        // // var newRange = new vscode.Range(selection.start,selection.end);
-        // // await currentTextEditor.revealRange(newRange); //Focus cursor to current selection
-        // // ABOVE DOWES NOT WORK! BAD BUG FROM VSCODE! :(
-        
-
-        //      currentTextEditor.selection = selection;
-
-        //     //THIS is just a temprary fix.
-        //     //TODO: if vscode fixes this issue, revert to above solution or 
-        
-        
-        resolve(true);
-    });
+            if (editor === undefined) {
+                var editor = await this.getCurrentTextEditor();
+            }
+            await vscode.window.showTextDocument(editor.document, editor.viewColumn, false);
+            resolve(true);
+        });
     }
 
     /**
@@ -64,8 +55,7 @@ export default class Helper {
             }
             var currentTextEditor = textEditors[0];
             var currentDocumentFileName = currentTextEditor.document.fileName;
-            var currentPath = currentDocumentFileName.substr(0, currentDocumentFileName.lastIndexOf(path.sep)); //Seperates the file name from the folder and returns only the folder string
-            //(currentPath.toString());
+            var currentPath = currentDocumentFileName.substr(0, currentDocumentFileName.lastIndexOf(path.sep));
             resolve(currentPath.toString());
         });
     }
@@ -224,31 +214,22 @@ export default class Helper {
         var newLinesExtra = (startCharacters.match(/\n/g) || []).length; //Checks how many new lines there are
         var startLine = selection.start.line + newLinesExtra;
         var startCharacter = selection.start.character + startCharacters.length;
-        if(newLinesExtra!==0){
+        if (newLinesExtra !== 0) {
             startCharacter = 0;
         }
         await vscode.workspace.applyEdit(workSpaceEdit);
-        var newStartPosition = new vscode.Position(startLine,startCharacter);
+        var newStartPosition = new vscode.Position(startLine, startCharacter);
         var newEndPosition = newStartPosition;
-        // if(selection.isEmpty !== false ){
-        //     console.log("selection not empty");
-        //     newEndPosition = selection.end;
-        //     newEndPosition.translate(newLinesExtra,startCharacters.length);
-        
-        // }
-        if (selection.start.line !== selection.end.line){
-            newEndPosition = new vscode.Position(selection.end.line + newLinesExtra,selection.end.character);   
+        if (selection.start.line !== selection.end.line) {
+            newEndPosition = new vscode.Position(selection.end.line + newLinesExtra, selection.end.character);
         } else {
             var selectionLength = selection.end.character - selection.start.character;
-            newEndPosition = new vscode.Position(selection.start.line + newLinesExtra,startCharacter + selectionLength);  
+            newEndPosition = new vscode.Position(selection.start.line + newLinesExtra, startCharacter + selectionLength);
         }
-
-        var newSelection = new vscode.Selection (newStartPosition,newEndPosition);
-        console.log("new Selection ", newSelection);
+        var newSelection = new vscode.Selection(newStartPosition, newEndPosition);
         currentTextEditor.selection = newSelection;
-        
-
     }
+
     /**
      * Deletes given character lengths from the start and end of a selection
      * @param currentTextEditor the given Text Editor
@@ -275,6 +256,7 @@ export default class Helper {
         );
         await vscode.workspace.applyEdit(workSpaceEdit);
     }
+
     /**
      * checks if the given selection has the given characters at the beginning and end
      * @param currentTextEditor the given Text Editor 
@@ -296,7 +278,6 @@ export default class Helper {
         if (startCharacters === startSubstring && endCharacters === endSubstring) {
             return true;
         }
-
     }
 
     /**
@@ -305,24 +286,21 @@ export default class Helper {
      * @param line optional. Line to work with
      * @param currentTextEditor optional. Editor to work with
      */
-    public async toggleCharactersAtBeginningOfLine(characters:string, line?:number, currentTextEditor?: vscode.TextEditor){
+    public async toggleCharactersAtBeginningOfLine(characters: string, line?: number, currentTextEditor?: vscode.TextEditor) {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
-        if(line ===undefined){
+        if (line === undefined) {
             var selection = this.getWordsSelection(currentTextEditor);
             line = selection.start.line;
         }
-
-
         var lineText = currentTextEditor.document.lineAt(line).text;
-        console.log("LINETEXT",lineText);
         var startSubstring = lineText.substr(0, characters.length);
-        if(startSubstring===characters){
+        if (startSubstring === characters) {
             const workSpaceEdit = new vscode.WorkspaceEdit();
-            var startPosition = new vscode.Position(line,0);
-            var endPosition = new vscode.Position(line,characters.length);
-            var characterSelection = new vscode.Selection(startPosition,endPosition);
+            var startPosition = new vscode.Position(line, 0);
+            var endPosition = new vscode.Position(line, characters.length);
+            var characterSelection = new vscode.Selection(startPosition, endPosition);
             await workSpaceEdit.delete(
                 currentTextEditor.document.uri,
                 characterSelection
@@ -330,12 +308,12 @@ export default class Helper {
             await vscode.workspace.applyEdit(workSpaceEdit);
         } else {
             const workSpaceEdit = new vscode.WorkspaceEdit();
-        workSpaceEdit.insert(
-            currentTextEditor.document.uri,
-            currentTextEditor.document.lineAt(line).range.start,
-            characters
-        );
-        await vscode.workspace.applyEdit(workSpaceEdit);
+            workSpaceEdit.insert(
+                currentTextEditor.document.uri,
+                currentTextEditor.document.lineAt(line).range.start,
+                characters
+            );
+            await vscode.workspace.applyEdit(workSpaceEdit);
         }
 
     }
@@ -416,13 +394,9 @@ export default class Helper {
 
         //If they are different and the selection is not longer than the length of the startCharacters
         await this.wrapCharactersAroundSelection(currentTextEditor, selection, startCharacters, endCharacters);
-
-        //currentTextEditor.selection = 
         return true;
-
-
-
     }
+
     /**
      * Creates a custom File Resource URI that can be used in the Webview
      * @param name Name of the Icon WITH file extension. So for example "bold.png"
@@ -433,6 +407,7 @@ export default class Helper {
         var ressource = this.getWebviewResourceURI(name, "icons", context);
         return ressource;
     }
+
     /**
      * Gets custom File Ressource URI for use in Webview.
      * @param name Name of the File with extension
@@ -442,11 +417,11 @@ export default class Helper {
      */
     public getWebviewResourceURI(name, folder, context): vscode.Uri {
         const onDiskPath = vscode.Uri.file(path.join(context.extensionPath, folder, name));
-
         // And get the special URI to use with the webview
         const ressource = onDiskPath.with({ scheme: 'vscode-resource' });
         return ressource;
     }
+
     /** Generates a semi random UUID.
      * @returns a UUID.
      */
@@ -534,8 +509,8 @@ export default class Helper {
             return true;
         }
         return false;
-
     }
+
     /**
      * Iterates upwards from the given selection until it found a line that begins with the given test string, or the beginning of the file
      * @param testString text to check if the selection begins with
@@ -621,6 +596,7 @@ export default class Helper {
         }
         return false;
     }
+
     /**
      * Makes a directory with a promise
      * @param path path that will be created
@@ -642,18 +618,15 @@ export default class Helper {
      * @param path string absolute path to the folder
      * @returns promise that resolves to true if path exist, otherwise false.
      */
-    public folderExists(path:string){
+    public folderExists(path: string) {
         return new Promise(async (resolve, reject) => {
-
             if (fs.existsSync(path)) {
                 resolve(true);
             } else {
                 resolve(false);
             }
         });
-
-}
-
+    }
 
     /**
      * Checks if file Exists
@@ -669,6 +642,7 @@ export default class Helper {
             }
         });
     }
+
     /**
      * Parses CSV to JSON
      * @param csvData csv data as String
@@ -693,7 +667,7 @@ export default class Helper {
      * @param selection otional. The selection used
      * @param currentTextEditor optional. The editor used
      */
-    public async replaceSelection(replacetext:string,selection?:vscode.Selection,currentTextEditor?:vscode.TextEditor){
+    public async replaceSelection(replacetext: string, selection?: vscode.Selection, currentTextEditor?: vscode.TextEditor) {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -707,27 +681,26 @@ export default class Helper {
             replacetext
         );
         await vscode.workspace.applyEdit(workSpaceEdit);
-
     }
 
     /**
-     * gets the content of the previous line
+     * gets the content of a line
      * @param line number of the line
      * @param currentTextEditor optional. The editor the Document is in
      * @returns string of content or null if not possible
      */
-    public async getLineContent(line:number,currentTextEditor?:vscode.TextEditor) {
+    public async getLineContent(line: number, currentTextEditor?: vscode.TextEditor) {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
-        if(line<0){
+        if (line < 0) {
             return null;
         }
         var lengthOfDocument = currentTextEditor.document.lineCount;
-        if(line>=lengthOfDocument){
+        if (line >= lengthOfDocument) {
             return null;
         }
-        var content:string = await currentTextEditor.document.lineAt(line).text;
+        var content: string = await currentTextEditor.document.lineAt(line).text;
         return content;
     }
 
@@ -736,7 +709,7 @@ export default class Helper {
      * @param filepath the full path to the file
      * @returns Folder/ Directory or error
      */
-    public async getFolderFromFilePath (filepath:string){
+    public async getFolderFromFilePath(filepath: string) {
         var filepath = await path.dirname(filepath);
         return (filepath);
     }
@@ -745,9 +718,8 @@ export default class Helper {
      * adds a Folder to the open Worspaces
      * @param path string to the Folder
      */
-    public async addWorkspaceFolder (path:string){
+    public async addWorkspaceFolder(path: string) {
         var uri = vscode.Uri.file(path);
-       await vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, null, { uri: uri});
+        await vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, null, { uri: uri });
     }
-
 }

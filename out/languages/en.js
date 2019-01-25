@@ -289,7 +289,10 @@ class En {
         this.d['importedFrom'] = 'imported from';
         this.d['createFolderError'] = "Error creating folder.";
         this.d['linuxNotSupportedYet'] = "Linux is not supported yet.";
+        this.d['noFileSelected'] = "No File Selected.";
         this.d['gitIsNotEnabled'] = "Git is not enabled. Go to Settings -> Extensions -> AGSBS and enable Git to use this function.";
+        this.d['sidebarWelcome'] = "Welcome to AGSBS!";
+        this.d['MatucIsInstalledWarning'] = "Matuc is NOT installed! Some features might not work.";
         this.d['osDocumentsFolderName'] = "Documents"; //The folder name of the documents folder in the userspace
     }
 }

@@ -1,31 +1,47 @@
+/**
+ * @author  Lucas Vogel
+ */
 import * as vscode from 'vscode';
 import En from './languages/en';
 
 export default class Language {
-    private language:string; 
-    private languageClass:any;
-    constructor(){
+    private language: string;
+    private languageClass: any;
+    constructor() {
         this.language = this.getVscodeLanguage();
         this._loadLanguageFile(this.language);
     }
-    private getVscodeLanguage ():string{
+
+    /**
+     * @returns the current Language of the editor.
+     */
+    private getVscodeLanguage(): string {
         return vscode.env.language;
     }
-    private  _loadLanguageFile = async (language)=>{
-        console.log("Language: "+language);
-        switch(language){
+
+    /**
+     * Loads the Language File.
+     * @param language Language to be used.
+     */
+    private _loadLanguageFile = async (language) => {
+        console.log("Language: " + language);
+        switch (language) {
             case "en":
-                this.languageClass =  new En();
+                this.languageClass = new En();
 
                 break;
             default:
-            this.languageClass =  new En();
-            break;
+                this.languageClass = new En();
+                break;
         }
-        
     }
-    public get = (name)=>{
+
+    /**
+     * Returns the translated String of the identifier
+     * @param name string of the identifier.
+     */
+    public get = (name) => {
         return this.languageClass.get(name);
     }
-    
+
 }

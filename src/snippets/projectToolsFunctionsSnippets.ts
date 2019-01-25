@@ -1,3 +1,6 @@
+/**
+ * @author  Lucas Vogel
+ */
 import Language from '../languages';
 
 
@@ -5,11 +8,21 @@ import Language from '../languages';
 export default class ProjectToolsFunctionSnippets {
     private _language: Language;
     private d: any;
-    constructor() {
 
+    /**
+     * Gets a snippet
+     * @param snippetName identifier of the snippet
+     * @returns snippet
+     */
+    public get(snippetName: string) {
+        return (this.d[snippetName]);
+    }
+
+    constructor() {
         this._language = new Language;
         this.d = [];
 
+        /**************** NEW PROJECT ****************** */
         this.d['newProjectHTMLPart1'] = `
         <label for="folder">${this._language.get("selectFolder")}</label><br role="none">
 
@@ -68,7 +81,7 @@ export default class ProjectToolsFunctionSnippets {
         <input type="text" name="sourceAuthor" id="sourceAuthor" required="true"  disabled="true"><br  role="none">
 
         `;
-        
+
         this.d['newProjectSCRIPT'] = `
 
             function onFileSelectorChange(){
@@ -124,7 +137,5 @@ export default class ProjectToolsFunctionSnippets {
                 }
             }`;
     }
-    public get(snippetName) {
-        return (this.d[snippetName]);
-    }
+
 }

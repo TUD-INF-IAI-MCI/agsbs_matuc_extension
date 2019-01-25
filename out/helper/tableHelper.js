@@ -1,4 +1,7 @@
 "use strict";
+/**
+ * @author  Lucas Vogel
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -15,13 +18,43 @@ const languages_1 = require("../languages");
 const helper_1 = require("./helper");
 const Papa = require("papaparse");
 const settingsHelper_1 = require("./settingsHelper");
+/**
+ * A Helper for all the table functions.
+ */
 class TableHelper {
     constructor() {
         this._language = new languages_1.default;
         this._helper = new helper_1.default;
         this._settings = new settingsHelper_1.default;
-        this.tableStartMarker = "TABLE START TYPE";
-        this.tableEndMarker = "TABLE END";
+        this.tableStartMarker = "TABLE START TYPE"; //Marker to identify the start of a table
+        this.tableEndMarker = "TABLE END"; //Marker to identify the end of a table
+    }
+    /**
+     * Gets the name of the default table folder
+     * @returns String of the picture folder
+     */
+    getTableFolderName() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var folderName = yield this._settings.get("tableFolderName");
+            var folderString = folderName;
+            if (folderString === "") {
+                folderString = "Pictures";
+            }
+            return folderString;
+        });
+    }
+    /**
+     * @returns the name of the Folder where the generated tables are
+     */
+    getGeneratedTablesFolderName() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var folderName = yield this._settings.get("generatedTableFolderName");
+            var folderString = folderName;
+            if (folderString === "") {
+                folderString = "generatedTables";
+            }
+            return folderString;
+        });
     }
     /**
      * Generates a Markdown table
@@ -98,7 +131,13 @@ class TableHelper {
                     }
                 }
             }
-            returnString = "<!-- " + this.tableStartMarker + " " + tableTypeName + " " + hasHeaderString + "" + extraTableStartText + " -->\n\n" + returnString + "\n<!-- " + tableTypeName + " " + this.tableEndMarker + " -->";
+            returnString = "<!-- " + this.tableStartMarker + " " +
+                tableTypeName + " " +
+                hasHeaderString + "" +
+                extraTableStartText + " -->\n\n" +
+                returnString + "\n<!-- " +
+                tableTypeName + " " +
+                this.tableEndMarker + " -->";
             return returnString;
         }
     }
@@ -142,7 +181,7 @@ class TableHelper {
                 var result = yield Papa.unparse(data, {
                     delimiter: delimiter,
                     header: header,
-                }); //TODO: change delimiter to an optional
+                });
                 resolve(result);
             }));
         });
@@ -162,7 +201,8 @@ class TableHelper {
             if (verticalChar === null) {
                 verticalChar = ""; //fallback
             }
-            if (verticalChar !== "  ") { //using simple tables, the first blank spaces are not added, just while using the other ones
+            if (verticalChar !== "  ") {
+                //using simple tables, the first blank spaces are not added, just while using the other ones
                 returnString += verticalChar;
             }
             for (var j = 0; j < row.length; j++) {
@@ -275,12 +315,12 @@ class TableHelper {
         return lengthArray;
     }
     /**
- * Gets all tables in a folder relative to the currently open file
- * @param path path to the folder
- * @param folder optional. the name of the folder, for example 'tables'
- * @returns Array of objects of files. The objects have the structure
- * {fileName:'tabelle.csv', folderPath:'/Users/.../dir/tabellen', completePath:'/Users/.../dir/tabellen/tabelle.csv', relativePath:'./tabellen/tabelle.csv'}
- */
+     * Gets all tables in a folder relative to the currently open file
+     * @param path path to the folder
+     * @param folder optional. the name of the folder, for example 'tables'
+     * @returns Array of objects of files. The objects have the structure
+     * {fileName:'tabelle.csv', folderPath:'/Users/.../dir/tabellen', completePath:'/Users/.../dir/tabellen/tabelle.csv', relativePath:'./tabellen/tabelle.csv'}
+     */
     getAllTablesInFolder(pathToFolder, folder) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
@@ -316,20 +356,10 @@ class TableHelper {
         });
     }
     /**
- * Gets the name of the default table folder
- * @returns String of the picture folder
- */
-    getTableFolderName() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return "tabellen";
-            //TODO: Add an alternative with config
-        });
-    }
-    /**
- * Checks if the given string of a file name is a file extension of a table
- * @param filename string of the file name
- * @returns true if the file is a table, otherwise false
- */
+     * Checks if the given string of a file name is a file extension of a table
+     * @param filename string of the file name
+     * @returns true if the file is a table, otherwise false
+     */
     isTable(filename) {
         var ext = this._getFileExtension(filename);
         switch (ext.toLowerCase()) {
@@ -340,10 +370,10 @@ class TableHelper {
         return false;
     }
     /**
- * Gets the extension of a given file, like 'table.csv' returns 'csv'
- * @param filename string of the file name
- * @returns the string of the file extension
- */
+     * Gets the extension of a given file, like 'table.csv' returns 'csv'
+     * @param filename string of the file name
+     * @returns the string of the file extension
+     */
     _getFileExtension(filename) {
         var parts = filename.split('.');
         return parts[parts.length - 1];
@@ -356,9 +386,6 @@ class TableHelper {
     generateSelectTableOptionsHTML(files) {
         var returnString = '';
         files.forEach(fileObject => {
-            //var markdownReadyRelativePath = fileObject.relativePath.replace(" ","%20"); //Markdown cannot handle Spaces
-            //var markdownReadyFileName = fileObject.fileName.replace(" ", "%20");
-            //fileObject.markdownReadyRelativePath = markdownReadyRelativePath;
             var json = JSON.stringify(fileObject);
             var myEscapedJSONString = json.replace(/\\n/g, "\\n")
                 .replace(/\\'/g, "\\'")
@@ -395,8 +422,6 @@ class TableHelper {
             }
             var foundTableEnd = yield this._helper.iterateDownwardsToCheckForString(tableEndMarker, currentTextEditor, foundTableStartSelection);
             return foundTableEnd;
-            //
-            //});
         });
     }
     /**
@@ -409,7 +434,7 @@ class TableHelper {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                 if (fileBasePath === undefined) {
-                    var folderName = this.getGeneratedTablesFolderName();
+                    var folderName = yield this.getGeneratedTablesFolderName();
                     var folderBasePath = yield this._helper.getCurrentDocumentFolderPath();
                     var fileBasePath = path.join(folderBasePath, folderName);
                 }
@@ -443,11 +468,11 @@ class TableHelper {
         });
     }
     /**
-     * @returns the name of the Folder where the generated tables are
+     * Loads the table where the selection is currently in.
+     * @param selection current Selection.
+     * @param currentTextEditor optional. The TextEditor to work with.
+     * @returns a Promise, that resoves to false if no table is found, otherwise a Object with the Table content.
      */
-    getGeneratedTablesFolderName() {
-        return "generatedTables";
-    }
     loadSelectedTable(selection, currentTextEditor) {
         return __awaiter(this, void 0, void 0, function* () {
             if (currentTextEditor === undefined) {
@@ -456,9 +481,7 @@ class TableHelper {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                 var tableStartRegex = /<!--\ ?TABLE\ ?START\ ?T?Y?P?E?\ ?(GRID|PIPE|SIMPLE)\ ?(HAS\ ?HEADER|NO\ ?HEADER)[a-zA-Z\ ?]*\ *(\.\/.*)\ -->/;
                 var startLineText = currentTextEditor.document.lineAt(selection.start.line).text;
-                console.log(startLineText);
                 var parts = startLineText.match(tableStartRegex);
-                console.log(parts);
                 if (parts.length !== 4) { //If The number of matched string parts from the first line is too long or too short
                     resolve(false);
                 }
@@ -480,12 +503,10 @@ class TableHelper {
                         vscode.window.showErrorMessage(this._language.get("parsingError"));
                         resolve(false);
                     }
-                    console.log(json);
                     if (!json.hasOwnProperty("data")) { //If the Result has no "data"-property 
                         vscode.window.showErrorMessage(this._language.get("parsingError"));
                         resolve(false);
                     }
-                    //var jsonString = JSON.stringify(json["data"]);
                     var returnObject = {};
                     var returnDataObject = {};
                     returnDataObject["hasHeader"] = tableHeader;
@@ -493,7 +514,6 @@ class TableHelper {
                     returnDataObject["data"] = json["data"];
                     returnObject["data"] = returnDataObject;
                     returnObject["file"] = pathToFile;
-                    console.log(JSON.stringify(returnObject));
                     resolve(returnObject);
                 }
             }));

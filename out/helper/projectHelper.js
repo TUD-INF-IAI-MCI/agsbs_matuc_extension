@@ -1,4 +1,7 @@
 "use strict";
+/**
+ * @author  Lucas Vogel
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -11,17 +14,29 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
 const languages_1 = require("../languages");
 const helper_1 = require("./helper");
+/**
+ * A Helper for all the project tool functions
+ */
 class ProjectHelper {
     constructor() {
         this._language = new languages_1.default;
         this._helper = new helper_1.default;
     }
+    /**
+     * gets all the open Workspace folders.
+     * @returns object with all folders
+     */
     getAllWorkspaceFolders() {
         return __awaiter(this, void 0, void 0, function* () {
             var folders = yield vscode.workspace.workspaceFolders;
             return folders;
         });
     }
+    /**
+     * Returns a HTML String of <option> Elements to be used in a form with all Workspace Folders.
+     * The Values of the objects are specially escaped json-strings (see code) to the full path of the folders as well as extra information.
+     * @returns HTML-String of <option> Elements of all Workspace Folders
+     */
     getAllWorkspaceFoldersAsHTMLWithSpeciallyEscapedJSON() {
         return __awaiter(this, void 0, void 0, function* () {
             var folders = yield vscode.workspace.workspaceFolders;
@@ -35,23 +50,23 @@ class ProjectHelper {
                 folders.forEach(folder => {
                     var escapedName = folder["name"].replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;"); //For better reading 
                     var thisValues = {};
-                    console.log(folder["uri"]["fsPath"], folder.uri.path);
                     thisValues["uri"] = folder.uri.fsPath;
                     thisValues["scheme"] = folder.uri.scheme;
                     thisValues["index"] = folder.index;
-                    // thisValues["escapedThings"] = `" . \` ' < > `;
-                    console.log(thisValues);
                     var escapedValue = JSON.stringify(thisValues);
-                    escapedValue = escapedValue.replace("'", "\\\\`"); //Escape ' as \\` because there is no clean way to escape a json string :(
-                    // console.log(escapedValue);
-                    // console.log(this.convertSpeciallyEscapedJSONToObject(escapedValue));
-                    //console.log(JSON.parse(escapedValue));
+                    escapedValue = escapedValue.replace("'", "\\\\`");
+                    //Escape ' as \\` because there is no clean way to escape a json string :(
                     html += `<option value='${escapedValue}'>${escapedName}</option>`;
                 });
                 return (html);
             }
         });
     }
+    /**
+     * Converts specially escaped JSON back to normal JSON
+     * @param json specially escaped json string
+     * @returns JSON-Object
+     */
     convertSpeciallyEscapedJSONToObject(json) {
         var unescapedString = json.replace("\\\\`", "'");
         try {
@@ -63,6 +78,13 @@ class ProjectHelper {
             return false;
         }
     }
+    /**
+     * Returns the Form for Editing the Project Metadata.
+     * Because there are a lot of prefilled Input Fields, this cannot be outsourced as a snippet.
+     * @param config an config-Object with all the information to insert into the form.
+     * @param folder a passthrough of the folder to edit the metadata of. This is made to make it easier to work in the Sidebar Callback. The Information is passed as a hidden input field.
+     * @returns the HTML-Form
+     */
     getEditProjectHTMLForm(config, folder) {
         var appendixPrefix = config.AppendixPrefix === 1 ? true : false;
         var author = config.Editor === "Unknown" ? "" : config.Editor;
@@ -122,10 +144,14 @@ class ProjectHelper {
         <label for="workingGroup">${this._language.get("workingGroup")}</label><br role="none">
         <input type="text" name="workingGroup" id="workingGroup" placeholder="${workingGroup}"><br role="none">
 
-        <input type="hidden" value ='${escapedPath}' name="folder" id="folder">
+        <input type="hidden" value ='${escapedPath}' name="folder" id="folder" role="none">
         `;
         return (form);
     }
+    /**
+     * Get the Form for the Conversion profile. This will possibly be legacy soon, because it is no longer needed in further Version of Matuc.
+     * @returns Form HTML
+     */
     getConversionProfileHTML() {
         var form = `
             <div class="spacing" role="none"></div>

@@ -1,10 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @author  Lucas Vogel
+ */
 const languages_1 = require("../languages");
 class ProjectToolsFunctionSnippets {
+    /**
+     * Gets a snippet
+     * @param snippetName identifier of the snippet
+     * @returns snippet
+     */
+    get(snippetName) {
+        return (this.d[snippetName]);
+    }
     constructor() {
         this._language = new languages_1.default;
         this.d = [];
+        /**************** NEW PROJECT ****************** */
         this.d['newProjectHTMLPart1'] = `
         <label for="folder">${this._language.get("selectFolder")}</label><br role="none">
 
@@ -117,9 +129,6 @@ class ProjectToolsFunctionSnippets {
                     tocDepth.disabled = true;
                 }
             }`;
-    }
-    get(snippetName) {
-        return (this.d[snippetName]);
     }
 }
 exports.default = ProjectToolsFunctionSnippets;

@@ -8,6 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @author  Lucas Vogel
+ */
 const vscode = require("vscode");
 const helper_1 = require("./helper/helper");
 const languages_1 = require("./languages");
@@ -16,25 +19,31 @@ const projectHelper_1 = require("./helper/projectHelper");
 const projectToolsFunctionsSnippets_1 = require("./snippets/projectToolsFunctionsSnippets");
 const settingsHelper_1 = require("./helper/settingsHelper");
 const gitCommands_1 = require("./gitCommands");
+/**
+ * This Class contains all functions of the project tools bar in the Taskbar. Here all Buttons are registered.
+ */
 class ProjectToolsFunctions {
     constructor(taskbarCallback, sidebarCallback, context) {
+        /**
+         * Registering all Buttons.
+         */
         this.setup = () => __awaiter(this, void 0, void 0, function* () {
             var gitIsEnabled = yield this._settings.get("enableGitUseage");
-            this._taskbarCallback.addProjectTool("new_project.svg", this._language.get("newProject"), this.createNewProject, this._language.get("projectTitle"));
-            this._taskbarCallback.addProjectTool("edit.svg", this._language.get("editProject"), this.editProjectData, this._language.get("projectTitle"));
+            this._taskbarCallback.addProjectTool("new_project.svg", this._language.get("newProject"), this.createNewProject, this._language.get("projectTitle"), "agsbs.newProject");
+            this._taskbarCallback.addProjectTool("edit.svg", this._language.get("editProject"), this.editProjectData, this._language.get("projectTitle"), "agsbs.edit");
             if (gitIsEnabled === true) {
-                this._taskbarCallback.addProjectTool("clone.svg", this._language.get("cloneExistingRepo"), this.cloneRepo, this._language.get("projectTitle"));
+                this._taskbarCallback.addProjectTool("clone.svg", this._language.get("cloneExistingRepo"), this.cloneRepo, this._language.get("projectTitle"), "agsbs.clone");
             }
             this._taskbarCallback.addProjectTool("save.svg", this._language.get("saveChanges"), this.saveChanges, this._language.get("documentTitle"));
-            this._taskbarCallback.addProjectTool("new_file.svg", this._language.get("newFile"), this.createNewFile, this._language.get("documentTitle"));
+            this._taskbarCallback.addProjectTool("new_file.svg", this._language.get("newFile"), this.createNewFile, this._language.get("documentTitle"), "agsbs.newFile");
             this._taskbarCallback.addProjectTool("undo.svg", this._language.get("undo"), this.undo, this._language.get("documentTitle"));
             this._taskbarCallback.addProjectTool("redo.svg", this._language.get("redo"), this.redo, this._language.get("documentTitle"));
-            this._taskbarCallback.addProjectTool("preview.svg", this._language.get("preview"), this.showHTMLPreview, this._language.get("documentTitle"));
-            this._taskbarCallback.addProjectTool("generate.svg", this._language.get("generateFile"), this.generateHTML, this._language.get("documentTitle"));
-            this._taskbarCallback.addProjectTool("create_all.svg", this._language.get("convertEntireProject"), this.generateHTMLForAllProjects, this._language.get("documentTitle"));
-            this._taskbarCallback.addProjectTool("check_all.svg", this._language.get("checkProject"), this.publish, this._language.get("publishTitle"));
+            this._taskbarCallback.addProjectTool("preview.svg", this._language.get("preview"), this.showHTMLPreview, this._language.get("documentTitle"), "agsbs.preview");
+            this._taskbarCallback.addProjectTool("generate.svg", this._language.get("generateFile"), this.generateHTML, this._language.get("documentTitle"), "agsbs.generateFile");
+            this._taskbarCallback.addProjectTool("create_all.svg", this._language.get("convertEntireProject"), this.generateHTMLForAllProjects, this._language.get("documentTitle"), "agsbs.convertEntireProject");
+            this._taskbarCallback.addProjectTool("check_all.svg", this._language.get("checkProject"), this.publish, this._language.get("publishTitle"), "agsbs.checkProject");
             if (gitIsEnabled === true) {
-                this._taskbarCallback.addProjectTool("commit.svg", this._language.get("commitChanges"), this.commitChanges, this._language.get("publishTitle"));
+                this._taskbarCallback.addProjectTool("commit.svg", this._language.get("commitChanges"), this.commitChanges, this._language.get("publishTitle"), "agsbs.commitChanges");
             }
         });
         /**
@@ -47,7 +56,6 @@ class ProjectToolsFunctions {
                 return;
             }
             var optionsHTML = yield this._projectHelper.getAllWorkspaceFoldersAsHTMLWithSpeciallyEscapedJSON();
-            //updateWorkspaceFolders
             var form = '';
             form += this._snippets.get("newProjectHTMLPart1");
             form += optionsHTML;
@@ -59,7 +67,6 @@ class ProjectToolsFunctions {
          * Callback for creating a new project
          */
         this.createNewProjectSidebarCallback = (params) => __awaiter(this, void 0, void 0, function* () {
-            //console.log(params);
             var path, chapterCount, appendixChapterCount, preface, projectLanguage, tableOfContents, title, editor, institution, sourceMaterial, sourceAuthor, depthOfTableOfContents;
             var pathDataObject = this._projectHelper.convertSpeciallyEscapedJSONToObject(params.folder.value);
             path = pathDataObject.uri;
@@ -109,7 +116,6 @@ class ProjectToolsFunctions {
             var currentEditor = yield this._helper.getCurrentTextEditor();
             var folder = yield this._helper.getFolderFromFilePath(currentEditor.document.uri.fsPath);
             var config = yield this._matuc.showConfig(folder);
-            console.log(config, folder);
             if (config === false) {
                 vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
                 return;
@@ -207,12 +213,24 @@ class ProjectToolsFunctions {
                 vscode.window.showErrorMessage(this._language.get("notInsideLecture"));
                 return;
             }
-            var form = this._projectHelper.getConversionProfileHTML();
-            //TODO: autoselect last selection
-            this._sidebarCallback.addToSidebar(form, this._language.get("generateFile"), this.generateHTMLSidebarCallback, this._language.get("generate"));
+            var conversionProfilePromise = yield this._settings.get("conversionProfile");
+            var conversionProfile = conversionProfilePromise;
+            if (conversionProfile !== "blind" && conversionProfile !== "visually impaired" && conversionProfile !== "visually") {
+                //Fallback if conversion profile cannot be resolved
+                var form = this._projectHelper.getConversionProfileHTML();
+                this._sidebarCallback.addToSidebar(form, this._language.get("generateFile"), this.generateHTMLSidebarCallback, this._language.get("generate"));
+            }
+            else {
+                if (conversionProfile === "visually impaired") {
+                    conversionProfile = "visually";
+                }
+                yield this._matuc.checkAndSaveChanges();
+                yield this._matuc.convertFile(conversionProfile);
+                this._helper.focusDocument(); //Puts focus back to the text editor
+            }
         });
         /**
-         * Callback for generating the HTML for the current File
+         * Callback for generating the HTML for the current File. Fallback if this is not set in the settings.
          */
         this.generateHTMLSidebarCallback = (params) => __awaiter(this, void 0, void 0, function* () {
             var profile = params.conversionProfile.value;
@@ -236,12 +254,23 @@ class ProjectToolsFunctions {
                 vscode.window.showErrorMessage(this._language.get("notInsideLecture"));
                 return;
             }
-            var form = this._projectHelper.getConversionProfileHTML();
-            //TODO: autoselect last selection
-            this._sidebarCallback.addToSidebar(form, this._language.get("convertEntireProject"), this.generateHTMLForAllProjectsSidebarCallback, this._language.get("generate"));
+            var conversionProfilePromise = yield this._settings.get("conversionProfile");
+            var conversionProfile = conversionProfilePromise;
+            if (conversionProfile !== "blind" && conversionProfile !== "visually impaired" && conversionProfile !== "visually") {
+                var form = this._projectHelper.getConversionProfileHTML();
+                this._sidebarCallback.addToSidebar(form, this._language.get("convertEntireProject"), this.generateHTMLForAllProjectsSidebarCallback, this._language.get("generate"));
+            }
+            else {
+                if (conversionProfile === "visually impaired") {
+                    conversionProfile = "visually";
+                }
+                yield this._matuc.checkAndSaveChanges();
+                yield this._matuc.convertEntireProject(conversionProfile);
+                this._helper.focusDocument(); //Puts focus back to the text editor
+            }
         });
         /**
-         * Callback for generating the HTML for all projects
+         * Callback for generating the HTML for all projects, as a fallback when the setting is manually selected every time
          */
         this.generateHTMLForAllProjectsSidebarCallback = (params) => __awaiter(this, void 0, void 0, function* () {
             var profile = params.conversionProfile.value;
@@ -275,6 +304,9 @@ class ProjectToolsFunctions {
             this._sidebarCallback.addToSidebar(form, this._language.get("pagenumbering"), this.publishSidebarCallback, this._language.get("generate"));
             this._helper.focusDocument(); //Puts focus back to the text editor
         });
+        /**
+         * Checks the whole project
+         */
         this.publishSidebarCallback = (params) => __awaiter(this, void 0, void 0, function* () {
             if (params.autoCorrectPageNumbering.checked === true) {
                 yield this._matuc.fixpnumInPlace();
@@ -283,6 +315,9 @@ class ProjectToolsFunctions {
             var filePath = currentEditor.document.uri.fsPath;
             this._matuc.checkEntireProject(filePath);
         });
+        /**
+         * Adds Form to sidebar to clone a project
+         */
         this.cloneRepo = () => __awaiter(this, void 0, void 0, function* () {
             var gitIsEnabled = yield this._settings.get("enableGitUseage");
             if (gitIsEnabled === false) {
@@ -298,11 +333,17 @@ class ProjectToolsFunctions {
         `;
             this._sidebarCallback.addToSidebar(form, this._language.get("cloneExistingRepo"), this.cloneRepoSidebarCallback, this._language.get("clone"));
         });
+        /**
+         * clones a project
+         */
         this.cloneRepoSidebarCallback = (params) => __awaiter(this, void 0, void 0, function* () {
             var userName = params.gitUser.value;
             var repoName = params.repoName.value;
             this._git.clone(userName, repoName);
         });
+        /**
+         * Adds commt changes dialogue to the sidebar
+         */
         this.commitChanges = () => __awaiter(this, void 0, void 0, function* () {
             var gitIsEnabled = yield this._settings.get("enableGitUseage");
             if (gitIsEnabled === false) {
@@ -316,6 +357,9 @@ class ProjectToolsFunctions {
         `;
             this._sidebarCallback.addToSidebar(form, this._language.get("commitChanges"), this.commitChangesSidebarCallback, this._language.get("commit"));
         });
+        /**
+         * commits the changes, and pushes them.
+         */
         this.commitChangesSidebarCallback = (params) => __awaiter(this, void 0, void 0, function* () {
             var commitMessage = params.commitChanges.value;
             var currentTexteditor = yield this._helper.getCurrentTextEditor();

@@ -8,6 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @author Jens Voegler
+ * @author Lucas Vogel
+ * This code was created by Jens Voegler and ported to VSCode by Lucas Vogel.
+ */
 const vscode = require("vscode");
 const helper_1 = require("./helper/helper");
 const languages_1 = require("./languages");
@@ -20,6 +25,11 @@ class GitCommands {
         this._language = new languages_1.default;
         this._settings = new settingsHelper_1.default;
     }
+    /**
+     * Clones a Repo
+     * @param user ZIH-Username as a String
+     * @param repoName Name of the repo
+     */
     clone(user, repoName) {
         return __awaiter(this, void 0, void 0, function* () {
             var gitLocalPath = yield this._settings.get("gitLocalPath");

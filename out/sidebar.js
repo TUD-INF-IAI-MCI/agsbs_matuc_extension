@@ -8,9 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @author  Lucas Vogel
+ */
 const vscode = require("vscode");
 const helper_1 = require("./helper/helper");
-//declare var globalSidebarPanel:any;
+const languages_1 = require("./languages");
+const sidebarSnippets_1 = require("./snippets/sidebarSnippets");
+const matucCommands_1 = require("./matucCommands");
+/**
+ * The main class of the sidebar.
+ */
 class Sidebar {
     constructor(context) {
         /**
@@ -18,7 +26,6 @@ class Sidebar {
          * @param message from Webview
          */
         this._messageFromWebviewHandler = (message) => {
-            console.log("CALLBACK");
             this._sidebarCallback(JSON.parse(message.text));
             this._panel.webview.html = this._getBaseHTML(); // erase the contents of the sidebar
             this._helper.focusDocument();
@@ -39,7 +46,6 @@ class Sidebar {
                 this._addToHTML("HEADLINE", `<h2>${headline}</h2>`);
             }
             var closeButtonRessource = this._helper.getWebviewResourceIconURI("close.svg", this._context);
-            //console.log(closeButtonRessource);
             this._addToHTML("CANCEL", `<br><button id='cancel' value="cancel" onclick='sendMessageCancel()' title='cancel'><img src='${closeButtonRessource}'></button>`);
             if (buttonText !== undefined) {
                 this._addToHTML("BUTTON", `<input type="submit" value="${buttonText}">`);
@@ -73,6 +79,7 @@ class Sidebar {
          */
         this._getBaseHTML = () => {
             var style = this._helper.getWebviewResourceURI("sidebar.css", "style", this._context);
+            var script = this._snippets.get("sidebarBaseHTMLScript");
             return `<!DOCTYPE html>
         <html>
             <head>
@@ -99,50 +106,34 @@ class Sidebar {
                 </script>
                 
                 <script>
-                var form = document.forms["inputForm"];
-                form.onsubmit = function(event) {
-                    event.preventDefault();
-                    validate();
-                    return false;
-                    
-                }
-                function validate () {
-                    var form = document.forms["inputForm"];
-                    var returnObject = {};
-                    for (var i = 0; i<form.length; i++){
-                        var element = form[i];
-                        if(element.hasAttribute("name")){
-                            var name = element.name;
-                            var elementPropertyObject = {};
-                            for (var property in element) {
-                                elementPropertyObject [property] = element[property];
-                            }
-                            returnObject[name] = elementPropertyObject;
-                        }
-                    }
-                    sendMessage( JSON.stringify(returnObject));
-                }
-                const vscode = acquireVsCodeApi();
-                     function sendMessage(message){
-                         vscode.postMessage({
-                             text: message
-                         })
-                     }
-                     function sendMessageCancel(){
-                        vscode.postMessage({
-                            cancel:true
-                        })
-                    }
+                ${script}
                 </script>
             </body>
         </html>
         `;
         };
+        /**
+         * Adds a welcome message if the extension is opened for the first time
+         */
+        this._addWelcomeMessage = () => __awaiter(this, void 0, void 0, function* () {
+            var matucIsInstalled = yield this._matuc.matucIsInstalled();
+            var welcomeText = this._language.get("sidebarWelcome");
+            var form = "<h2>" + welcomeText + "</h2>";
+            if (matucIsInstalled === false) {
+                form += "<br role='none'><br role='none'>" + this._language.get("MatucIsInstalledWarning");
+            }
+            this._wasOpenendBefore = true;
+            this._addToHTML("HEADLINE", form);
+        });
         this._sidebarIsVisible = false;
         this._context = context;
         this._helper = new helper_1.default();
         this._panel = null;
         this._sidebarCallback = null;
+        this._snippets = new sidebarSnippets_1.default;
+        this._matuc = new matucCommands_1.default;
+        this._language = new languages_1.default;
+        this._wasOpenendBefore = false;
     }
     /**
      * Returns the current State of visibility of the Sidebar.
@@ -151,18 +142,20 @@ class Sidebar {
     isVisible() {
         return this._sidebarIsVisible;
     }
+    /**
+     * Puts the focus on the sidebar.
+     */
     focus() {
         this._panel.reveal(this._panel.viewColumn);
     }
     /**
      * Opens a Sidebar Webview
-     * @return A WebviewPanel from Type vscode.WebviewPanel
+     * @return A promise that resolves to a WebviewPanel from Type vscode.WebviewPanel
      */
     show() {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                 this._sidebarIsVisible = true;
-                //vscode.window.showInformationMessage('UPDATE');
                 var panel = vscode.window.createWebviewPanel('agsbssidebar', // Identifies the type of the webview. Used internally
                 "AGSBS Sidebar", // Title of the panel displayed to the user
                 //vscode.ViewColumn.X, // Editor column to show the new webview panel in.
@@ -171,9 +164,8 @@ class Sidebar {
                     preserveFocus: true
                 }, {
                     enableScripts: true
-                } // Webview options. More on these later.
+                } // Webview options.
                 );
-                //globalSidebarPanel = panel;
                 panel.webview.html = this._getBaseHTML();
                 panel.onDidDispose(() => {
                     this._sidebarIsVisible = false; //When panel is closed
@@ -182,24 +174,25 @@ class Sidebar {
                 panel.webview.onDidReceiveMessage(message => {
                     if (message.hasOwnProperty('text')) {
                         this._messageFromWebviewHandler(message);
-                        //reject (false);//return;
                     }
                     else {
                         if (message.hasOwnProperty('cancel')) {
-                            console.log("RESET");
                             this._panel.webview.html = this._getBaseHTML();
-                            //reject (false);//return;
                         }
                     }
                 }, undefined);
                 this._panel = panel;
-                resolve(panel); //return panel;
+                if (this._wasOpenendBefore === false) {
+                    this._addWelcomeMessage();
+                }
+                resolve(panel); //return panel
             }));
         });
     }
     /**
      * Gets triggered when the Layout of the Editor changes.
      * @param panel The WebviewPanel that should be closed, from fype vscode.WebviewPanel
+     * @returns a promise that resolves to true if its finished.
      */
     hide(panel) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -207,7 +200,6 @@ class Sidebar {
                 yield panel.dispose();
                 this._sidebarIsVisible = false;
                 this._panel = null;
-                //vscode.window.showInformationMessage('HIDE Sidebar');
                 resolve(true);
             }));
         });

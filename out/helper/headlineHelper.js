@@ -1,4 +1,7 @@
 "use strict";
+/**
+ * @author  Lucas Vogel
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -97,11 +100,9 @@ class HeadlineHelper {
                 }
                 var newPageIdentifier = this._insertHelper.getNewPageIdentifier();
                 if (currentLineText.startsWith(newPageIdentifier)) {
-                    //console.log("new Page found");
                     return "## ";
                 }
             }
-            //console.log("not Found");
             return "# ";
         });
     }

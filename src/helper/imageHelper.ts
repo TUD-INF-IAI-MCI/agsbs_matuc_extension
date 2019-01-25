@@ -1,14 +1,21 @@
+/**
+ * @author  Lucas Vogel
+ */
+
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import Language from '../languages';
+import SettingsHelper from './settingsHelper';
 
 
 
 export default class ImageHelper {
     private _language: Language;
+    private _settings: SettingsHelper;
     constructor() {
         this._language = new Language;
+        this._settings = new SettingsHelper;
     }
 
     /**
@@ -16,9 +23,12 @@ export default class ImageHelper {
      * @returns String of the picture folder
      */
     public async getPictureFolderName() {
-        return "bilder";
-        //return this._language.get("picuteFolderName");
-        //TODO: Add an alternative with config
+        var folderName: any = await this._settings.get("pictureFolderName");
+        var folderString: string = folderName;
+        if (folderString === "") {
+            folderString = "pictures";
+        }
+        return folderString;
     }
 
     /**
@@ -30,13 +40,11 @@ export default class ImageHelper {
     public addImageDescriptionToFile(fileBasePath: string, fileName: string, content: string) {
         var thisRelPath = path.join(fileBasePath, fileName);
         var thisPath = path.resolve(thisRelPath);//For cross Platform compatibility, makes absolute path from possibly relative one
-        console.log(thisPath);
         content = "\n" + content; //Adding a Line Break at the beginning
         var fd = fs.openSync(thisPath, 'a+'); //Open in "add"-Mode
         fs.write(fd, content, (error) => {
             if (error) {
                 vscode.window.showErrorMessage(this._language.get('somethingWentWrongDuringInsertOfGraphic'));
-
                 return;
             } else {
                 vscode.window.showInformationMessage(fileName + " " + this._language.get("imagesMdHasBeenWritten"));
@@ -50,27 +58,27 @@ export default class ImageHelper {
      * @param filename string of the file name
      * @returns the string of the file extension
      */
-    public getFileExtension(filename:string) {
+    public getFileExtension(filename: string) {
         var parts = filename.split('.');
         return parts[parts.length - 1];
     }
-    
+
     /**
      * Checks if the given string of a file name is a file extension of a picture
      * @param filename string of the file name
      * @returns true if the file is an image, otherwise false
      */
-    public isImage(filename:string) {
+    public isImage(filename: string) {
         var ext = this.getFileExtension(filename);
         switch (ext.toLowerCase()) {
-        case 'jpg':
-        case 'gif':
-        case 'bmp':
-        case 'png':
-        case 'jpeg':
-        case 'svg':
-            //etc
-            return true;
+            case 'jpg':
+            case 'gif':
+            case 'bmp':
+            case 'png':
+            case 'jpeg':
+            case 'svg':
+                //etc
+                return true;
         }
         return false;
     }
@@ -82,36 +90,34 @@ export default class ImageHelper {
      * @returns Array of objects of files. The objects have the structure 
      * {fileName:'pic.jpg', folderPath:'/Users/.../dir/bilder', completePath:'/Users/.../dir/bilder/pic.jpg', relativePath:'./bilder/pic.jpg', basePath:'/Users/.../dir'}
      */
-    public async getAllPicturesInFolder(pathToFolder:any, folder: string) {
+    public async getAllPicturesInFolder(pathToFolder: any, folder: string) {
         return new Promise(async (resolve, reject) => {
-        //var currentFolder = path;//await this.getCurrentDocumentFolderPath();
-        var folderPath = path.join(pathToFolder.toString(), folder);
-        var allFilesArray = [];
-        if (fs.existsSync(folderPath)) {
-            fs.readdir(folderPath, (err, files) => {
-                files.forEach(file => {
-                    if(this.isImage(file) === true){
-                        var completePath = path.join(folderPath,file);
-                        var relativePath = "." + path.sep + folder + path.sep + file; //generate the relative file path, path.sep gives the OS folder seperator
-                        var newFileObject = {fileName:file, folderPath:folderPath, completePath:completePath, relativePath:relativePath,basePath:pathToFolder};
-                        allFilesArray.push(newFileObject);
+            var folderPath = path.join(pathToFolder.toString(), folder);
+            var allFilesArray = [];
+            if (fs.existsSync(folderPath)) {
+                fs.readdir(folderPath, (err, files) => {
+                    files.forEach(file => {
+                        if (this.isImage(file) === true) {
+                            var completePath = path.join(folderPath, file);
+                            var relativePath = "." + path.sep + folder + path.sep + file; //generate the relative file path, path.sep gives the OS folder seperator
+                            var newFileObject = { fileName: file, folderPath: folderPath, completePath: completePath, relativePath: relativePath, basePath: pathToFolder };
+                            allFilesArray.push(newFileObject);
+                        }
+                    });
+                    if (err) {
+                        vscode.window.showErrorMessage(this._language.get("error"));
                     }
+                    if (allFilesArray.length === 0) {
+                        vscode.window.showErrorMessage(this._language.get("thereAreNoPicturesInFolder") + folderPath);
+                    }
+                    resolve(allFilesArray);
                 });
-                
-                if (err) {
-                    vscode.window.showErrorMessage(this._language.get("error"));
-                }
-                if (allFilesArray.length === 0) {
-                    vscode.window.showErrorMessage(this._language.get("thereAreNoPicturesInFolder") + folderPath);
-                }
-                resolve(allFilesArray);
-            });
-            
-        } else {
-            vscode.window.showErrorMessage(this._language.get('noPictureFolderFound') + folderPath);
-            //If there is no picture folder
-        }
-    });
+
+            } else {
+                vscode.window.showErrorMessage(this._language.get('noPictureFolderFound') + folderPath);
+                //If there is no picture folder
+            }
+        });
     }
 
     /**
@@ -119,22 +125,21 @@ export default class ImageHelper {
      * @param files an array of files objects, as it is produced by the getAllPicturesInFolder function
      * @returns an HTML-String of the file options, like <option value='FILEPATH'>FILENAME</option>...
      */
-    public generateSelectImagesOptionsHTML(files:any){
-        var returnString:string = '';
-        
+    public generateSelectImagesOptionsHTML(files: any) {
+        var returnString: string = '';
         files.forEach(fileObject => {
-            var markdownReadyRelativePath = fileObject.relativePath.replace(" ","%20"); //Markdown cannot handle Spaces
+            var markdownReadyRelativePath = fileObject.relativePath.replace(" ", "%20"); //Markdown cannot handle Spaces
             //var markdownReadyFileName = fileObject.fileName.replace(" ", "%20");
             fileObject.markdownReadyRelativePath = markdownReadyRelativePath;
             var json = JSON.stringify(fileObject);
             var myEscapedJSONString = json.replace(/\\n/g, "\\n")
-                                      .replace(/\\'/g, "\\'")
-                                      .replace(/\\"/g, '\\"')
-                                      .replace(/\\&/g, "\\&")
-                                      .replace(/\\r/g, "\\r")
-                                      .replace(/\\t/g, "\\t")
-                                      .replace(/\\b/g, "\\b")
-                                      .replace(/\\f/g, "\\f"); //replacing all special characters to savely inject the json into the value
+                .replace(/\\'/g, "\\'")
+                .replace(/\\"/g, '\\"')
+                .replace(/\\&/g, "\\&")
+                .replace(/\\r/g, "\\r")
+                .replace(/\\t/g, "\\t")
+                .replace(/\\b/g, "\\b")
+                .replace(/\\f/g, "\\f"); //replacing all special characters to savely inject the json into the value
             returnString += `<option value='${myEscapedJSONString}'>${fileObject.fileName}</option>`;
             //adding extra attributes that will later be transfered to the params-object, so it can be used later
         });

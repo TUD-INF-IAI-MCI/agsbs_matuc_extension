@@ -8,7 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-//import * as vscode from 'vscode'
+/**
+ * @author  Lucas Vogel
+ */
 const vscode = require("vscode");
 const helper_1 = require("./helper/helper");
 const languages_1 = require("./languages");
@@ -22,62 +24,90 @@ const listHelper_1 = require("./helper/listHelper");
 const insertHelper_1 = require("./helper/insertHelper");
 const headlineHelper_1 = require("./helper/headlineHelper");
 const settingsHelper_1 = require("./helper/settingsHelper");
+/**
+ * The Main Class to add Buttons and their functionality of the Editor Tools Bar.
+ */
 class EditorFunctions {
     constructor(taskbarCallback, sidebarCallback, context) {
         /**
-         * Setup of the Editor Functions. Here taskbar-buttons can be added.
+         * Setup of the Editor Functions. Here taskbar edit-buttons can be added.
          */
         this.setup = () => {
-            this._taskbarCallback.addButton("bold.svg", this._language.get("bold"), this.bold, this._language.get("emphasis"));
-            this._taskbarCallback.addButton("italic.svg", this._language.get("italic"), this.italic, this._language.get("emphasis"));
-            this._taskbarCallback.addButton("strikethrough.svg", this._language.get("strikethrough"), this.strikethrough, this._language.get("emphasis"));
-            this._taskbarCallback.addButton("h.svg", this._language.get("headline"), this.headline, this._language.get("headline"));
-            this._taskbarCallback.addButton("h1.svg", this._language.get("headline1"), this.h1, this._language.get("headline"));
-            this._taskbarCallback.addButton("h2.svg", this._language.get("headline2"), this.h2, this._language.get("headline"));
-            this._taskbarCallback.addButton("h3.svg", this._language.get("headline3"), this.h3, this._language.get("headline"));
-            this._taskbarCallback.addButton("h4.svg", this._language.get("headline4"), this.h4, this._language.get("headline"));
-            this._taskbarCallback.addButton("h5.svg", this._language.get("headline5"), this.h5, this._language.get("headline"));
-            this._taskbarCallback.addButton("h6.svg", this._language.get("headline6"), this.h6, this._language.get("headline"));
-            this._taskbarCallback.addButton('numbered_list.svg', this._language.get('orderedList'), this.orderedList, this._language.get('list'));
-            this._taskbarCallback.addButton('list.svg', this._language.get('unorderedList'), this.unorderedList, this._language.get('list'));
-            this._taskbarCallback.addButton('table.svg', this._language.get('insertTable'), this.insertTable, this._language.get('table'));
-            this._taskbarCallback.addButton('import_table_csv.svg', this._language.get('importTableCsv'), this.insertCSVTable, this._language.get('table'));
-            this._taskbarCallback.addButton("edit_table.svg", this._language.get("editTable"), this.editTable, this._language.get("table"));
-            this._taskbarCallback.addButton("formula.svg", this._language.get("formula"), this.formula, this._language.get("formatting"));
-            this._taskbarCallback.addButton("inline_formula.svg", this._language.get("formulaInline"), this.inlineFormula, this._language.get("formatting"));
-            this._taskbarCallback.addButton("code.svg", this._language.get("code"), this.code, this._language.get("formatting"));
-            this._taskbarCallback.addButton("quote.svg", this._language.get("blockquote"), this.blockquote, this._language.get("formatting"));
-            this._taskbarCallback.addButton("link.svg", this._language.get("insertLink"), this.insertLink, this._language.get("insert"));
-            this._taskbarCallback.addButton('image.svg', this._language.get('insertGraphic'), this.insertImage, this._language.get('insert'));
-            this._taskbarCallback.addButton('footnote.svg', this._language.get('insertFootnote'), this.insertFootnote, this._language.get('insert'));
-            this._taskbarCallback.addButton('annotation.svg', this._language.get('authorAnnotation'), this.insertAnnotation, this._language.get('insert'));
-            this._taskbarCallback.addButton('hr.svg', this._language.get('horizontalRule'), this.insertHorizontalRule, this._language.get('separator'));
-            this._taskbarCallback.addButton('new_page.svg', this._language.get('newPage'), this.addNewPage, this._language.get('separator'));
+            this._taskbarCallback.addButton("bold.svg", this._language.get("bold"), this.bold, this._language.get("emphasis"), "agsbs.bold");
+            this._taskbarCallback.addButton("italic.svg", this._language.get("italic"), this.italic, this._language.get("emphasis"), "agsbs.italic");
+            this._taskbarCallback.addButton("strikethrough.svg", this._language.get("strikethrough"), this.strikethrough, this._language.get("emphasis"), "agsbs.strikethrough");
+            this._taskbarCallback.addButton("h.svg", this._language.get("headline"), this.headline, this._language.get("headline"), "agsbs.h");
+            this._taskbarCallback.addButton("h1.svg", this._language.get("headline1"), this.h1, this._language.get("headline"), "agsbs.h1");
+            this._taskbarCallback.addButton("h2.svg", this._language.get("headline2"), this.h2, this._language.get("headline"), "agsbs.h2");
+            this._taskbarCallback.addButton("h3.svg", this._language.get("headline3"), this.h3, this._language.get("headline"), "agsbs.h3");
+            this._taskbarCallback.addButton("h4.svg", this._language.get("headline4"), this.h4, this._language.get("headline"), "agsbs.h4");
+            this._taskbarCallback.addButton("h5.svg", this._language.get("headline5"), this.h5, this._language.get("headline"), "agsbs.h5");
+            this._taskbarCallback.addButton("h6.svg", this._language.get("headline6"), this.h6, this._language.get("headline"), "agsbs.h6");
+            this._taskbarCallback.addButton('numbered_list.svg', this._language.get('orderedList'), this.orderedList, this._language.get('list'), "agsbs.numberedList");
+            this._taskbarCallback.addButton('list.svg', this._language.get('unorderedList'), this.unorderedList, this._language.get('list'), "agsbs.list");
+            this._taskbarCallback.addButton('table.svg', this._language.get('insertTable'), this.insertTable, this._language.get('table'), "agsbs.table");
+            this._taskbarCallback.addButton('import_table_csv.svg', this._language.get('importTableCsv'), this.insertCSVTable, this._language.get('table'), "agsbs.importTableCSV");
+            this._taskbarCallback.addButton("edit_table.svg", this._language.get("editTable"), this.editTable, this._language.get("table"), "agsbs.editTable");
+            this._taskbarCallback.addButton("formula.svg", this._language.get("formula"), this.formula, this._language.get("formatting"), "agsbs.formula");
+            this._taskbarCallback.addButton("inline_formula.svg", this._language.get("formulaInline"), this.inlineFormula, this._language.get("formatting"), "agsbs.inlineFormula");
+            this._taskbarCallback.addButton("code.svg", this._language.get("code"), this.code, this._language.get("formatting"), "agsbs.code");
+            this._taskbarCallback.addButton("quote.svg", this._language.get("blockquote"), this.blockquote, this._language.get("formatting"), "agsbs.quote");
+            this._taskbarCallback.addButton("link.svg", this._language.get("insertLink"), this.insertLink, this._language.get("insert"), "agsbs.link");
+            this._taskbarCallback.addButton('image.svg', this._language.get('insertGraphic'), this.insertImage, this._language.get('insert'), "agsbs.image");
+            this._taskbarCallback.addButton('footnote.svg', this._language.get('insertFootnote'), this.insertFootnote, this._language.get('insert'), "agsbs.footnote");
+            this._taskbarCallback.addButton('annotation.svg', this._language.get('authorAnnotation'), this.insertAnnotation, this._language.get('insert'), "agsbs.annotation");
+            this._taskbarCallback.addButton('hr.svg', this._language.get('horizontalRule'), this.insertHorizontalRule, this._language.get('separator'), "agsbs.hr");
+            this._taskbarCallback.addButton('new_page.svg', this._language.get('newPage'), this.addNewPage, this._language.get('separator'), "agsbs.newPage");
         };
+        /**
+         * Inserts a headline with a computed grade.
+         * It tries to smartly match what the next headline could be.
+         */
         this.headline = () => __awaiter(this, void 0, void 0, function* () {
             var result = yield this._headlineHelper.getNextHeadlineString();
             var headlineGrade = (result.match(/\#/g) || []).length;
             vscode.window.showInformationMessage(this._language.get("headlineInsertedWithGrade") + headlineGrade);
             this._headlineHelper.setSpecificHeadline(headlineGrade);
         });
+        /**
+         * Inserts a headline with grade 1
+         */
         this.h1 = () => __awaiter(this, void 0, void 0, function* () {
             this._headlineHelper.setSpecificHeadline(1);
         });
+        /**
+         * Inserts a headline with grade 2
+         */
         this.h2 = () => __awaiter(this, void 0, void 0, function* () {
             this._headlineHelper.setSpecificHeadline(2);
         });
+        /**
+         * Inserts a headline with grade 3
+         */
         this.h3 = () => __awaiter(this, void 0, void 0, function* () {
             this._headlineHelper.setSpecificHeadline(3);
         });
+        /**
+         * Inserts a headline with grade 4
+         */
         this.h4 = () => __awaiter(this, void 0, void 0, function* () {
             this._headlineHelper.setSpecificHeadline(4);
         });
+        /**
+         * Inserts a headline with grade 5
+         */
         this.h5 = () => __awaiter(this, void 0, void 0, function* () {
             this._headlineHelper.setSpecificHeadline(5);
         });
+        /**
+         * Inserts a headline with grade 6
+         */
         this.h6 = () => __awaiter(this, void 0, void 0, function* () {
             this._headlineHelper.setSpecificHeadline(6);
         });
+        /**
+         * Inserts a new Page identifier. It uses Matuc to determine what Page it is.
+         */
         this.addNewPage = () => __awaiter(this, void 0, void 0, function* () {
             var currentTextEditor = yield this._helper.getCurrentTextEditor();
             if (currentTextEditor.document.isDirty) {
@@ -98,6 +128,9 @@ class EditorFunctions {
             this._helper.insertStringAtStartOfLine(insertText);
             this._helper.focusDocument(); //Puts focus back to the text editor
         });
+        /**
+         * Inserts a horizontal rule.
+         */
         this.insertHorizontalRule = () => __awaiter(this, void 0, void 0, function* () {
             var text = "\n---\n\n";
             var insertPosition = yield this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
@@ -113,6 +146,9 @@ class EditorFunctions {
             }
             this._helper.focusDocument(); //Puts focus back to the text editor
         });
+        /**
+         * Adds the 'add Annotation'-Dialogue to to the sidebar.
+         */
         this.insertAnnotation = () => __awaiter(this, void 0, void 0, function* () {
             var setttingsTextboxContentIsOptional = yield this._settings.get("optionalTextboxContent");
             var form = this._snippets.get("insertAnnotationHTMLPart1");
@@ -127,6 +163,9 @@ class EditorFunctions {
             var script = this._snippets.get("insertAnnotationSCRIPT");
             this._sidebarCallback.addToSidebar(form, this._language.get("insertTextbox"), this.insertAnnotationSidebarCallback, this._language.get("insert"), "", script);
         });
+        /**
+         * Adds an specified annotation to the text.
+         */
         this.insertAnnotationSidebarCallback = (params) => __awaiter(this, void 0, void 0, function* () {
             var annotationType = params.annotationType.value;
             var color = params.color.value;
@@ -165,10 +204,16 @@ class EditorFunctions {
             }
             this._helper.focusDocument(); //Puts focus back to the text editor
         });
+        /**
+         * Adds the form dialogue to the sidebar
+         */
         this.insertFootnote = () => __awaiter(this, void 0, void 0, function* () {
             var form = this._snippets.get("insertFootnoteHTML");
             this._sidebarCallback.addToSidebar(form, this._language.get("insertFootnote"), this.insertFootnoteSidebarCallback, this._language.get("insertFootnote"));
         });
+        /**
+         * Adds a specified footnote to the text.
+         */
         this.insertFootnoteSidebarCallback = (params) => __awaiter(this, void 0, void 0, function* () {
             var label = params.footLabel.value;
             var text = params.footText.value;
@@ -182,28 +227,30 @@ class EditorFunctions {
                 vscode.window.showErrorMessage(this._language.get("footLabelErrorDetail"));
                 return false;
             }
-            // var currentTextEditor = await this._helper.getCurrentTextEditor();
-            // var currentSelection = await this._helper.getWordsSelection(currentTextEditor);
             var pageEndLabel = currentLineLabel + ": " + text;
             var endPoint = yield this._insertHelper.getPageEndLine();
-            console.log(endPoint);
             if (endPoint === false) {
                 yield this._helper.insertStringAtStartOfLine(currentLineLabel + "\n" + pageEndLabel + "\n");
             }
             else {
                 yield this._helper.insertStringAtStartOfLineOrLinebreak(currentLineLabel);
                 endPoint = yield this._insertHelper.getPageEndLine();
-                console.log(endPoint);
                 var currentTextEditor = yield this._helper.getCurrentTextEditor();
                 var newEndSelection = new vscode.Selection(endPoint, endPoint);
                 yield this._helper.insertStringAtStartOfLineOrLinebreak(pageEndLabel, currentTextEditor, newEndSelection);
             }
             this._helper.focusDocument(); //Puts focus back to the text editor
         });
+        /**
+         * Adds a quote identifier at the start of the current line.
+         */
         this.blockquote = () => __awaiter(this, void 0, void 0, function* () {
             yield this._helper.toggleCharactersAtBeginningOfLine("> ");
             this._helper.focusDocument(); //Puts focus back to the text editor
         });
+        /**
+         * Marks the current selection as code.
+         */
         this.code = () => __awaiter(this, void 0, void 0, function* () {
             var currentTextEditor = yield this._helper.getCurrentTextEditor();
             var selection = yield this._helper.getWordsSelection(currentTextEditor);
@@ -216,10 +263,16 @@ class EditorFunctions {
             yield this._helper.toggleCharactersAtStartAndEnd(startInsertText, endInsertText);
             this._helper.focusDocument(); //Puts focus back to the text editor
         });
+        /**
+         * Toggles the current selection as a inline formula
+         */
         this.inlineFormula = () => __awaiter(this, void 0, void 0, function* () {
             yield this._helper.toggleCharactersAtStartAndEnd("$", "$");
             this._helper.focusDocument(); //Puts focus back to the text editor
         });
+        /**
+         * Toggles the current selection as a formula
+         */
         this.formula = () => __awaiter(this, void 0, void 0, function* () {
             yield this._helper.toggleCharactersAtStartAndEnd("$$ ", " $$");
             this._helper.focusDocument(); //Puts focus back to the text editor
@@ -231,6 +284,9 @@ class EditorFunctions {
             yield this._helper.toggleCharactersAtBeginningOfLine("- ");
             this._helper.focusDocument(); //Puts focus back to the text editor
         });
+        /**
+         * Adds a Marker at the current line as a ordered list.
+         */
         this.orderedList = () => __awaiter(this, void 0, void 0, function* () {
             this._listHelper.orderedList();
             this._helper.focusDocument(); //Puts focus back to the text editor
@@ -269,11 +325,9 @@ class EditorFunctions {
          * Callback of the Sidebar for editing a table
          */
         this.editTableSidebarCallback = (params) => __awaiter(this, void 0, void 0, function* () {
-            //console.log(params);
             var hasHeader = params.tableHeadCheckbox.checked;
             var tableType = params.tableType.value;
             var rawdata = params.tableJSON.value;
-            //console.log("rawdata " + rawdata);
             var data;
             try {
                 data = JSON.parse(rawdata);
@@ -283,12 +337,9 @@ class EditorFunctions {
                 return;
             }
             var tableData = yield this._tableHelper.generateCSVfromJSON(rawdata);
-            console.log("TABLEData" + tableData);
-            //console.log(params.hiddenFileName);
             var fileName = params.hiddenFileName.value.replace(/^.*[\\\/]/, '');
             var folderName = params.hiddenFileName.value.substr(0, params.hiddenFileName.value.lastIndexOf("/") - 1);
             var defaultGeneratedFolderName = yield this._tableHelper.getTableFolderName();
-            console.log("TABLE DATA", tableData, "END");
             var savedTable;
             if (folderName === defaultGeneratedFolderName) {
                 savedTable = yield this._tableHelper.writeCSVFile(tableData, fileName);
@@ -322,9 +373,7 @@ class EditorFunctions {
             var thisPath = yield this._helper.getCurrentDocumentFolderPath();
             var results = yield this._tableHelper.getAllTablesInFolder(thisPath);
             var selectionTablesHTML = this._tableHelper.generateSelectTableOptionsHTML(results);
-            //<input type="text" name="uriTable" placeholder="${this._language.get("uriTable")}"><br><br>
             var form = `
-        
         <select name='selectTable'>
         <option selected="true" disabled="disabled" value=''>${this._language.get("selectTable")}</option>
         ${selectionTablesHTML}
@@ -339,7 +388,7 @@ class EditorFunctions {
             var urlData = params.selectTable.value;
             var url;
             if (urlData === "") {
-                console.log("No File Selected");
+                vscode.window.showErrorMessage(this._language.get("noFileSelected"));
                 return false;
             }
             else {
@@ -434,8 +483,6 @@ class EditorFunctions {
          * @param params parameters given by the callback about the html-elements of the html-form
          */
         this.insertImageSidebarCallback = (params) => __awaiter(this, void 0, void 0, function* () {
-            //TODO: Fallback if Matuc cannot be loaded
-            //stringToInsert = '![' + altText + '](' + pictureSource + ')'; //TODO: Delete
             var altText = "";
             var pictureTitle = "";
             var pictureSelector = JSON.parse(params.selectPicture.value);
@@ -443,10 +490,7 @@ class EditorFunctions {
             pictureTitle += params.graphicTitle.value;
             var pictureSource = "";
             pictureSource += pictureSelector.markdownReadyRelativePath;
-            //console.log(altText, false, pictureSelector.basePath, pictureTitle, pictureSelector.markdownReadyRelativePath);
             var result = yield this._matucCommands.imageDescription(altText, params.outsourceCheckbox.checked, pictureSelector.basePath, pictureTitle, pictureSelector.markdownReadyRelativePath);
-            //TODO: Insert only if the selection is at the start of the line, otherwise do a linebreak first
-            //TODO: Handle Alternative direct Path 
             yield this._helper.insertStringAtStartOfSelection(result['internal'].verbatim);
             //typescript does not like .internal, so this workaround is used.
             if (result.hasOwnProperty("external")) { // if the description is outsourced, the returning JSON has a 'external' property
