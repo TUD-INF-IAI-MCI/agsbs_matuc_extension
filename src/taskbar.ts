@@ -19,6 +19,7 @@ export default class Taskbar {
     private _editorFunctions: EditorFunctions;
     private _callbacks: any;
     private _projectToolsFunctions: ProjectToolsFunctions;
+    private _functionsAreAlreadyRegisterd: boolean;
     constructor(sidebarCallback, context) {
         this._context = context;
         this._taskbarIsVisible = false;
@@ -101,6 +102,7 @@ export default class Taskbar {
      * @param commandIdentifier optional. The identifier used in the package.json command and key binding.
      */
     public addButton = (iconName: string, name: string, callback: any, section: string, commandIdentifier?: string) => {
+
         var id = this._helper.generateUuid();
         var newSection = "";
         if (section !== undefined) {
@@ -120,10 +122,19 @@ export default class Taskbar {
             if (!commandIdentifier.includes("agsbs.")) {
                 commandIdentifier = "agsbs." + commandIdentifier;
             }
-            let disposable = vscode.commands.registerCommand(commandIdentifier, () => {
-                callback();
-            });
+            try {
+                let disposable = vscode.commands.registerCommand(commandIdentifier, () => {
+                    callback();
+                });
+            } catch (e) {
+                //If it tries to re-register a command an error will be trown. However, 
+                //because there is no check if a command is already registered, this is the workarround
+                console.log("No need to re-register editor command.");
+            }
+
         }
+
+
 
     }
 
@@ -153,10 +164,17 @@ export default class Taskbar {
             if (!commandIdentifier.includes("agsbs.")) {
                 commandIdentifier = "agsbs." + commandIdentifier;
             }
-            let disposable = vscode.commands.registerCommand(commandIdentifier, () => {
-                callback();
-            });
+            try {
+                let disposable = vscode.commands.registerCommand(commandIdentifier, () => {
+                    callback();
+                });
+            } catch (e) {
+                //If it tries to re-register a command an error will be trown. However, 
+                //because there is no check if a command is already registered, this is the workarround
+                console.log("No need to re-register project tool command.");
+            }
         }
+
     }
 
     /** This adds HTML to the taskbars Webview, at the given point. 

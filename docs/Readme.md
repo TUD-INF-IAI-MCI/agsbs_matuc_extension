@@ -15,6 +15,7 @@ Eine kurze Anleitung zu TypeScript gibt es hier: [Link zum Tutorial](https://www
 
 </div>
 
+
 ## Aufbau der Extension
 
 Der Aufbau der Extension wird gut auf der [Webseite von VSCode](https://code.visualstudio.com/api/get-started/extension-anatomy "Link zum Aufbau einer Extension mit VSCode") erklärt.  

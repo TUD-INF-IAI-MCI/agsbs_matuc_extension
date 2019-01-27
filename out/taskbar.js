@@ -54,9 +54,16 @@ class Taskbar {
                 if (!commandIdentifier.includes("agsbs.")) {
                     commandIdentifier = "agsbs." + commandIdentifier;
                 }
-                let disposable = vscode.commands.registerCommand(commandIdentifier, () => {
-                    callback();
-                });
+                try {
+                    let disposable = vscode.commands.registerCommand(commandIdentifier, () => {
+                        callback();
+                    });
+                }
+                catch (e) {
+                    //If it tries to re-register a command an error will be trown. However, 
+                    //because there is no check if a command is already registered, this is the workarround
+                    console.log("No need to re-register editor command.");
+                }
             }
         };
         /** Adds a Button to the Taskbar Project Tools
@@ -85,9 +92,16 @@ class Taskbar {
                 if (!commandIdentifier.includes("agsbs.")) {
                     commandIdentifier = "agsbs." + commandIdentifier;
                 }
-                let disposable = vscode.commands.registerCommand(commandIdentifier, () => {
-                    callback();
-                });
+                try {
+                    let disposable = vscode.commands.registerCommand(commandIdentifier, () => {
+                        callback();
+                    });
+                }
+                catch (e) {
+                    //If it tries to re-register a command an error will be trown. However, 
+                    //because there is no check if a command is already registered, this is the workarround
+                    console.log("No need to re-register project tool command.");
+                }
             }
         };
         /** This adds HTML to the taskbars Webview, at the given point.

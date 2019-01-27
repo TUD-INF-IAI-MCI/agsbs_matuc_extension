@@ -1,65 +1,52 @@
-# agsbs README
+AGSBS Visual Studio Code Package
+==================
 
-This is the README for your extension "agsbs". After writing up a brief description, we recommend including the following sections.
 
-## Features
+##About this extension
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+This package is developed to make the transcription process more effective.
+It is a GUI toolkit which helps to transcribe study material to markdown which fulfill the AGSBS guidelines. A lot of its functions are executed and processed by MAGSBS. Our extension parses the returns strings and writes them into files, shows notifications, warnings and much more. It simply helps you to write and edit markdown faster and more easily.
 
-For example if there is an image subfolder under your extension project workspace:
+## What is AGSBS?
 
-\!\[feature X\]\(images/feature-x.png\)
+AGSBS (Arbeitsgruppe Studium für Blinde und Sehbehinderte eng. working group for blind and visually impaired Students) is a working group of TU Dresden (germany). AGSBS works on (automatically) transcribing study material to offer it to the blind an visually impaired students.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## Issues and new features
 
-## Requirements
+There are a few open issues, please check [Open Issues](https://github.com/TUD-INF-IAI-MCI/agsbs_matuc_extension/issues).
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+If you found a new issue. Describe how it occurs:
 
-## Extension Settings
+- Which view was opened?
+- Did you use a shortcut or a icon?
+- Was a error message shown?
+- What files was open?
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+Also an screenshot is very helpful
 
-For example:
+## Functions
 
-This extension contributes the following settings:
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
 
-## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- GUI for the creation of different markdown table
+  - grid table
+  - pipe table
+  - simple table
+- import data from a csv file and editing markdown tables:
+![Demonstration of the table import and table editing functions](./docs/pictures/demonstration.gif "Demonstration of the table import and table editing functions")
 
-## Release Notes
+- GUI for adding a image and add alternative text
+- Formatting the markdown by various icons
+- generation of HTML by using [Matuc](https://github.com/TUD-INF-IAI-MCI/AGSBS-infrastructure/tree/master/MAGSBS) (Markdown TU Dresden Converter)
+- GUI for adding Links
+- preview for Markdown
+- insertation of textboxes or annotations
+- insertation of text frames (decoration)
+- annotation of the creator
 
-Users appreciate release notes as you update your extension.
+Please note that you have to install Matuc to use all features.
 
-### 1.0.0
+## Multilanguage
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Supported languages of GUI are German and English. Shown warnings and notifications are created by MAGSBS. Other languages can be used in MAGSBS. For more information read [MAGSBS Localization](https://github.com/TUD-INF-IAI-MCI/AGSBS-infrastructure#localization)
