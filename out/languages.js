@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const vscode = require("vscode");
 const en_1 = require("./languages/en");
+const de_1 = require("./languages/de");
 class Language {
     constructor() {
         /**
@@ -20,10 +21,13 @@ class Language {
          * @param language Language to be used.
          */
         this._loadLanguageFile = (language) => __awaiter(this, void 0, void 0, function* () {
-            console.log("Language: " + language);
+            //console.log("Language: " + language);
             switch (language) {
                 case "en":
                     this.languageClass = new en_1.default();
+                    break;
+                case "de":
+                    this.languageClass = new de_1.default();
                     break;
                 default:
                     this.languageClass = new en_1.default();

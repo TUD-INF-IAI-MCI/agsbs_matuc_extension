@@ -3,6 +3,7 @@
  */
 import * as vscode from 'vscode';
 import En from './languages/en';
+import DE from './languages/de';
 
 export default class Language {
     private language: string;
@@ -24,17 +25,20 @@ export default class Language {
      * @param language Language to be used.
      */
     private _loadLanguageFile = async (language) => {
-        console.log("Language: " + language);
+        //console.log("Language: " + language);
         switch (language) {
             case "en":
                 this.languageClass = new En();
-
+                break;
+            case "de":
+                this.languageClass = new DE();
                 break;
             default:
                 this.languageClass = new En();
                 break;
         }
     }
+
 
     /**
      * Returns the translated String of the identifier

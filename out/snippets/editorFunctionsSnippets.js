@@ -28,7 +28,7 @@ class EditorFunctionSnippets {
         /****************INSERT IMAGE ****************** */
         this.d['insertImageFormPart1'] = `<input type='checkbox' id='outsourceCheckbox' name='outsourceCheckbox'>
                                     <label for='outsourceCheckbox'>${this._language.get("outsourceCheckbox")}</label><br  role="none">
-                                    
+                                    <div class="spacing" role="none"></div>
                                     <label for='selectPicture'>${this._language.get("selectPictureFromHere")}</label><br  role="none">
                                         <select name='selectPicture'>
                                         <option selected="true" disabled="disabled" value=''>${this._language.get("selectImageFile")}</option> `;

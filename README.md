@@ -1,5 +1,4 @@
-AGSBS Visual Studio Code Package
-==================
+#AGSBS Visual Studio Code Extension
 
 
 ##About this extension
@@ -26,8 +25,7 @@ Also an screenshot is very helpful
 
 ## Functions
 
-
-
+$ \sigma $
 
 - GUI for the creation of different markdown table
   - grid table
