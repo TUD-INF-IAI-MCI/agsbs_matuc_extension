@@ -217,7 +217,9 @@ export default class En {
 		this.d['linuxNotSupportedYet'] = "Linux is not supported yet.";
 		this.d['noFileSelected'] = "No File Selected.";
 		this.d['gitIsNotEnabled'] = "Git is not enabled. Go to Settings -> Extensions -> AGSBS and enable Git to use this function.";
-		this.d['sidebarWelcome'] = "Welcome to AGSBS!";
+		this.d['sidebarWelcome'] = "Welcome to AGSBS extension for Visual Studio Code!";
+		this.d['sendingError'] = "If you find a bug or have another issue please send a mail."+
+								 "<a href=\"mailto:toAdd@mail.de\">Send mail</a>";			
 		this.d['MatucIsInstalledWarning'] = "Matuc is NOT installed! Some features might not work.";
 		this.d['osDocumentsFolderName'] = "Documents";//The folder name of the documents folder in the userspace
 
