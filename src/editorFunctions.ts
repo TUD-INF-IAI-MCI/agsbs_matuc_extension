@@ -36,7 +36,7 @@ export default class EditorFunctions {
 
     constructor(taskbarCallback, sidebarCallback, context) {
         this._helper = new Helper;
-        this._imageHelper = new ImageHelper;
+        this._imageHelper = new ImageHelper(context);
         this._sidebarCallback = sidebarCallback;
         this._taskbarCallback = taskbarCallback;
         this._language = new Language;
@@ -520,8 +520,9 @@ export default class EditorFunctions {
         var thisPicturesArray = await this._imageHelper.getAllPicturesInFolder(thisPath, thisPicturesFolderName);
         var allPicturesHTMLString = await this._imageHelper.generateSelectImagesOptionsHTML(thisPicturesArray);
         var form = "";
+        var script =this._snippets.get("insertImageScript");
         form += this._snippets.get('insertImageFormPart1') + allPicturesHTMLString + this._snippets.get('insertImageFormPart2');
-        this._sidebarCallback.addToSidebar(form, this._language.get("insertGraphic"), this.insertImageSidebarCallback, this._language.get("insert"));
+        this._sidebarCallback.addToSidebar(form, this._language.get("insertGraphic"), this.insertImageSidebarCallback, this._language.get("insert"),"",script);
     }
 
     /**
@@ -557,7 +558,23 @@ export default class EditorFunctions {
      */
     public insertLink = () => {
         var form = this._snippets.get("insertLinkForm");
-        this._sidebarCallback.addToSidebar(form, this._language.get("insertLink"), this.insertLinkSidebarCallback, this._language.get("insertLinkSubmit"));
+        var script = `
+        function valueChanged(){
+            var urlElement = document.getElementById("url");
+            var url = urlElement.value;
+            var linkTextElement = document.getElementById("linkText");
+            var linkText = linkTextElement.value;
+            var linkTitleElement = document.getElementById("linkTitle");
+            var linkTitle = linkTitleElement.value;
+            var a = document.getElementById("link");
+
+            a.href = url;
+            a.innerHTML = linkText;
+            a.title = linkTitle;
+
+        }
+        `;
+        this._sidebarCallback.addToSidebar(form, this._language.get("insertLink"), this.insertLinkSidebarCallback, this._language.get("insertLinkSubmit"),"",script);
     }
 
     /**

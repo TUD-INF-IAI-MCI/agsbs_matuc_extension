@@ -18,33 +18,69 @@ class EditorFunctionSnippets {
         this.d = [];
         /****************INSERT LINK ****************** */
         this.d['insertLinkForm'] = `<label for='url'>${this._language.get("link")}</label><br  role="none">
-                      <input type='text' id='url' name='url' required><br  role="none">
+                      <input type='text' id='url' name='url' required><br  role="none" onkeyup="valueChanged()" onchange="valueChanged()">
                       <div class="spacing" role="none"></div>
                       <label for='linkText'>${this._language.get("linkText")}</label><br  role="none">
-                      <input type='text' id='linkText' name='linkText'><br  role="none">
+                      <input type='text' id='linkText' name='linkText' onkeyup="valueChanged()" onchange="valueChanged()" ><br  role="none">
                       <div class="spacing" role="none"></div>
                       <label for='linkTitle'>${this._language.get("linkTitle")}</label><br  role="none">
-                      <input type='text' id='linkTitle' name='linkTitle'>`;
+                      <input type='text' id='linkTitle' name='linkTitle' onkeyup="valueChanged()" onchange="valueChanged()">
+                      <div class="spacing" role="none"></div>
+                      <fieldset id="fieldset" name="preview"><legend>${this._language.get("preview")}</legend><a id="link" href="" title="" target="_blank"></a></fieldset>
+                      `;
         /****************INSERT IMAGE ****************** */
         this.d['insertImageFormPart1'] = `<input type='checkbox' id='outsourceCheckbox' name='outsourceCheckbox'>
-                                    <label for='outsourceCheckbox'>${this._language.get("outsourceCheckbox")}</label><br  role="none">
+                                    <label for='outsourceCheckbox'>${this._language.get("outsourceCheckbox")}</label><br role="none">
                                     <div class="spacing" role="none"></div>
-                                    <label for='selectPicture'>${this._language.get("selectPictureFromHere")}</label><br  role="none">
-                                        <select name='selectPicture'>
+                                    <label for='selectPicture'>${this._language.get("selectPictureFromHere")}</label><br role="none">
+                                        <select name='selectPicture' id="selectPicture" onchange="selectionChanged()">
                                         <option selected="true" disabled="disabled" value=''>${this._language.get("selectImageFile")}</option> `;
         this.d['insertImageFormPart2'] = `</select><br  role="none">
                                         <div class="spacing" role="none"></div>
-                                        <label for='altText'>${this._language.get("altText")}</label><br  role="none">
-                                        <input type='text' id='altText' name='altText'><br  role="none">
+                                        <label for='altText'>${this._language.get("altText")}</label><br role="none">
+                                        <input type='text' id='altText' name='altText' onkeyup="selectionChanged()" onchange="selectionChanged()"><br role="none">
                                         <div class="spacing" role="none"></div>
-                                        <label for='graphicTitle'>${this._language.get("graphicTitle")}</label><br  role="none">
-                                        <input type='text' id='graphicTitle' name='graphicTitle'><br  role="none"> `;
+                                        <label for='graphicTitle'>${this._language.get("graphicTitle")}</label><br role="none">
+                                        <input type='text' id='graphicTitle' name='graphicTitle'><br role="none"> 
+                                        <div class="spacing" role="none"></div>
+                                        <fieldset id="fieldset" name="preview"><legend>${this._language.get("preview")}</legend><img id="image" src="" alt="" onerror="onImgError()"></fieldset>
+                                        `;
+        this.d['insertImageScript'] = `
+                                        function selectionChanged(){
+                                            var selector = document.getElementById("selectPicture");
+                                            var altText = document.getElementById("altText");
+                                            var image = document.getElementById("image");
+                                            var value = selector.value;
+                                            if(value!==""){
+                                                try{
+                                                var json = JSON.parse(value);
+                                                } catch(e){
+                                                    console.log(e);
+                                                }
+                                                image.src = "vscode-resource:"+ json.vscodePath;
+                                                var errorMessage = document.getElementById('errorMessage');
+                                                if(errorMessage !== undefined && errorMessage !== null){
+                                                    errorMessage.parentNode.removeChild(errorMessage);
+                                                }
+                                            }
+                                            image.alt = altText.value;
+                                        }
+                                        function onImgError(){
+                                            var selector = document.getElementById("selectPicture");
+                                            if(selector.value == ""){
+                                                return;
+                                            }
+                                            console.log("IMAGE ERROR");
+                                            var fieldset = document.getElementById("fieldset");
+                                                    var errorMessage = '<span id="errorMessage">${this._language.get("previewNotAvailableCheckWorspaceFolder")}</span>';
+                                                    fieldset.insertAdjacentHTML('beforeend', errorMessage);
+        } `;
         /****************INSERT TABLE ****************** */
         this.d['insertTableHTML'] = `<input name="tableHeadCheckbox" id="tableHeadCheckbox" type="checkbox" onchange="tableHeaderToggle(this)">
-                                    <label for="tableHeadCheckbox">${this._language.get("tableHeadCheckbox")}</label><br  role="none">
+                                    <label for="tableHeadCheckbox">${this._language.get("tableHeadCheckbox")}</label><br role="none">
                                     <div class="spacing" role="none"></div>
                                     
-                                    <label for="tableType">${this._language.get("tableType")}</label><br  role="none">
+                                    <label for="tableType">${this._language.get("tableType")}</label><br role="none">
                                     <select name='tableType' id='tableType'>
                                         <option value='gridTable'>${this._language.get("gridTable")}</option>
                                         <option value='pipeTable'>${this._language.get("pipeTable")}</option>

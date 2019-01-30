@@ -207,6 +207,8 @@ class En {
         this.d['sidebarWelcome'] = "Welcome to AGSBS!";
         this.d['MatucIsInstalledWarning'] = "Matuc is NOT installed! Some features might not work.";
         this.d['osDocumentsFolderName'] = "Documents"; //The folder name of the documents folder in the userspace
+        this.d['preview'] = "Preview";
+        this.d['previewNotAvailableCheckWorspaceFolder'] = "The Preview is currently not available. Please check if the folder (the current file is in) is open as a workspace folder on the left.";
         //unused:
         // this.d['SelectedWrongFileErrorDetail'] =  'Please select a .md or .html file.';
         // this.d['changesFromEditProjectDialogSaved'] =  'Your changes has been saved.';

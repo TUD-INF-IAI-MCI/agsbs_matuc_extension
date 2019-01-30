@@ -206,6 +206,8 @@ class En {
         this.d['sidebarWelcome'] = "Wilkommen bei AGSBS!";
         this.d['MatucIsInstalledWarning'] = "Matuc ist NICHT installiert! Manche Funktionen werden nicht verfügbar sein.";
         this.d['osDocumentsFolderName'] = "Dokumente"; //The folder name of the documents folder in the userspace
+        this.d['preview'] = "Vorschau";
+        this.d['previewNotAvailableCheckWorspaceFolder'] = "Die Vorschau ist aktuell nicht verfügbar. Bitte überprüfen Sie, ob der Ordner, in dem sich die aktuelle Datei befindet, als Workspace-Ordner geöffnet ist (auf der linken Seite des Editors).";
     }
 }
 exports.default = En;

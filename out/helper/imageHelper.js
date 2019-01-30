@@ -16,10 +16,13 @@ const path = require("path");
 const fs = require("fs");
 const languages_1 = require("../languages");
 const settingsHelper_1 = require("./settingsHelper");
+const helper_1 = require("./helper");
 class ImageHelper {
-    constructor() {
+    constructor(context) {
         this._language = new languages_1.default;
         this._settings = new settingsHelper_1.default;
+        this._helper = new helper_1.default;
+        this._context = context;
     }
     /**
      * Gets the name of the default picture folder
@@ -134,6 +137,9 @@ class ImageHelper {
             var markdownReadyRelativePath = fileObject.relativePath.replace(" ", "%20"); //Markdown cannot handle Spaces
             //var markdownReadyFileName = fileObject.fileName.replace(" ", "%20");
             fileObject.markdownReadyRelativePath = markdownReadyRelativePath;
+            const onDiskPath = vscode.Uri.file(fileObject.completePath);
+            // And get the special URI to use with the webview
+            fileObject.vscodePath = onDiskPath.with({ scheme: 'vscode-resource' }).path; // For Preview
             var json = JSON.stringify(fileObject);
             var myEscapedJSONString = json.replace(/\\n/g, "\\n")
                 .replace(/\\'/g, "\\'")
@@ -142,7 +148,7 @@ class ImageHelper {
                 .replace(/\\r/g, "\\r")
                 .replace(/\\t/g, "\\t")
                 .replace(/\\b/g, "\\b")
-                .replace(/\\f/g, "\\f"); //replacing all special characters to savely inject the json into the value
+                .replace(/\\f/g, "\\f"); //replacing all special characters to savely inject the json into the value. This might not do anything, not sure. But it works.
             returnString += `<option value='${myEscapedJSONString}'>${fileObject.fileName}</option>`;
             //adding extra attributes that will later be transfered to the params-object, so it can be used later
         });

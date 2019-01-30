@@ -7,15 +7,20 @@ import * as path from 'path';
 import * as fs from 'fs';
 import Language from '../languages';
 import SettingsHelper from './settingsHelper';
+import Helper from './helper';
 
 
 
 export default class ImageHelper {
     private _language: Language;
     private _settings: SettingsHelper;
-    constructor() {
+    private _helper: Helper;
+    private _context: vscode.ExtensionContext;
+    constructor(context) {
         this._language = new Language;
         this._settings = new SettingsHelper;
+        this._helper = new Helper;
+        this._context = context;
     }
 
     /**
@@ -131,6 +136,9 @@ export default class ImageHelper {
             var markdownReadyRelativePath = fileObject.relativePath.replace(" ", "%20"); //Markdown cannot handle Spaces
             //var markdownReadyFileName = fileObject.fileName.replace(" ", "%20");
             fileObject.markdownReadyRelativePath = markdownReadyRelativePath;
+            const onDiskPath = vscode.Uri.file(fileObject.completePath);
+            // And get the special URI to use with the webview
+            fileObject.vscodePath = onDiskPath.with({ scheme: 'vscode-resource' }).path; // For Preview
             var json = JSON.stringify(fileObject);
             var myEscapedJSONString = json.replace(/\\n/g, "\\n")
                 .replace(/\\'/g, "\\'")
@@ -139,7 +147,7 @@ export default class ImageHelper {
                 .replace(/\\r/g, "\\r")
                 .replace(/\\t/g, "\\t")
                 .replace(/\\b/g, "\\b")
-                .replace(/\\f/g, "\\f"); //replacing all special characters to savely inject the json into the value
+                .replace(/\\f/g, "\\f"); //replacing all special characters to savely inject the json into the value. This might not do anything, not sure. But it works.
             returnString += `<option value='${myEscapedJSONString}'>${fileObject.fileName}</option>`;
             //adding extra attributes that will later be transfered to the params-object, so it can be used later
         });

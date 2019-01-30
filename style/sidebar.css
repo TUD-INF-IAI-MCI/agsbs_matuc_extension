@@ -233,4 +233,18 @@ select:not(:-internal-list-box) {
 .custom-file-input:active::before {
   background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
 }
+
+fieldset {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+fieldset a {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+fieldset img {
+  max-height: 30vh;
+}
 /*# sourceMappingURL=sidebar.css.map */

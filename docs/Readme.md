@@ -282,6 +282,8 @@ Der Parameter ```params``` ist ein Objekt, welches alle Form-Elemente mit Namen 
 Es ist ratsam, nach der Ausführung der eigenen Funktion am Ende ```this._helper.focusDocument();``` aufzurufen. Dabei wird der Fokus wieder auf das Dokument gelegt, damit direkt weiter geschrieben werden kann.
 </div>
 
+---
+
 ## Ressourcen und wichtige Konzepte:
 
 ### Allgemein
@@ -313,6 +315,13 @@ input {
 
 Man sieht hier, dass hier CSS-Variablen verwendet werden. Der Punkt wird durch einen ```-``` ersetzt und hinter ein ```--vscode-``` geschrieben.
 Es wurde aber schon versucht, alle Haupt-Eingabefelder von Formularen einzurichten. Dies geschah in ```style/sidebar.scss```.
+
+#### Debugging in der WebView
+Leider können die Default-Developer-Tools nicht auf den Inhalt von WebViews zugreifen. Stattdessen gibt es spezielle Developer Tools dafür, die extra aktiviert werden müssen:
+1. Aktivieren der Tastenkombination. Unter **Einstellungen -> Tastenkombinationen** bei dem Punkt *WebView Entwicklertools öffnen* eine Tastenkombination hinzufügen. (Befehl der Kombination: ```workbench.action.webview.openDeveloperTools```).
+2. Wenn nun der Entwicklungshost geöffnet ist, eine Webview fokusieren und die entsprechende Tastenkombination drücken. 
+Dabei wird dann für jede WebView ein neues Developer-Tools-Fenster geöffnet. Weitere Infos findet man unter: [Debugging in WebViews](https://code.visualstudio.com/api/extension-guides/webview#inspecting-and-debugging-webviews "Webseite von VSCode WebView API, zum Debuggen in WebViews").
+
 
 ## Bekannte Bugs und Probleme
 Leider ist VSCode nicht perfekt (diese Extension auch nicht, aber daran kann gearbeitet werden ;-) ).

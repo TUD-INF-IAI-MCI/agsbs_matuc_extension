@@ -475,8 +475,9 @@ class EditorFunctions {
             var thisPicturesArray = yield this._imageHelper.getAllPicturesInFolder(thisPath, thisPicturesFolderName);
             var allPicturesHTMLString = yield this._imageHelper.generateSelectImagesOptionsHTML(thisPicturesArray);
             var form = "";
+            var script = this._snippets.get("insertImageScript");
             form += this._snippets.get('insertImageFormPart1') + allPicturesHTMLString + this._snippets.get('insertImageFormPart2');
-            this._sidebarCallback.addToSidebar(form, this._language.get("insertGraphic"), this.insertImageSidebarCallback, this._language.get("insert"));
+            this._sidebarCallback.addToSidebar(form, this._language.get("insertGraphic"), this.insertImageSidebarCallback, this._language.get("insert"), "", script);
         });
         /**
          * The Callback for inserting an image from the sidebar, inserts the image
@@ -505,7 +506,23 @@ class EditorFunctions {
          */
         this.insertLink = () => {
             var form = this._snippets.get("insertLinkForm");
-            this._sidebarCallback.addToSidebar(form, this._language.get("insertLink"), this.insertLinkSidebarCallback, this._language.get("insertLinkSubmit"));
+            var script = `
+        function valueChanged(){
+            var urlElement = document.getElementById("url");
+            var url = urlElement.value;
+            var linkTextElement = document.getElementById("linkText");
+            var linkText = linkTextElement.value;
+            var linkTitleElement = document.getElementById("linkTitle");
+            var linkTitle = linkTitleElement.value;
+            var a = document.getElementById("link");
+
+            a.href = url;
+            a.innerHTML = linkText;
+            a.title = linkTitle;
+
+        }
+        `;
+            this._sidebarCallback.addToSidebar(form, this._language.get("insertLink"), this.insertLinkSidebarCallback, this._language.get("insertLinkSubmit"), "", script);
         };
         /**
          * gets called when the 'insert Link'-Button is pressed
@@ -542,7 +559,7 @@ class EditorFunctions {
             this._helper.focusDocument(); //Puts focus back to the text editor
         });
         this._helper = new helper_1.default;
-        this._imageHelper = new imageHelper_1.default;
+        this._imageHelper = new imageHelper_1.default(context);
         this._sidebarCallback = sidebarCallback;
         this._taskbarCallback = taskbarCallback;
         this._language = new languages_1.default;
