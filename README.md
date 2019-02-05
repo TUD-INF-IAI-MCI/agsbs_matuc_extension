@@ -1,4 +1,5 @@
-#AGSBS Visual Studio Code Extension
+AGSBS Visual Studio Code Extension
+----
 
 
 ##About this extension
@@ -25,7 +26,6 @@ Also an screenshot is very helpful
 
 ## Functions
 
-$ \sigma $
 
 - GUI for the creation of different markdown table
   - grid table
@@ -48,3 +48,6 @@ Please note that you have to install Matuc to use all features.
 ## Multilanguage
 
 Supported languages of GUI are German and English. Shown warnings and notifications are created by MAGSBS. Other languages can be used in MAGSBS. For more information read [MAGSBS Localization](https://github.com/TUD-INF-IAI-MCI/AGSBS-infrastructure#localization)
+
+## Creation of this Project
+This Extension for Visual Studio Code was created by Lucas Vogel (lucas.vogel2 &#91;at&#93; tu-dresden.de) and is a recreation of the already existing [AGSBS Atom Plugin](https://github.com/TUD-INF-IAI-MCI/agsbs_atom_package). 
