@@ -115,8 +115,8 @@ export default class MatucCommands {
 			selection = this._helper.getWordsSelection(currentTextEditor);
 		}
 		var line = selection.start.line;
-		var thisPath = currentTextEditor.document.uri.path;
-		var cmd = `matuc_js addpnum -f ${thisPath} ${line}`;
+		var thisPath = currentTextEditor.document.uri.fsPath;		
+		var cmd = `matuc_js addpnum -f "${thisPath}" ${line}`;
 		return new Promise(function (resolve, reject) {
 			try {
 				exec(cmd, (error, stdout, stderr) => {
