@@ -351,9 +351,10 @@ export default class ProjectToolsFunctions {
             vscode.window.showErrorMessage(this._language.get("gitIsNotEnabled"));
             return;
         }
+        var gitUserName = await this._settings.get("gitUserName");
         var form = `
         <label for="gitUser">${this._language.get("gitUser")}</label>
-        <input id="gitUser" name="gitUser" type="text" required="true">
+        <input id="gitUser" name="gitUser" type="text" required="true" value="${gitUserName}">
         <div class="spacing" role="none"></div>
         <label for="repoName">${this._language.get("repoName")}</label>
         <input id="repoName" name="repoName" type="text" required="true">
