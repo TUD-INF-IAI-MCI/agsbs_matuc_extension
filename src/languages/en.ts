@@ -112,8 +112,8 @@ export default class En {
 
 		// //git
 		this.d['gitUser'] = 'Username  (ZIH-Login)';
-		this.d['gitCloneSucess'] = "Repo was cloned successfully!";
-		this.d['gitCloneError'] = "An error occurs during the cloning. Check whether you load your private key.";
+		this.d['gitCloneSucess'] = "Repo ${repoName} was cloned successfully!";
+		this.d['gitCloneError'] = "An error occurs during the cloning. Check whether you load your private key or whether the git directory is existing.";
 		// //new-project
 		this.d['noFolder'] = 'No folder set';
 		this.d['preface'] = 'Add a preface to the document.';

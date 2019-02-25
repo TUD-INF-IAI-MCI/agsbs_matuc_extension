@@ -111,8 +111,8 @@ export default class En {
 
 		// //git
 		this.d['gitUser'] = 'Nutzername  (ZIH-Login)';
-		this.d['gitCloneSucess'] = "Repo wurde erfolgreich geklont!";
-		this.d['gitCloneError'] = "Während des Klonen ist ein Fehler aufgetreten. Überprüfen Sie, ob sie ihren privaten Schlüssel geladen haben.";
+		this.d['gitCloneSucess'] = "Repo ${repoName} wurde erfolgreich geklont!";
+		this.d['gitCloneError'] = "Während des Klonen ist ein Fehler aufgetreten. Überprüfen Sie, ob sie ihren privaten Schlüssel geladen haben oder der Ordner bereits existiert";
 		// //new-project
 		this.d['noFolder'] = 'Kein Ordner ausgewählt';
 		this.d['preface'] = 'Vorwort einfügen';
