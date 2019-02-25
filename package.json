@@ -121,9 +121,7 @@
             {
                 "command": "agsbs.newPage",
                 "title": "AGSBS: Inserts a 'new page' marker"
-            }
-            
-            ,
+            },
             {
                 "command": "agsbs.newProject",
                 "title": "AGSBS: Open a sidebar dialogue to add a new project"
@@ -161,223 +159,226 @@
                 "title": "AGSBS: Commits and pushes all changes."
             }
         ],
-            "keybindings": [
-                {
-                    "command": "agsbs.bold",
-                    "key": "alt+shift+b",
-                    "mac": "alt+shift+b",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.italic",
-                    "key": "alt+shift+i",
-                    "mac": "alt+shift+i",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.strikethrough",
-                    "key": "alt+shift+s",
-                    "mac": "alt+shift+s",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.h",
-                    "key": "alt+shift+h",
-                    "mac": "alt+shift+h",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.h1",
-                    "key": "alt+shift+1",
-                    "mac": "alt+shift+1",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.h2",
-                    "key": "alt+shift+2",
-                    "mac": "alt+shift+2",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.h3",
-                    "key": "alt+shift+3",
-                    "mac": "alt+shift+3",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.h4",
-                    "key": "alt+shift+4",
-                    "mac": "alt+shift+4",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.h5",
-                    "key": "alt+shift+5",
-                    "mac": "alt+shift+5",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.h6",
-                    "key": "alt+shift+6",
-                    "mac": "alt+shift+6",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.numberedList",
-                    "key": "alt+shift+o",
-                    "mac": "alt+shift+o",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.list",
-                    "key": "alt+shift+u",
-                    "mac": "alt+shift+u",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.formula",
-                    "key": "alt+shift+f",
-                    "mac": "alt+shift+f",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.inlineFormula",
-                    "key": "ctrl+shift+f",
-                    "mac": "cmd+shift+f",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.code",
-                    "key": "alt+shift+c",
-                    "mac": "alt+shift+c",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.quote",
-                    "key": "alt+shift+q",
-                    "mac": "alt+shift+q",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.link",
-                    "key": "alt+shift+l",
-                    "mac": "alt+shift+l",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.hr",
-                    "key": "alt+shift+r",
-                    "mac": "alt+shift+r",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.newPage",
-                    "key": "alt+shift+p",
-                    "mac": "alt+shift+p",
-                    "when": "editorLangId == markdown"
-                }
-
-                ,
-                {
-                    "command": "agsbs.newProject",
-                    "key": "f2",
-                    "mac": "f2",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.newFile",
-                    "key": "alt+shift+n",
-                    "mac": "alt+shift+n",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.generateFile",
-                    "key": "f6",
-                    "mac": "f6",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.convertEntireProject",
-                    "key": "f7",
-                    "mac": "f7",
-                    "when": "editorLangId == markdown"
-                },
-                {
-                    "command": "agsbs.checkProject",
-                    "key": "f4",
-                    "mac": "f4",
-                    "when": "editorLangId == markdown"
-                }
+        "keybindings": [
+            {
+                "command": "agsbs.bold",
+                "key": "alt+shift+b",
+                "mac": "alt+shift+b",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.italic",
+                "key": "alt+shift+i",
+                "mac": "alt+shift+i",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.strikethrough",
+                "key": "alt+shift+s",
+                "mac": "alt+shift+s",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.h",
+                "key": "alt+shift+h",
+                "mac": "alt+shift+h",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.h1",
+                "key": "alt+shift+1",
+                "mac": "alt+shift+1",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.h2",
+                "key": "alt+shift+2",
+                "mac": "alt+shift+2",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.h3",
+                "key": "alt+shift+3",
+                "mac": "alt+shift+3",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.h4",
+                "key": "alt+shift+4",
+                "mac": "alt+shift+4",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.h5",
+                "key": "alt+shift+5",
+                "mac": "alt+shift+5",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.h6",
+                "key": "alt+shift+6",
+                "mac": "alt+shift+6",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.numberedList",
+                "key": "alt+shift+o",
+                "mac": "alt+shift+o",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.list",
+                "key": "alt+shift+u",
+                "mac": "alt+shift+u",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.formula",
+                "key": "alt+shift+f",
+                "mac": "alt+shift+f",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.inlineFormula",
+                "key": "ctrl+shift+f",
+                "mac": "cmd+shift+f",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.code",
+                "key": "alt+shift+c",
+                "mac": "alt+shift+c",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.quote",
+                "key": "alt+shift+q",
+                "mac": "alt+shift+q",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.link",
+                "key": "alt+shift+l",
+                "mac": "alt+shift+l",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.hr",
+                "key": "alt+shift+r",
+                "mac": "alt+shift+r",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.newPage",
+                "key": "alt+shift+p",
+                "mac": "alt+shift+p",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.newProject",
+                "key": "f2",
+                "mac": "f2",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.newFile",
+                "key": "alt+shift+n",
+                "mac": "alt+shift+n",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.generateFile",
+                "key": "f6",
+                "mac": "f6",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.convertEntireProject",
+                "key": "f7",
+                "mac": "f7",
+                "when": "editorLangId == markdown"
+            },
+            {
+                "command": "agsbs.checkProject",
+                "key": "f4",
+                "mac": "f4",
+                "when": "editorLangId == markdown"
+            }
         ],
         "configuration": {
             "type": "object",
             "title": "AGSBS",
             "properties": {
-              "agsbs.csvDelimiter": {
-                "type": "string",
-                "default": ";",
-                "description": "Default: ;"
-              },
-              "agsbs.enableGitAutoCommit": {
-                "type": "boolean",
-                "default": false,
-                "description": "Enable Git Auto commit"
-              },
-              "agsbs.enableGitUseage": {
-                "type": "boolean",
-                "default": true,
-                "description": "Enable Git Useage (You have to restart the AGSBS Toolbar for this change to take effect)"
-              },
-              "agsbs.gitLocalPath": {
-                "type": "string",
-                "default": "",
-                "description": "Default is ...Documents/agsbs_git"
-              },
-              "agsbs.gitServerPath": {
-                "type": "string",
-                "default": "",
-                "description": "Enter the Path to the repo"
-              },
-              "agsbs.optionalTextboxContent": {
-                "type": "boolean",
-                "default": false,
-                "description": "If this is checked, the title and text of a textbox is not required and empty containers are inserted."
-              },
-              "agsbs.pictureFolderName": {
-                "type": "string",
-                "default": "Bilder",
-                "description": "The name of the Folder in the project that will be searched for pictures."
-              },
-              "agsbs.tableFolderName": {
-                "type": "string",
-                "default": "Tabellen",
-                "description": "The name of the Folder in the project that will be searched for tables."
-              },
-              "agsbs.generatedTableFolderName": {
-                "type": "string",
-                "default": "generatedTables",
-                "description": "The name of the Folder in the project that will save all the generated tables."
-              },
-              "agsbs.conversionProfile": {
-                "type": "string",
-                "default": "check manually every time",
-                "enum": [
-                    "check manually every time",
-                    "blind",
-                    "visually impaired"
-                ],
-                "description": "Only the named Version supports all functions of Matuc"
-              },
-              "agsbs.requiredVersion": {
-                "type": "string",
-                "default": "0.0.1",
-                "enum": [
-                    "0.0.1"
-                ],
-                "description": "Only the named Version supports all functions of Matuc"
-              }
+                "agsbs.csvDelimiter": {
+                    "type": "string",
+                    "default": ";",
+                    "description": "Default: ;"
+                },
+                "agsbs.enableGitAutoCommit": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable Git Auto commit"
+                },
+                "agsbs.enableGitUseage": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable Git Useage (You have to restart the AGSBS Toolbar for this change to take effect)"
+                },
+                "agsbs.gitLocalPath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Default is ...Documents/agsbs_git"
+                },
+                "agsbs.gitServerPath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Enter the Path to the repo"
+                },
+                "agsbs.gitUserName":{
+                    "type": "string",
+                    "default": "Enter your user name",
+                    "description": "Required for working with existing git repositories"
+                },
+                "agsbs.optionalTextboxContent": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If this is checked, the title and text of a textbox is not required and empty containers are inserted."
+                },
+                "agsbs.pictureFolderName": {
+                    "type": "string",
+                    "default": "Bilder",
+                    "description": "The name of the Folder in the project that will be searched for pictures."
+                },
+                "agsbs.tableFolderName": {
+                    "type": "string",
+                    "default": "Tabellen",
+                    "description": "The name of the Folder in the project that will be searched for tables."
+                },
+                "agsbs.generatedTableFolderName": {
+                    "type": "string",
+                    "default": "generatedTables",
+                    "description": "The name of the Folder in the project that will save all the generated tables."
+                },
+                "agsbs.conversionProfile": {
+                    "type": "string",
+                    "default": "check manually every time",
+                    "enum": [
+                        "check manually every time",
+                        "blind",
+                        "visually impaired"
+                    ],
+                    "description": "Only the named Version supports all functions of Matuc"
+                },
+                "agsbs.requiredVersion": {
+                    "type": "string",
+                    "default": "0.0.1",
+                    "enum": [
+                        "0.0.1"
+                    ],
+                    "description": "Only the named Version supports all functions of Matuc"
+                }
             }
-      }
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
@@ -395,6 +396,8 @@
     },
     "dependencies": {
         "os-locale": "^3.1.0",
-        "papaparse": "^4.6.2"
+        "papaparse": "^4.6.2",
+        "chardet": "0.7.0",
+        "iconv-lite": "0.4.24"
     }
 }
