@@ -7,6 +7,8 @@ import * as path from 'path';
 import * as fs from 'fs';
 import Language from '../languages';
 import * as Papa from 'papaparse';
+import * as chardet from 'chardet';
+import * as iconvLite from 'iconv-lite';
 
 export default class Helper {
     private _language: Language;
@@ -441,18 +443,23 @@ export default class Helper {
     public async getContentOfFile(fileName: string, encoding?: string) {
         return new Promise(async (resolve, reject) => {
             if (encoding === undefined) {
-                encoding = 'utf8';
+                encoding = chardet.detectFileSync(fileName);
             }
             if (fileName === "") {
                 vscode.window.showErrorMessage(this._language.get("readingFileError"));
                 reject();
-            }
-            fs.readFile(fileName, encoding, function (err, data) {
+            }            
+            fs.readFile(fileName, function (err, data) {                
                 if (err) {
                     vscode.window.showErrorMessage(this._language.get("readingFileError"));
                     reject(err);
                 }
-                resolve(data);
+                // ToDo check under OS X
+                if(encoding){
+                    resolve(iconvLite.decode(data, encoding));
+                }else{
+                    resolve(data);
+                }
             });
         });
     }
@@ -721,5 +728,9 @@ export default class Helper {
     public async addWorkspaceFolder(path: string) {
         var uri = vscode.Uri.file(path);
         await vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, null, { uri: uri });
+    }
+    
+    public normalizePath(path2normalize: string){
+        return path.normalize(path2normalize);
     }
 }
