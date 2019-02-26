@@ -394,7 +394,7 @@ export default class ProjectToolsFunctions {
     public commitChangesSidebarCallback = async (params) => {
         var commitMessage = params.commitChanges.value;
         var currentTexteditor = await this._helper.getCurrentTextEditor();
-        var projectFolder = this._helper.getFolderFromFilePath(currentTexteditor.document.uri.fsPath);
+        var projectFolder = await this._helper.getFolderFromFilePath(currentTexteditor.document.uri.fsPath);
         await this._git.addAll(projectFolder);
         await this._git.commit(commitMessage, projectFolder);
         await this._git.push(projectFolder);
