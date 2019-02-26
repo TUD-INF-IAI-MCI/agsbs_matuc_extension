@@ -109,10 +109,12 @@ export default class GitCommands {
 	*/
 	public async push(path) {
 		exec('git push origin', { cwd: path }, (error, stdout, stderr) => {
-			if (error) {
+			if (error) {				
 				console.error(`exec error: ${error}`);
+				vscode.window.showErrorMessage(this._language.get("gitPushError"));
 				return;
 			}
+			vscode.window.showInformationMessage(this._language.get("gitPushSuccess"))
 			console.log(`stdout: ${stdout}`);
 			console.log(`stderr: ${stderr}`);
 		});

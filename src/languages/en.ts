@@ -65,8 +65,7 @@ export default class En {
 		this.d['colorViolet'] = "Violett";
 		this.d['selectType'] = "Select type:";
 		this.d['titleOfTextbox'] = "Title of the textbox/textframe";
-		this.d['contentOfTextbox'] = "Content of the textbox/textframe or annotation";
-		// this.d['allColors'] =  "colorRed, colorBlack, colorGreen, colorYellow, colorOrange, colorBlue, colorBrown, colorGrey, colorViolet";
+		this.d['contentOfTextbox'] = "Content of the textbox/textframe or annotation";		
 		this.d['annotationNoTitleError'] = "there is no title or color for an annotation. These attributes will be ignored.";
 
 		// //footer-panel
@@ -114,6 +113,9 @@ export default class En {
 		this.d['gitUser'] = 'Username  (ZIH-Login)';
 		this.d['gitCloneSucess'] = "Repo ${repoName} was cloned successfully!";
 		this.d['gitCloneError'] = "An error occurs during the cloning. Check whether you load your private key or whether the git directory is existing.";
+		this.d['gitPushError']	= "During the push an error occurs. Find more information in the terminal";
+		this.d['gitPushSuccess'] = "Git push was successful";
+
 		// //new-project
 		this.d['noFolder'] = 'No folder set';
 		this.d['preface'] = 'Add a preface to the document.';
