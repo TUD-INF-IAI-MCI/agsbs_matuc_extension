@@ -2,7 +2,7 @@ AGSBS Visual Studio Code Extension
 ----
 
 
-##About this extension
+## About this extension
 
 This package is developed to make the transcription process more effective.
 It is a GUI toolkit which helps to transcribe study material to markdown which fulfill the AGSBS guidelines. A lot of its functions are executed and processed by MAGSBS. Our extension parses the returns strings and writes them into files, shows notifications, warnings and much more. It simply helps you to write and edit markdown faster and more easily.
