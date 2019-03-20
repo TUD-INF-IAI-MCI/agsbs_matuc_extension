@@ -134,6 +134,9 @@ class Sidebar {
         this._matuc = new matucCommands_1.default;
         this._language = new languages_1.default;
         this._wasOpenendBefore = false;
+        let disposable = vscode.commands.registerCommand("agsbs.focusSidebar", () => {
+            this.focus();
+        });
     }
     /**
      * Returns the current State of visibility of the Sidebar.

@@ -13,9 +13,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const vscode = require("vscode");
 const helper_1 = require("./helper/helper");
-const taskbar_1 = require("./taskbar");
-const sidebar_1 = require("./sidebar");
 const settingsHelper_1 = require("./helper/settingsHelper");
+const sidebar_1 = require("./sidebar");
+const taskbar_1 = require("./taskbar");
 /**
  * Gets triggered when the Extension is activated
  * @param context Context of the extension, gets automatically handed over from VSCode at activation
@@ -41,11 +41,10 @@ exports.deactivate = deactivate;
  * Orchestrates Updates and all open Panels
  */
 class ExtensionController {
-    getSidebarPanel(params) {
-        console.log("RETURN PANEL" + params);
-        return this._sidebarPanel;
-    }
     constructor(context) {
+        this.disposable = vscode.commands.registerCommand("agsbs.focusDocument", () => {
+            this._helper.focusDocument();
+        });
         let sidebar = new sidebar_1.default(context);
         let taskbar = new taskbar_1.default(sidebar, context);
         let helper = new helper_1.default();
@@ -61,6 +60,10 @@ class ExtensionController {
         // create a combined disposable from both event subscriptions
         this._disposable = vscode.Disposable.from(...subscriptions);
         this._update();
+    }
+    getSidebarPanel(params) {
+        console.log("RETURN PANEL" + params);
+        return this._sidebarPanel;
     }
     dispose() {
         this._disposable.dispose();

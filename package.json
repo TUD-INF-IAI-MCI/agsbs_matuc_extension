@@ -23,6 +23,18 @@
                 "title": "AGSBS: Open AGSBS"
             },
             {
+                "command": "agsbs.focusSidebar",
+                "title": "AGSBS: Focus AGSBS Sidebar"
+            },
+            {
+                "command": "agsbs.focusTaskbar",
+                "title": "AGSBS: Focus AGSBS Taskbar"
+            },
+            {
+                "command": "agsbs.focusDocument",
+                "title": "AGSBS: Focus the open Document"
+            },
+            {
                 "command": "agsbs.bold",
                 "title": "AGSBS: Make Selection Bold"
             },
@@ -63,7 +75,7 @@
                 "title": "AGSBS: Inserts a Headline with Grade 6"
             },
             {
-                "command": "agsbs.numberedLisst",
+                "command": "agsbs.numberedList",
                 "title": "AGSBS: Inserts a marker for an numbered list"
             },
             {
@@ -162,6 +174,24 @@
             }
         ],
             "keybindings": [
+                {
+                    "command": "agsbs.focusDocument",
+                    "key": "alt+shift+6",
+                    "mac": "alt+shift+6",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.focusTaskbar",
+                    "key": "alt+shift+8",
+                    "mac": "alt+shift+8",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "agsbs.focusSidebar",
+                    "key": "alt+shift+9",
+                    "mac": "alt+shift+9",
+                    "when": "editorLangId == markdown"
+                },
                 {
                     "command": "agsbs.bold",
                     "key": "alt+shift+b",

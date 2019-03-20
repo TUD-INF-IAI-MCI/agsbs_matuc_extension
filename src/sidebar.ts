@@ -30,6 +30,10 @@ export default class Sidebar {
         this._matuc = new MatucCommands;
         this._language = new Language;
         this._wasOpenendBefore = false;
+
+        let disposable = vscode.commands.registerCommand("agsbs.focusSidebar", () => {
+            this.focus();
+        });
     }
 
     /**
@@ -46,6 +50,7 @@ export default class Sidebar {
     public focus() {
         this._panel.reveal(this._panel.viewColumn);
     }
+
 
     /**
      * Opens a Sidebar Webview

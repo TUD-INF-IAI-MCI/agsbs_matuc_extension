@@ -12,6 +12,8 @@ export default class Helper {
     private _language: Language;
     constructor() {
         this._language = new Language;
+
+
     }
     /**
      * Sets the Editor layout to the given specifications

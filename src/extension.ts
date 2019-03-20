@@ -3,9 +3,9 @@
  */
 import * as vscode from 'vscode';
 import Helper from './helper/helper';
-import Taskbar from './taskbar';
-import Sidebar from './sidebar';
 import SettingsHelper from './helper/settingsHelper';
+import Sidebar from './sidebar';
+import Taskbar from './taskbar';
 
 
 /**
@@ -20,6 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
     let disposable = vscode.commands.registerCommand('agsbs.open', () => {
         vscode.window.showInformationMessage('AGSBS is active.');
     });
+
     context.subscriptions.push(extensionController);
     context.subscriptions.push(disposable);
 }
@@ -48,6 +49,11 @@ class ExtensionController {
     private _settingsHelper: SettingsHelper;
 
     private _disposable: vscode.Disposable;
+
+    disposable = vscode.commands.registerCommand("agsbs.focusDocument", () => {
+        this._helper.focusDocument();
+    });
+
     public getSidebarPanel(params) {
         console.log("RETURN PANEL" + params);
         return this._sidebarPanel;

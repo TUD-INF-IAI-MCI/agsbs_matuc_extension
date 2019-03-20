@@ -131,6 +131,15 @@ class Taskbar {
         this._projectToolsFunctions = new projectToolsFunctions_1.default(this, this._sidebarCallback, context);
         this._panel = null;
         this._callbacks = [];
+        let disposable = vscode.commands.registerCommand("agsbs.focusTaskbar", () => {
+            this.focus();
+        });
+    }
+    /**
+     * Puts the focus on the sidebar.
+     */
+    focus() {
+        this._panel.reveal(this._panel.viewColumn);
     }
     /**
      * Returns the current State of visibility of the Taskbar.
