@@ -452,6 +452,7 @@ export default class MatucCommands {
 			console.log(`stderr: ${stderr}`);
 		});
 		//open file
+		this.loadGeneratedHtml(filePath);
 	}
 
 	/**
