@@ -4,27 +4,26 @@
     "description": "This package is developed to make the transcription process more effective of our working group",
     "version": "0.0.1",
     "publisher": "TUD-AGSBS",
-    "categories": ["Other"],
-    "keywords": ["blind, visually impaired, accessible materials, transcript, markdown, html, epub, pandoc, table editor, csv import, csv export"],
+    "categories": [
+        "Other"
+    ],
+    "keywords": [
+        "blind, visually impaired, accessible materials, transcript, markdown, html, epub, pandoc, table editor, csv import, csv export"
+    ],
     "engines": {
         "vscode": "^1.28.0"
     },
-    "author":{ 
-        "name": "Lucas Vogel",
-        "email": "lucas.vogel2@tu-dresden.de"},        
-    "author":{ 
-            "name": "Jens Voegler"},
+    "author": {
+        "name": "Jens Voegler"
+    },
     "license": "",
-    "bugs":{
+    "bugs": {
         "url": "https://github.com/TUD-INF-IAI-MCI/agsbs_matuc_extension/issues"
     },
     "repository": {
         "type": "git",
         "url": "https://github.com/TUD-INF-IAI-MCI/agsbs_matuc_extension"
     },
-    "categories": [
-        "Other"
-    ],
     "activationEvents": [
         "onCommand:agsbs.open",
         "onLanguage:markdown",
@@ -403,16 +402,16 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^8.10.45",
+        "tslint": "^5.14.0",
         "typescript": "^2.6.1",
-        "vscode": "^1.1.21",
-        "tslint": "^5.8.0",
-        "@types/node": "^8.10.25",
-        "@types/mocha": "^2.2.42"
+        "vscode": "^1.1.33"
     },
     "dependencies": {
-        "os-locale": "^3.1.0",
-        "papaparse": "^4.6.2",
         "chardet": "0.7.0",
-        "iconv-lite": "0.4.24"
+        "iconv-lite": "0.4.24",
+        "os-locale": "^3.1.0",
+        "papaparse": "^4.6.3"
     }
 }
