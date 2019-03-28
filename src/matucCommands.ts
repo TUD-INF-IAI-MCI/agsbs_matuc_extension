@@ -350,10 +350,12 @@ export default class MatucCommands {
 				}
 				vscode.window.showErrorMessage(this._language.get("unExpectedMatucError") + message);
 				console.error(`exec error: ${error}`);
+				console.log(`stderr: ${stderr}`);
+				console.log(`stdout: ${stdout}`);
 				return;
 			}
 			console.log(`stdout: ${stdout}`);
-			console.log(`stderr: ${stderr}`);
+			
 			//load generate HTML-file
 			this.loadGeneratedHtml(path);
 		});
