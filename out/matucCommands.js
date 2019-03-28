@@ -125,8 +125,8 @@ class MatucCommands {
                 selection = this._helper.getWordsSelection(currentTextEditor);
             }
             var line = selection.start.line;
-            var thisPath = currentTextEditor.document.uri.path;
-            var cmd = `matuc_js addpnum -f ${thisPath} ${line}`;
+            var thisPath = currentTextEditor.document.uri.fsPath;
+            var cmd = `matuc_js addpnum -f "${thisPath}" ${line}`;
             return new Promise(function (resolve, reject) {
                 try {
                     exec(cmd, (error, stdout, stderr) => {
@@ -355,9 +355,6 @@ class MatucCommands {
                 yield currentTextEditor.document.save();
             }
             var cmd = `matuc_js conv "${path}"`;
-            if (profile === 'visually') {
-                cmd += ` -p vid`;
-            }
             console.log("matuc conv command " + cmd);
             exec(cmd, { env: this.getOsLocale() }, (error, stdout, stderr) => {
                 if (error) {
@@ -371,10 +368,11 @@ class MatucCommands {
                     }
                     vscode.window.showErrorMessage(this._language.get("unExpectedMatucError") + message);
                     console.error(`exec error: ${error}`);
+                    console.log(`stderr: ${stderr}`);
+                    console.log(`stdout: ${stdout}`);
                     return;
                 }
                 console.log(`stdout: ${stdout}`);
-                console.log(`stderr: ${stderr}`);
                 //load generate HTML-file
                 this.loadGeneratedHtml(path);
             });
@@ -439,21 +437,19 @@ class MatucCommands {
                 currentTextEditor = yield this._helper.getCurrentTextEditor();
             }
             currentTextEditor.document.save();
-            var path = currentTextEditor.document.uri.fsPath;
+            var filePath = currentTextEditor.document.uri.fsPath;
+            var projectPath = path.dirname(path.dirname(filePath));
             var cmd;
             if (process.platform === 'win32') {
-                cmd = 'matuc_js master';
-                cmd += ` \"${path}\\..\"`;
+                cmd = 'matuc_js conv';
+                cmd += ` \"${projectPath}\"`;
             }
             else {
                 // OS X and Linux
-                cmd = `matuc_js master ${path}/..`;
-            }
-            if (profile === 'visually') {
-                cmd += ` -p vid`;
+                cmd = `matuc_js conv ${projectPath}/..`;
             }
             console.log(cmd);
-            exec(cmd, { env: this.getOsLocale(), cwd: path }, (error, stdout, stderr) => {
+            exec(cmd, { env: this.getOsLocale() }, (error, stdout, stderr) => {
                 if (error) {
                     let fragment = JSON.parse(stdout);
                     let message = "";
@@ -477,6 +473,7 @@ class MatucCommands {
                 console.log(`stderr: ${stderr}`);
             });
             //open file
+            this.loadGeneratedHtml(filePath);
         });
     }
     /**

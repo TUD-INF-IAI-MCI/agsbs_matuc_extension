@@ -16,6 +16,8 @@ const path = require("path");
 const fs = require("fs");
 const languages_1 = require("../languages");
 const Papa = require("papaparse");
+const chardet = require("chardet");
+const iconvLite = require("iconv-lite");
 class Helper {
     constructor() {
         this._language = new languages_1.default;
@@ -414,18 +416,24 @@ class Helper {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                 if (encoding === undefined) {
-                    encoding = 'utf8';
+                    encoding = chardet.detectFileSync(fileName);
                 }
                 if (fileName === "") {
                     vscode.window.showErrorMessage(this._language.get("readingFileError"));
                     reject();
                 }
-                fs.readFile(fileName, encoding, function (err, data) {
+                fs.readFile(fileName, function (err, data) {
                     if (err) {
                         vscode.window.showErrorMessage(this._language.get("readingFileError"));
                         reject(err);
                     }
-                    resolve(data);
+                    // ToDo check under OS X
+                    if (encoding) {
+                        resolve(iconvLite.decode(data, encoding));
+                    }
+                    else {
+                        resolve(data);
+                    }
                 });
             }));
         });
@@ -699,6 +707,9 @@ class Helper {
             var uri = vscode.Uri.file(path);
             yield vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, null, { uri: uri });
         });
+    }
+    normalizePath(path2normalize) {
+        return path.normalize(path2normalize);
     }
 }
 exports.default = Helper;

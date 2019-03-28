@@ -324,9 +324,10 @@ class ProjectToolsFunctions {
                 vscode.window.showErrorMessage(this._language.get("gitIsNotEnabled"));
                 return;
             }
+            var gitUserName = yield this._settings.get("gitUserName");
             var form = `
         <label for="gitUser">${this._language.get("gitUser")}</label>
-        <input id="gitUser" name="gitUser" type="text" required="true">
+        <input id="gitUser" name="gitUser" type="text" required="true" value="${gitUserName}">
         <div class="spacing" role="none"></div>
         <label for="repoName">${this._language.get("repoName")}</label>
         <input id="repoName" name="repoName" type="text" required="true">
@@ -363,7 +364,7 @@ class ProjectToolsFunctions {
         this.commitChangesSidebarCallback = (params) => __awaiter(this, void 0, void 0, function* () {
             var commitMessage = params.commitChanges.value;
             var currentTexteditor = yield this._helper.getCurrentTextEditor();
-            var projectFolder = this._helper.getFolderFromFilePath(currentTexteditor.document.uri.fsPath);
+            var projectFolder = yield this._helper.getFolderFromFilePath(currentTexteditor.document.uri.fsPath);
             yield this._git.addAll(projectFolder);
             yield this._git.commit(commitMessage, projectFolder);
             yield this._git.push(projectFolder);

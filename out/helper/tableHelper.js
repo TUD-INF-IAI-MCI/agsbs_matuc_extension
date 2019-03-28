@@ -479,8 +479,15 @@ class TableHelper {
                 currentTextEditor = yield this._helper.getCurrentTextEditor();
             }
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-                var tableStartRegex = /<!--\ ?TABLE\ ?START\ ?T?Y?P?E?\ ?(GRID|PIPE|SIMPLE)\ ?(HAS\ ?HEADER|NO\ ?HEADER)[a-zA-Z\ ?]*\ *(\.\/.*)\ -->/;
+                var tableStartRegex = /<!--\ ?TABLE\ ?START\ ?T?Y?P?E?\ ?(GRID|PIPE|SIMPLE)\ ?(HAS\ ?HEADER|NO\ ?HEADER)[a-zA-Z\ ?]*\ *(\.\/.*|\.\\.*)\ -->/;
                 var startLineText = currentTextEditor.document.lineAt(selection.start.line).text;
+                var pathSep = [["\\", "\/"], ["\/", "\\"]]; //  [[winSep, unixSep],[unixSep, winSep]]
+                for (let i = 0; i < pathSep.length; ++i) {
+                    if (startLineText.includes(pathSep[i][0]) && path.sep === pathSep[i][1]) {
+                        startLineText = startLineText.replace(pathSep[i][0], pathSep[i][1]);
+                        break;
+                    }
+                }
                 var parts = startLineText.match(tableStartRegex);
                 if (parts.length !== 4) { //If The number of matched string parts from the first line is too long or too short
                     resolve(false);
