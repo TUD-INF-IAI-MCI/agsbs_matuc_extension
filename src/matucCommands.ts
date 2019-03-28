@@ -337,9 +337,6 @@ export default class MatucCommands {
 			await currentTextEditor.document.save();
 		}
 		var cmd = `matuc_js conv "${path}"`;
-		if (profile === 'visually') {
-			cmd += ` -p vid`;
-		}
 		console.log("matuc conv command " + cmd);
 		exec(cmd, { env: this.getOsLocale() }, (error, stdout, stderr) => {
 			if (error) {
@@ -420,20 +417,18 @@ export default class MatucCommands {
 			currentTextEditor = await this._helper.getCurrentTextEditor();
 		}
 		currentTextEditor.document.save();
-		var path = currentTextEditor.document.uri.fsPath;
+		var filePath = currentTextEditor.document.uri.fsPath;
+		var projectPath = path.dirname(path.dirname(filePath));
 		var cmd;
 		if (process.platform === 'win32') {
-			cmd = 'matuc_js master';
-			cmd += ` \"${path}\\..\"`;
+			cmd = 'matuc_js conv';
+			cmd += ` \"${projectPath}\"`;
 		} else {
 			// OS X and Linux
-			cmd = `matuc_js master ${path}/..`;
-		}
-		if (profile === 'visually') {
-			cmd += ` -p vid`;
+			cmd = `matuc_js conv ${projectPath}/..`;
 		}
 		console.log(cmd);
-		exec(cmd, { env: this.getOsLocale(), cwd: path }, (error, stdout, stderr) => {
+		exec(cmd, { env: this.getOsLocale()}, (error, stdout, stderr) => {
 			if (error) {
 				let fragment = JSON.parse(stdout);
 				let message = "";
