@@ -1,11 +1,26 @@
 {
-    "name": "agsbs",
-    "displayName": "agsbs",
+    "name": "agsbsextension",
+    "displayName": "AGSBS extension",
     "description": "This package is developed to make the transcription process more effective of our working group",
     "version": "0.0.1",
-    "publisher": "absbs",
+    "publisher": "TUD-AGSBS",
+    "categories": ["Other"],
+    "keywords": ["blind, visually impaired, accessible materials, transcript, markdown, html, epub, pandoc, table editor, csv import, csv export"],
     "engines": {
         "vscode": "^1.28.0"
+    },
+    "author":{ 
+        "name": "Lucas Vogel",
+        "email": "lucas.vogel2@tu-dresden.de"},        
+    "author":{ 
+            "name": "Jens Voegler"},
+    "license": "",
+    "bugs":{
+        "url": "https://github.com/TUD-INF-IAI-MCI/agsbs_matuc_extension/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/TUD-INF-IAI-MCI/agsbs_matuc_extension"
     },
     "categories": [
         "Other"
@@ -334,7 +349,7 @@
                     "default": "",
                     "description": "Enter the Path to the repo"
                 },
-                "agsbs.gitUserName":{
+                "agsbs.gitUserName": {
                     "type": "string",
                     "default": "Enter your user name",
                     "description": "Required for working with existing git repositories"
