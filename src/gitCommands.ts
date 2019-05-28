@@ -37,7 +37,7 @@ export default class GitCommands {
 			vscode.window.showErrorMessage(this._language.get("missingGitServerPath"));
 			return;
 		}
-		var gitCmd = `git clone ssh://${user}@${gitServerPath}/${repoName}`;
+		var gitCmd = `git clone https://${user}@${gitServerPath}/${repoName}`;
 		console.log("gitCmd " + gitCmd);
 		if (!await this._helper.folderExists(gitLocalPath)) {
 			this._helper.mkDir(gitLocalPath);
