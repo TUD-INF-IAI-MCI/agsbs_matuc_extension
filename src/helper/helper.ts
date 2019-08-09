@@ -731,8 +731,27 @@ export default class Helper {
         var uri = vscode.Uri.file(path);
         await vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, null, { uri: uri });
     }
-    
+
     public normalizePath(path2normalize: string){
         return path.normalize(path2normalize);
+    }
+
+    public async ShowMkErrorMessage(mkResult: Object) {
+        Object.keys(mkResult).forEach(key => {
+            var location = key.split(path.sep).reverse()[0];  // file name or directory name
+            var errorMessage = "";  // text of the errorMessageq
+            var mkMessageContent = mkResult[key][0];
+            if(typeof(mkMessageContent) === 'string'){  // mkResult can be a string:
+                errorMessage = `error in ${location} more details ${mkMessageContent}`;
+            } else {
+                // mk is an object and looks like the following example
+                //  {line number: " Detailed description of error"}
+                Object.keys(mkMessageContent).forEach(key2 => {
+                    errorMessage = `Fehler in ${location}: ${key2} : ${mkMessageContent[key2]}`;
+                });
+            }
+            vscode.window.showErrorMessage(errorMessage);
+        });
+
     }
 }

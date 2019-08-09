@@ -225,7 +225,7 @@ export default class MatucCommands {
 			if (typeof mistkerl.result === 'string') {
 				vscode.window.showInformationMessage(this._language.get("mistkerlDidNotFindAnyError"));
 			} else {
-				vscode.window.showErrorMessage(mistkerl.result);
+				this._helper.ShowMkErrorMessage(mistkerl.result);
 			}
 		});
 	}
