@@ -13,10 +13,8 @@ import Taskbar from './taskbar';
  * @param context Context of the extension, gets automatically handed over from VSCode at activation
  */
 export function activate(context: vscode.ExtensionContext) {
-    console.log('AGSBS is now active!');
+    console.log('AGSBS extension is now active!');
     let extensionController = new ExtensionController(context);
-
-
     let disposable = vscode.commands.registerCommand('agsbs.open', () => {
         vscode.window.showInformationMessage('AGSBS is active.');
         extensionController.showSidebar();
