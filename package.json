@@ -403,15 +403,16 @@
     },
     "devDependencies": {
         "@types/mocha": "^2.2.42",
-        "@types/node": "^8.10.45",
-        "tslint": "^5.14.0",
+        "@types/node": "^8.10.51",
+        "tslint": "^5.18.0",
         "typescript": "^2.6.1",
-        "vscode": "^1.1.33"
+        "vscode": "^1.1.36"
     },
     "dependencies": {
         "chardet": "0.7.0",
         "iconv-lite": "0.4.24",
         "os-locale": "^3.1.0",
-        "papaparse": "^4.6.3"
+        "papaparse": "^4.6.3",
+        "path": "latest"
     }
 }
