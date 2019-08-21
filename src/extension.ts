@@ -19,8 +19,13 @@ export function activate(context: vscode.ExtensionContext) {
 
     let disposable = vscode.commands.registerCommand('agsbs.open', () => {
         vscode.window.showInformationMessage('AGSBS is active.');
+        extensionController.showSidebar();
     });
 
+    let git = vscode.commands.registerCommand('agsbs.clone', () => {
+        //this.extensionController.showSidebar();
+        vscode.commands.executeCommand("agsbs.showGitView");
+    });
     context.subscriptions.push(extensionController);
     context.subscriptions.push(disposable);
 }
@@ -83,6 +88,14 @@ class ExtensionController {
         this._disposable.dispose();
     }
 
+    /**
+     * Shows Side bar
+     */
+    public async showSidebar() {
+        if (this._sidebar.isVisible() === false) {
+            this._sidebarPanel = await this._sidebar.show();
+        }
+    }
 
     /**
      * Gets triggered when the Layout of the Editor changes. 

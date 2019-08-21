@@ -36,6 +36,9 @@ export default class ProjectToolsFunctions {
         this._snippets = new ProjectToolsFunctionSnippets;
         this._settings = new SettingsHelper;
         this._git = new GitCommands;
+        let disposable = vscode.commands.registerCommand("agsbs.showGitView", () => {
+            this.cloneRepo();
+        });
     }
 
     /**
@@ -165,7 +168,7 @@ export default class ProjectToolsFunctions {
         vscode.window.showInformationMessage(this._language.get("updateSuccessfull"));
     }
 
-    /** 
+    /**
      * Saves the changes made in the current file
      */
     public saveChanges = async () => {
@@ -293,7 +296,7 @@ export default class ProjectToolsFunctions {
     }
 
     /**
-     * Callback for generating the HTML for all projects, as a fallback when the setting is manually selected every time 
+     * Callback for generating the HTML for all projects, as a fallback when the setting is manually selected every time
      */
     public generateHTMLForAllProjectsSidebarCallback = async (params) => {
         var profile = params.conversionProfile.value;
