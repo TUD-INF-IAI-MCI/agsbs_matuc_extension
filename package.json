@@ -338,6 +338,18 @@
                     "default": true,
                     "description": "Enable Git Useage (You have to restart the AGSBS Toolbar for this change to take effect)"
                 },
+                "agsbs.usesHttpsOrSshForGit":{
+                    "type": "string",
+                    "default": "ssh",
+                    "enum": [
+                        "ssh",
+                        "https"
+                    ],
+                    "enumDescriptions": [
+                        "Uses ssh for git",
+                        "Uses https for git"
+                    ]
+                },
                 "agsbs.gitLocalPath": {
                     "type": "string",
                     "default": "",

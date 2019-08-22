@@ -29,6 +29,7 @@ export default class GitCommands {
 	public async clone(user, repoName) {
 		var gitLocalPath: any = await this._settings.get("gitLocalPath");
 		var gitServerPath: any = await this._settings.get("gitServerPath");
+		var usesHttpsOrSshForGit = await this._settings.get("usesHttpsOrSshForGit");
 		if (gitServerPath.endsWith("/")) {
 			gitServerPath = gitServerPath.substring(0, gitServerPath.length - 1);
 			this._settings.update("gitServerPath", gitServerPath); //If Path in Settings ends with a /
@@ -37,7 +38,7 @@ export default class GitCommands {
 			vscode.window.showErrorMessage(this._language.get("missingGitServerPath"));
 			return;
 		}
-		var gitCmd = `git clone https://${user}@${gitServerPath}/${repoName}`;
+		var gitCmd = `git clone ${usesHttpsOrSshForGit}://${user}@${gitServerPath}/${repoName}`;
 		console.log("gitCmd " + gitCmd);
 		if (!await this._helper.folderExists(gitLocalPath)) {
 			this._helper.mkDir(gitLocalPath);
@@ -109,7 +110,7 @@ export default class GitCommands {
 	*/
 	public async push(path) {
 		exec('git push origin', { cwd: path }, (error, stdout, stderr) => {
-			if (error) {				
+			if (error) {
 				console.error(`exec error: ${error}`);
 				vscode.window.showErrorMessage(this._language.get("gitPushError"));
 				return;
