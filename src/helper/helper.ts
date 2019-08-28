@@ -38,7 +38,12 @@ export default class Helper {
             if (editor === undefined) {
                 var editor = await this.getCurrentTextEditor();
             }
+            if(editor != null){
             await vscode.window.showTextDocument(editor.document, editor.viewColumn, false);
+            } else {
+                //cause if repo is cloned and no editor is open
+                await vscode.window.showWarningMessage(this._language.get("noEditorIsOpenCannotLoadDocument"));
+            }
             resolve(true);
         });
     }

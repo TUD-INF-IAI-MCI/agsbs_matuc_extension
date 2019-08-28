@@ -65,7 +65,7 @@ export default class En {
 		this.d['colorViolet'] = "Violett";
 		this.d['selectType'] = "Select type:";
 		this.d['titleOfTextbox'] = "Title of the textbox/textframe";
-		this.d['contentOfTextbox'] = "Content of the textbox/textframe or annotation";		
+		this.d['contentOfTextbox'] = "Content of the textbox/textframe or annotation";
 		this.d['annotationNoTitleError'] = "there is no title or color for an annotation. These attributes will be ignored.";
 
 		// //footer-panel
@@ -111,8 +111,8 @@ export default class En {
 
 		// //git
 		this.d['gitUser'] = 'Username  (ZIH-Login)';
-		this.d['gitCloneSucess'] = "Repo ${repoName} was cloned successfully!";
-		this.d['gitCloneError'] = "An error occurs during the cloning. Check whether you load your private key or whether the git directory is existing.";
+		this.d['gitCloneSucess'] = "Repo was cloned successfully!";
+		this.d['gitCloneError'] = "An error occurs during the cloning. Check whether you load your private key or whether the git directory is existing. Find more information in the terminal";
 		this.d['gitPushError']	= "During the push an error occurs. Find more information in the terminal";
 		this.d['gitPushSuccess'] = "Git push was successful";
 
@@ -211,7 +211,7 @@ export default class En {
 		this.d['doYouWantToAutocorrect'] = 'If you want to automatically correct the Pagenumbering check the following box. Otherwise you have to do it manually.';
 		this.d['autocorrectPagenumberingCheckbox'] = 'Autocorrect Pagenumbering';
 		this.d['checkLine'] = 'Check line: ';
-		
+
 		// Reading Files and Folders
 		this.d['readingFileError'] = 'An unexpected error occured reading the file.';
 		this.d['importedFrom'] = 'imported from';
@@ -221,12 +221,16 @@ export default class En {
 		this.d['gitIsNotEnabled'] = "Git is not enabled. Go to Settings -> Extensions -> AGSBS and enable Git to use this function.";
 		this.d['sidebarWelcome'] = "Welcome to AGSBS extension for Visual Studio Code!";
 		this.d['sendingError'] = "If you find a bug or have another issue please send a mail."+
-								 "<a href=\"mailto:toAdd@mail.de\">Send mail</a>";			
+								 "<a href=\"mailto:toAdd@mail.de\">Send mail</a>";
 		this.d['MatucIsInstalledWarning'] = "Matuc is NOT installed! Some features might not work.";
 		this.d['osDocumentsFolderName'] = "Documents";//The folder name of the documents folder in the userspace
 
 		this.d['preview'] = "Preview";
 		this.d['previewNotAvailableCheckWorspaceFolder'] ="The Preview is currently not available. Please check if the folder (the current file is in) is open as a workspace folder on the left.";
+
+
+		//information message
+		this.d['noEditorIsOpenCannotLoadDocument'] = "Cannot open a file, open/create a file";
 
 		//unused:
 
@@ -329,6 +333,7 @@ export default class En {
 		// this.d['correct'] =  "Correct";
 
 		// this.d['textAutoCorrection'] =  "Press <strong>Correct</strong> if the page number\n should be corrected <strong>automatically</strong>.\n Press Abort for a manually correction!";
+
 
 	}
 
