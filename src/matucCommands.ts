@@ -277,7 +277,14 @@ export default class MatucCommands {
 					resolve(false);
 				}
 				var currentConfig = JSON.parse(stdout);
-				resolve(currentConfig.result['Current settings']);
+				// check why Aktuelle Einstellungen is default also for english data
+				if (currentConfig.result.hasOwnProperty("Aktuelle Einstellungen")){
+					resolve(currentConfig.result['Aktuelle Einstellungen']);
+				} else if(currentConfig.result.hasOwnProperty("Current settings")) {
+					resolve(currentConfig.result['Current settings']);
+				} else {
+					reject();
+				}
 			});
 		});
 	}
