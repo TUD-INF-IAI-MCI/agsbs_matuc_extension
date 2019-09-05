@@ -13,14 +13,17 @@ import Taskbar from './taskbar';
  * @param context Context of the extension, gets automatically handed over from VSCode at activation
  */
 export function activate(context: vscode.ExtensionContext) {
-    console.log('AGSBS is now active!');
+    console.log('AGSBS extension is now active!');
     let extensionController = new ExtensionController(context);
-
-
     let disposable = vscode.commands.registerCommand('agsbs.open', () => {
         vscode.window.showInformationMessage('AGSBS is active.');
+        extensionController.showSidebar();
     });
 
+    let git = vscode.commands.registerCommand('agsbs.clone', () => {
+        //this.extensionController.showSidebar();
+        vscode.commands.executeCommand("agsbs.showGitView");
+    });
     context.subscriptions.push(extensionController);
     context.subscriptions.push(disposable);
 }
@@ -72,7 +75,7 @@ class ExtensionController {
         this._taskbar = taskbar;
         this._sidebar = sidebar;
 
-        let subscriptions: vscode.Disposable[] = []; //Create Disposable for Event subscriptions 
+        let subscriptions: vscode.Disposable[] = []; //Create Disposable for Event subscriptions
         vscode.window.onDidChangeActiveTextEditor(this._update, this, subscriptions);
 
         // create a combined disposable from both event subscriptions
@@ -83,9 +86,17 @@ class ExtensionController {
         this._disposable.dispose();
     }
 
+    /**
+     * Shows Side bar
+     */
+    public async showSidebar() {
+        if (this._sidebar.isVisible() === false) {
+            this._sidebarPanel = await this._sidebar.show();
+        }
+    }
 
     /**
-     * Gets triggered when the Layout of the Editor changes. 
+     * Gets triggered when the Layout of the Editor changes.
      */
     private async _update() {
         let editor = vscode.window.activeTextEditor;
@@ -119,7 +130,6 @@ class ExtensionController {
             //Read the docs.
 
             //await this._sidebar.hide(this._sidebarPanel);
-            //await this._taskbar.hide(this._taskbarPanel); 
         }
     }
 }

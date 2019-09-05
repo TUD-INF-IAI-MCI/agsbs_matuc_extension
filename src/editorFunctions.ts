@@ -87,7 +87,7 @@ export default class EditorFunctions {
     }
 
     /**
-     * Inserts a headline with a computed grade. 
+     * Inserts a headline with a computed grade.
      * It tries to smartly match what the next headline could be.
      */
     public headline = async () => {
@@ -268,14 +268,16 @@ export default class EditorFunctions {
             vscode.window.showErrorMessage(this._language.get("footLabelErrorDetail"));
             return false;
         }
-        var pageEndLabel = currentLineLabel + ": " + text;
+        var pageEndLabel = "\n" + currentLineLabel + ": " + text + "\n";
         var endPoint: any = await this._insertHelper.getPageEndLine();
+        var currentTextEditor = await this._helper.getCurrentTextEditor();
+        var selection = this._helper.getPrimarySelection(currentTextEditor);
+        var position = new vscode.Range(selection.active, selection.end);
+        await this._helper.insertStringAtStartOfSelection(currentLineLabel, undefined, position);
         if (endPoint === false) {
-            await this._helper.insertStringAtStartOfLine(currentLineLabel + "\n" + pageEndLabel + "\n");
+            this._helper.insertStringAtStartOfLineOrLinebreak(pageEndLabel);
         } else {
-            await this._helper.insertStringAtStartOfLineOrLinebreak(currentLineLabel);
             endPoint = await this._insertHelper.getPageEndLine();
-            var currentTextEditor = await this._helper.getCurrentTextEditor();
             var newEndSelection = new vscode.Selection(endPoint, endPoint);
             await this._helper.insertStringAtStartOfLineOrLinebreak(pageEndLabel, currentTextEditor, newEndSelection);
         }
@@ -427,7 +429,7 @@ export default class EditorFunctions {
         this._sidebarCallback.addToSidebar(form, this._language.get("importTableCsv"), this.insertCSVTableSidebarCallback, this._language.get("insert"));
     }
 
-    /** 
+    /**
      * Callback for insert a table from a CSV-File
      */
     public insertCSVTableSidebarCallback = async (params) => {

@@ -112,7 +112,10 @@ export default class En {
 		// //git
 		this.d['gitUser'] = 'Nutzername  (ZIH-Login)';
 		this.d['gitCloneSucess'] = "Repo wurde erfolgreich geklont!";
-		this.d['gitCloneError'] = "Während des Klonen ist ein Fehler aufgetreten. Überprüfen Sie, ob sie ihren privaten Schlüssel geladen haben.";
+		this.d['gitCloneError'] = "Während des Klonen ist ein Fehler aufgetreten. Überprüfen Sie, ob sie ihren privaten Schlüssel geladen haben oder der Ordner bereits existiert. Mehr Informationen finden Sie auf der Konsole.";
+		this.d['gitPushError']	= "Während des Push auf den Server ist ein Fehler aufgetreten. Mehr Informationen finden Sie im Terminal";
+		this.d['gitPushSuccess'] = "Der Git-Push auf den Server war erfolgreich";
+
 		// //new-project
 		this.d['noFolder'] = 'Kein Ordner ausgewählt';
 		this.d['preface'] = 'Vorwort einfügen';
@@ -208,7 +211,7 @@ export default class En {
 		this.d['doYouWantToAutocorrect'] = 'Wenn die Seitennummerierung automatisch korrigiert werden soll, muss folgende Checkbox ausgewählt werden. Wenn nicht müssen die Seitennummern manuell korrigiert werden.';
 		this.d['autocorrectPagenumberingCheckbox'] = 'Seitennummerierung automatisch korrigieren';
 		this.d['checkLine'] = 'Zeiel überprüfen: ';
-		
+
 		// Reading Files and Folders
 		this.d['readingFileError'] = 'Ein unerwarteter Fehler ist aufgetreten beim Lesen der Datei.';
 		this.d['importedFrom'] = 'importiert von';
@@ -216,13 +219,20 @@ export default class En {
 		this.d['linuxNotSupportedYet'] = "Linux wird leider noch nicht unterstützt.";
 		this.d['noFileSelected'] = "Keine Datei ausgewählt.";
 		this.d['gitIsNotEnabled'] = "Git ist nicht aktiviert. Zu den Einstellungen -> Erweiterungen -> AGSBS und Git aktivieren um diese Funktion zu nutzen.";
-		this.d['sidebarWelcome'] = "Wilkommen bei AGSBS!";
+		this.d['sidebarWelcome'] = "Wilkommen in der AGSBS Erweiterung für Visual studio Code!";
+		this.d['textWhatToDo'] = "Sie können mit der Bearbeitung der Dateien beginnen. <br \>" +
+								 "Hierfür können Sie  die Icons in der unteren Taskleiste verwenden";
+		this.d['sendingError'] = "Wenn Sie einen Fehler finden, melden Sie Ihn bitte an per <br \> Mail an "+
+								  "<a href=\"mailto:toAdd@mail.de\">Fehler per E-Mail melden </a>";
 		this.d['MatucIsInstalledWarning'] = "Matuc ist NICHT installiert! Manche Funktionen werden nicht verfügbar sein.";
 		this.d['osDocumentsFolderName'] = "Dokumente";//The folder name of the documents folder in the userspace
 
 		this.d['preview'] = "Vorschau";
 
-		this.d['previewNotAvailableCheckWorspaceFolder'] ="Die Vorschau ist aktuell nicht verfügbar. Bitte überprüfen Sie, ob der Ordner, in dem sich die aktuelle Datei befindet, als Workspace-Ordner geöffnet ist (auf der linken Seite des Editors).";
+		this.d['previewNotAvailableCheckWorspaceFolder'] = "Die Vorschau ist aktuell nicht verfügbar. Bitte überprüfen Sie, ob der Ordner, in dem sich die aktuelle Datei befindet, als Workspace-Ordner geöffnet ist (auf der linken Seite des Editors).";
+
+		//information message
+		this.d['noEditorIsOpenCannotLoadDocument'] = "Es konnte keine Datei geladen werden, öffne/oder legen Sie eine neue Datei an";
 	}
 
 	public get = (varname) => {

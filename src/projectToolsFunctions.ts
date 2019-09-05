@@ -36,6 +36,9 @@ export default class ProjectToolsFunctions {
         this._snippets = new ProjectToolsFunctionSnippets;
         this._settings = new SettingsHelper;
         this._git = new GitCommands;
+        let disposable = vscode.commands.registerCommand("agsbs.showGitView", () => {
+            this.cloneRepo();
+        });
     }
 
     /**
@@ -165,7 +168,7 @@ export default class ProjectToolsFunctions {
         vscode.window.showInformationMessage(this._language.get("updateSuccessfull"));
     }
 
-    /** 
+    /**
      * Saves the changes made in the current file
      */
     public saveChanges = async () => {
@@ -293,7 +296,7 @@ export default class ProjectToolsFunctions {
     }
 
     /**
-     * Callback for generating the HTML for all projects, as a fallback when the setting is manually selected every time 
+     * Callback for generating the HTML for all projects, as a fallback when the setting is manually selected every time
      */
     public generateHTMLForAllProjectsSidebarCallback = async (params) => {
         var profile = params.conversionProfile.value;
@@ -351,9 +354,10 @@ export default class ProjectToolsFunctions {
             vscode.window.showErrorMessage(this._language.get("gitIsNotEnabled"));
             return;
         }
+        var gitUserName = await this._settings.get("gitUserName");
         var form = `
         <label for="gitUser">${this._language.get("gitUser")}</label>
-        <input id="gitUser" name="gitUser" type="text" required="true">
+        <input id="gitUser" name="gitUser" type="text" required="true" value="${gitUserName}">
         <div class="spacing" role="none"></div>
         <label for="repoName">${this._language.get("repoName")}</label>
         <input id="repoName" name="repoName" type="text" required="true">
@@ -393,7 +397,7 @@ export default class ProjectToolsFunctions {
     public commitChangesSidebarCallback = async (params) => {
         var commitMessage = params.commitChanges.value;
         var currentTexteditor = await this._helper.getCurrentTextEditor();
-        var projectFolder = this._helper.getFolderFromFilePath(currentTexteditor.document.uri.fsPath);
+        var projectFolder = await this._helper.getFolderFromFilePath(currentTexteditor.document.uri.fsPath);
         await this._git.addAll(projectFolder);
         await this._git.commit(commitMessage, projectFolder);
         await this._git.push(projectFolder);

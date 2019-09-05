@@ -7,6 +7,8 @@ import * as path from 'path';
 import * as fs from 'fs';
 import Language from '../languages';
 import * as Papa from 'papaparse';
+import * as chardet from 'chardet';
+import * as iconvLite from 'iconv-lite';
 
 export default class Helper {
     private _language: Language;
@@ -36,7 +38,12 @@ export default class Helper {
             if (editor === undefined) {
                 var editor = await this.getCurrentTextEditor();
             }
-            await vscode.window.showTextDocument(editor.document, editor.viewColumn, false);
+            if(editor != null){
+                await vscode.window.showTextDocument(editor.document, editor.viewColumn, false);
+            } else {
+                //cause if repo is cloned and no editor is open
+                await vscode.window.showWarningMessage(this._language.get("noEditorIsOpenCannotLoadDocument"));
+            }
             resolve(true);
         });
     }
@@ -108,15 +115,33 @@ export default class Helper {
                 newSelection = new vscode.Selection(selection.start, selection.end);
             }
         } else { //if there is a selection
-            newSelection = new vscode.Selection(selection.start, selection.end);
+             newSelection = new vscode.Selection(selection.start, selection.end);
 
         }
         return newSelection;
 
     }
     /**
+     * Look for next blank line after current cursor position
+     * @param currentTextEditor the current text editor
+     * @returns {int} number of next blank line
+     */
+    public async getNextBlankLineAfterPos(currentTextEditor?: vscode.TextEditor) {
+        if (currentTextEditor === undefined) {
+            currentTextEditor = await this.getCurrentTextEditor();
+        }
+        var lineCount = currentTextEditor.document.lineCount;
+        var currentLine = currentTextEditor.selection.active.line;
+        for (var i = currentLine; i < lineCount;  i++){
+            if (currentTextEditor.document.lineAt(i).isEmptyOrWhitespace){
+                return i; // next blank line
+            }
+        }
+        return lineCount + 1 ; // use end of file / editor
+    }
+    /**
      * Inserts a given string at the start of a selection
-     * @param charactersToInsert string that will be inserted 
+     * @param charactersToInsert string that will be inserted
      * @param currentTextEditor the current text editor
      * @param selection the current selection
      */
@@ -137,7 +162,7 @@ export default class Helper {
     }
 
     /**
-     * Insert a String if characters at the beginning of the line of the selection. 
+     * Insert a String if characters at the beginning of the line of the selection.
      * @param charactersToInsert a string of characters to insert at the beginning
      * @param currentTextEditor optional. The text editor to work with
      * @param selection optional. the selection to work with
@@ -153,6 +178,11 @@ export default class Helper {
         if (selection.start.character !== 0) {
             var newStartPositionAtLineStart = new vscode.Position(selection.start.line, 0);
             selection = new vscode.Selection(newStartPositionAtLineStart, newStartPositionAtLineStart);
+        } else {
+            // insert footnote after a string
+            var nextBlankLine = await this.getNextBlankLineAfterPos();
+            var newCursorPos = new vscode.Position(nextBlankLine +1, 0);
+            selection = new vscode.Selection(newCursorPos, newCursorPos);
         }
         workSpaceEdit.insert(
             currentTextEditor.document.uri,
@@ -161,6 +191,7 @@ export default class Helper {
         );
         await vscode.workspace.applyEdit(workSpaceEdit);
     }
+
     /**
      * Inserts a string at the start of a Line if the current Line is empty, or at a new line if it is not
      * @param charactersToInsert String of characters
@@ -261,7 +292,7 @@ export default class Helper {
 
     /**
      * checks if the given selection has the given characters at the beginning and end
-     * @param currentTextEditor the given Text Editor 
+     * @param currentTextEditor the given Text Editor
      * @param selection the Selection the check will be made on
      * @param startCharacters the start Characters that will be checked
      * @param endCharacters  the end Characters that will be checked
@@ -443,18 +474,23 @@ export default class Helper {
     public async getContentOfFile(fileName: string, encoding?: string) {
         return new Promise(async (resolve, reject) => {
             if (encoding === undefined) {
-                encoding = 'utf8';
+                encoding = chardet.detectFileSync(fileName);
             }
             if (fileName === "") {
                 vscode.window.showErrorMessage(this._language.get("readingFileError"));
                 reject();
             }
-            fs.readFile(fileName, encoding, function (err, data) {
+            fs.readFile(fileName, function (err, data) {
                 if (err) {
                     vscode.window.showErrorMessage(this._language.get("readingFileError"));
                     reject(err);
                 }
-                resolve(data);
+                // ToDo check under OS X
+                if(encoding){
+                    resolve(iconvLite.decode(data, encoding));
+                }else{
+                    resolve(data);
+                }
             });
         });
     }
@@ -723,5 +759,28 @@ export default class Helper {
     public async addWorkspaceFolder(path: string) {
         var uri = vscode.Uri.file(path);
         await vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, null, { uri: uri });
+    }
+
+    public normalizePath(path2normalize: string){
+        return path.normalize(path2normalize);
+    }
+
+    public async ShowMkErrorMessage(mkResult: Object) {
+        Object.keys(mkResult).forEach(key => {
+            var location = key.split(path.sep).reverse()[0];  // file name or directory name
+            var errorMessage = "";  // text of the errorMessageq
+            var mkMessageContent = mkResult[key][0];
+            if(typeof(mkMessageContent) === 'string'){  // mkResult can be a string:
+                errorMessage = `error in ${location} more details ${mkMessageContent}`;
+            } else {
+                // mk is an object and looks like the following example
+                //  {line number: " Detailed description of error"}
+                Object.keys(mkMessageContent).forEach(key2 => {
+                    errorMessage = `Fehler in ${location}: ${key2} : ${mkMessageContent[key2]}`;
+                });
+            }
+            vscode.window.showErrorMessage(errorMessage);
+        });
+
     }
 }

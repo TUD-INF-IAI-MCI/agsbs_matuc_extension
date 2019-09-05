@@ -209,13 +209,26 @@ export default class Sidebar {
      */
     private _addWelcomeMessage = async () => {
         var matucIsInstalled = await this._matuc.matucIsInstalled();
-        var welcomeText = this._language.get("sidebarWelcome");
+        var welcomeText = this._language.get("sidebarWelcome");        
         var form = "<h2>" + welcomeText + "</h2>";
+        form = this._addMultipleText(["textWhatToDo", "sendingError"], form);  
         if (matucIsInstalled === false) {
             form += "<br role='none'><br role='none'>" + this._language.get("MatucIsInstalledWarning");
         }
         this._wasOpenendBefore = true;
         this._addToHTML("HEADLINE", form);
+    }
+
+    /**
+     * Create multiple paragraph basing on a string list and returns new element
+     *  @param textList the string list 
+     *  @param element where the paragraph should be appended
+     */
+    private _addMultipleText(textList, element)  {
+        textList.forEach(item => {
+            element += "<p>"+this._language.get(item) +"</p>";
+        });
+        return element;
     }
 
 }
