@@ -75,7 +75,7 @@ class ExtensionController {
         this._taskbar = taskbar;
         this._sidebar = sidebar;
 
-        let subscriptions: vscode.Disposable[] = []; //Create Disposable for Event subscriptions 
+        let subscriptions: vscode.Disposable[] = []; //Create Disposable for Event subscriptions
         vscode.window.onDidChangeActiveTextEditor(this._update, this, subscriptions);
 
         // create a combined disposable from both event subscriptions
@@ -96,7 +96,7 @@ class ExtensionController {
     }
 
     /**
-     * Gets triggered when the Layout of the Editor changes. 
+     * Gets triggered when the Layout of the Editor changes.
      */
     private async _update() {
         let editor = vscode.window.activeTextEditor;
@@ -130,7 +130,6 @@ class ExtensionController {
             //Read the docs.
 
             //await this._sidebar.hide(this._sidebarPanel);
-            //await this._taskbar.hide(this._taskbarPanel); 
         }
     }
 }
