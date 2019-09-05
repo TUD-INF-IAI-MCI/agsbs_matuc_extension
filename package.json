@@ -2,7 +2,7 @@
     "name": "agsbsextension",
     "displayName": "AGSBS extension",
     "description": "This package is developed to make the transcription process more effective of our working group",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "publisher": "TUD-AGSBS",
     "categories": [
         "Other"
@@ -338,7 +338,7 @@
                     "default": true,
                     "description": "Enable Git Useage (You have to restart the AGSBS Toolbar for this change to take effect)"
                 },
-                "agsbs.usesHttpsOrSshForGit":{
+                "agsbs.usesHttpsOrSshForGit": {
                     "type": "string",
                     "default": "ssh",
                     "enum": [
@@ -425,6 +425,6 @@
         "iconv-lite": "0.4.24",
         "os-locale": "^3.1.0",
         "papaparse": "^4.6.3",
-        "path": "latest"
+        "path": "^0.12.7"
     }
 }
