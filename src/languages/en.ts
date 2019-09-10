@@ -115,6 +115,8 @@ export default class En {
 		this.d['gitCloneError'] = "An error occurs during the cloning. Check whether you load your private key or whether the git directory is existing. Find more information in the terminal";
 		this.d['gitPushError']	= "During the push an error occurs. Find more information in the terminal";
 		this.d['gitPushSuccess'] = "Git push was successful";
+		this.d['userName'] = "Name";
+		this.d['mailadresse'] = "E-mail address";
 
 		// //new-project
 		this.d['noFolder'] = 'No folder set';

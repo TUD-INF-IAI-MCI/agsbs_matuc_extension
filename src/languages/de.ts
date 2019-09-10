@@ -115,6 +115,8 @@ export default class En {
 		this.d['gitCloneError'] = "Während des Klonen ist ein Fehler aufgetreten. Überprüfen Sie, ob sie ihren privaten Schlüssel geladen haben oder der Ordner bereits existiert. Mehr Informationen finden Sie auf der Konsole.";
 		this.d['gitPushError']	= "Während des Push auf den Server ist ein Fehler aufgetreten. Mehr Informationen finden Sie im Terminal";
 		this.d['gitPushSuccess'] = "Der Git-Push auf den Server war erfolgreich";
+		this.d['userName'] = "Name";
+		this.d['mailadresse'] = "E-Mailadresse";
 
 		// //new-project
 		this.d['noFolder'] = 'Kein Ordner ausgewählt';

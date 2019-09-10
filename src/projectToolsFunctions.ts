@@ -354,13 +354,19 @@ export default class ProjectToolsFunctions {
             vscode.window.showErrorMessage(this._language.get("gitIsNotEnabled"));
             return;
         }
+        var gitLoginName = await this._settings.get("gitLoginName");
         var gitUserName = await this._settings.get("gitUserName");
+        var gitUserEmail = await this._settings.get("gitUserEmail");
         var form = `
         <label for="gitUser">${this._language.get("gitUser")}</label>
-        <input id="gitUser" name="gitUser" type="text" required="true" value="${gitUserName}">
+        <input id="gitLoginName" name="gitLoginName" type="text" required="true" value="${gitLoginName}">
         <div class="spacing" role="none"></div>
         <label for="repoName">${this._language.get("repoName")}</label>
         <input id="repoName" name="repoName" type="text" required="true">
+        <label for="userName">${this._language.get("userName")}</label>
+        <input id="userName" name="userName" type="text" required="true" value="${gitUserName}">
+        <label for="mailadresse">${this._language.get("mailadresse")}</label>
+        <input id="mailadresse" name="mailadresse" type="text" required="true value="${gitUserEmail}">
         `;
         this._sidebarCallback.addToSidebar(form, this._language.get("cloneExistingRepo"), this.cloneRepoSidebarCallback, this._language.get("clone"));
     }
@@ -369,9 +375,11 @@ export default class ProjectToolsFunctions {
      * clones a project
      */
     public cloneRepoSidebarCallback = async (params) => {
-        var userName = params.gitUser.value;
+        var gitLoginName = params.gitLoginName.value;
         var repoName = params.repoName.value;
-        this._git.clone(userName, repoName);
+        var gitUserName = params.gitUserName.value;
+        var gitUserEmail = params.gitUserName.value;
+        this._git.clone(gitLoginName, repoName);
     }
 
     /**
