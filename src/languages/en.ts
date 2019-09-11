@@ -117,6 +117,8 @@ export default class En {
 		this.d['gitPushSuccess'] = "Git push was successful";
 		this.d['userName'] = "Name";
 		this.d['mailadresse'] = "E-mail address";
+		this.d['noUserDataIsSet'] = "Es sind keine Mailadresse und Username in der git Config gespeichert.";
+		this.d['SetUserDataInConfig'] = "The email address \"$emailAddress$\" and user name \"$userName$\" of the user settings were set in the local configuration.";
 
 		// //new-project
 		this.d['noFolder'] = 'No folder set';
@@ -145,7 +147,7 @@ export default class En {
 		// //commit-changes-dialog
 		this.d['commitMessage'] = 'Leave a few words about the changes you made...';
 		this.d['commit'] = 'Commit';
-		this.d['commitChangesErrorDetail'] = 'Maybe the file is stored in a wrong directory?\n';
+		this.d['commitChangesErrorDetail'] = 'An error occurs during the commit. More information in the terminal';
 
 		// //matuc
 		this.d['matucNotInstalled'] = "Matuc is not installed. You have to install the latest Matuc version to use this feature.";
