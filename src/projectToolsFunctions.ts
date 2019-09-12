@@ -379,13 +379,13 @@ export default class ProjectToolsFunctions {
         var repoName = params.repoName.value;
         var gitUserName = params.gitUserName.value;
         var gitUserEmail = params.mailadresse.value;
-        var setGitUsername = this._settings.get("gitUserName");
-        var setGitMail = this._settings.get("gitUserEmail");
+        var setGitUsername = await this._settings.get("gitUserName");
+        var setGitMail = await this._settings.get("gitUserEmail");
         if (gitUserName !== setGitUsername) {
             this._settings.update("gitUserName", gitUserName);
         }
 
-        if (gitUserEmail !== gitUserEmail) {
+        if (gitUserEmail !== setGitMail) {
             this._settings.update("gitUserEmail", gitUserEmail);
         }
         this._git.clone(gitLoginName, repoName);
