@@ -366,7 +366,7 @@ export default class ProjectToolsFunctions {
         <label for="gitUserName">${this._language.get("userName")}</label>
         <input id="gitUserName" name="gitUserName" type="text" required="true" value="${gitUserName}">
         <label for="mailadresse">${this._language.get("mailadresse")}</label>
-        <input id="mailadresse" name="mailadresse" type="text" required="true value="${gitUserEmail}">
+        <input id="mailadresse" name="mailadresse" type="text" required="true" value="${gitUserEmail}">
         `;
         this._sidebarCallback.addToSidebar(form, this._language.get("cloneExistingRepo"), this.cloneRepoSidebarCallback, this._language.get("clone"));
     }
