@@ -8,7 +8,7 @@ import Helper from './helper/helper';
 import Language from './languages';
 import SettingsHelper from './helper/settingsHelper';
 import * as path from 'path';
-import { getMaxListeners } from 'cluster';
+import { getMaxListeners, removeAllListeners } from 'cluster';
 const exec = require('child_process').exec;
 
 export default class GitCommands {
@@ -50,6 +50,12 @@ export default class GitCommands {
 				vscode.window.showErrorMessage(this._language.get("gitCloneError"));
 			} else {
 				vscode.window.showInformationMessage(this._language.get("gitCloneSucess"));
+				// possible are url/pfad/repo
+				// so the repoName is pfad/repo
+				if (repoName.includes("/")) {
+					var arr = repoName.split("/");
+					repoName = arr[arr.length - 1];
+				}
 				var newFolderName = path.join(gitLocalPath, repoName);
 				this._helper.addWorkspaceFolder(newFolderName);
 			}
