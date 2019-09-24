@@ -9,8 +9,8 @@ import * as os from 'os';
 import * as path from 'path';
 
 /**
- * A Helper to get and set the Settings of this Extension. 
- * It contains wrapper to get and set, as well as a setup to 
+ * A Helper to get and set the Settings of this Extension.
+ * It contains wrapper to get and set, as well as a setup to
  * set default parameters at first startup, like the git Path.
  */
 export default class SettingsHelper {
@@ -25,7 +25,7 @@ export default class SettingsHelper {
 
     /**
      * This setup will be executed at every launch of the extension. It just checks if the default parameters are set,
-     * and if there are not set, sets them. 
+     * and if there are not set, sets them.
      */
     public async setup() {
         var gitLocalPath = await this.get("gitLocalPath");
@@ -45,7 +45,7 @@ export default class SettingsHelper {
     }
 
     /**
-     * Updates a Value of the Settings. It will automatically set the global (User)-Setting, not the workspace setting. 
+     * Updates a Value of the Settings. It will automatically set the global (User)-Setting, not the workspace setting.
      * If you don't know the difference of these both than you dont have to care about it, thats why there is a wrapper.
      * @param settingsIdentifier  The settings Identifier. This is only the last part of the identifier, after the point. So for "agsbs.gitLocalPath" it is just "gitLocalPath".
      * @param value new value of the Setting

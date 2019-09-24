@@ -143,7 +143,7 @@ export default class GitCommands {
 	}
 
 	public async setConfig(userName: string, eMail: string, path) {
-		var gitConfig = await this.getConfig(path);
+		var gitConfig: any = await this.getConfig(path);
 		if (!gitConfig.includes("user.email") || !gitConfig.includes("user.name")) {
 			var command = `git config --local user.email \"${eMail}\" && `;
 			command += `git config --local user.name  \"${userName}\"`;
@@ -161,13 +161,13 @@ export default class GitCommands {
 
 	public async getConfig(path) {
 		return new Promise(function (resolve, reject) {
-		exec('git config -l --local', { cwd: path }, (error, stdout, stderr) => {
-			if (error) {
-				console.log("Error during git config -l --local \n \t" + error);
-				reject(error);
-			}
-			resolve(stdout);
+			exec('git config -l --local', { cwd: path }, (error, stdout, stderr) => {
+				if (error) {
+					console.log("Error during git config -l --local \n \t" + error);
+					reject(error);
+				}
+				resolve(String(stdout));
+			});
 		});
-
 	}
 }

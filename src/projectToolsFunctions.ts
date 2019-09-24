@@ -416,11 +416,11 @@ export default class ProjectToolsFunctions {
         var currentTexteditor = await this._helper.getCurrentTextEditor();
         var projectFolder = await this._helper.getFolderFromFilePath(currentTexteditor.document.uri.fsPath);
         await this._git.addAll(projectFolder);
-        var error = await this._git.commit(commitMessage, projectFolder);
+        var error: any = await this._git.commit(commitMessage, projectFolder);
         if (error.out.includes("Please tell me who you are")) {
             vscode.window.showErrorMessage(this._language.get("noUserDataIsSet"));
-            var userName = await this._settings.get("gitUserName");
-            var emailAddress = await this._settings.get("gitUserEmail");
+            var userName: any = await this._settings.get("gitUserName");
+            var emailAddress: any = await this._settings.get("gitUserEmail");
             await this._git.setConfig(userName, emailAddress, projectFolder);
             var msg = this._language.get("SetUserDataInConfig");
             msg = msg.replace("$userName$", userName);
