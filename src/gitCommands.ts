@@ -58,7 +58,22 @@ export default class GitCommands {
 				}
 				var newFolderName = path.join(gitLocalPath, repoName);
 				this._helper.addWorkspaceFolder(newFolderName);
+				this.track(newFolderName);
 			}
+		});
+	}
+	/**
+	 * Track git repo
+	 * @param path
+	 */
+	public async track(path) {
+		exec('git branch -u origin/master', { cwd: path },
+			(error, stdout, stderr) => {
+				if (error) {
+					console.error(`exec git track error: ${error}`);
+					return;
+				}
+				return;
 		});
 	}
 
