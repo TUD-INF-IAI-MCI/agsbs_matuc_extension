@@ -7,6 +7,8 @@
    - add value in extension setting
    - add function for checking whether values are set
    - values are set only for each repo
+- track git remotes
+
 
 ## v0.2.0
 - Added more information text during start of extension
