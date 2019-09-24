@@ -8,6 +8,7 @@ import Helper from './helper/helper';
 import Language from './languages';
 import SettingsHelper from './helper/settingsHelper';
 import * as path from 'path';
+import { getMaxListeners, removeAllListeners } from 'cluster';
 const exec = require('child_process').exec;
 
 export default class GitCommands {
@@ -49,9 +50,30 @@ export default class GitCommands {
 				vscode.window.showErrorMessage(this._language.get("gitCloneError"));
 			} else {
 				vscode.window.showInformationMessage(this._language.get("gitCloneSucess"));
+				// possible are url/pfad/repo
+				// so the repoName is pfad/repo
+				if (repoName.includes("/")) {
+					var arr = repoName.split("/");
+					repoName = arr[arr.length - 1];
+				}
 				var newFolderName = path.join(gitLocalPath, repoName);
 				this._helper.addWorkspaceFolder(newFolderName);
+				this.track(newFolderName);
 			}
+		});
+	}
+	/**
+	 * Track git repo
+	 * @param path
+	 */
+	public async track(path) {
+		exec('git branch -u origin/master', { cwd: path },
+			(error, stdout, stderr) => {
+				if (error) {
+					console.error(`exec git track error: ${error}`);
+					return;
+				}
+				return;
 		});
 	}
 
@@ -91,14 +113,13 @@ export default class GitCommands {
 	* @param {string} path The path of the local git repository.
 	*/
 	public async commit(message, path) {
-
+		var promThis = this;
 		return new Promise(function (resolve, reject) {
 			exec(`git commit -am "${message}"`, { cwd: path }, (error, stdout, stderr) => {
 				if (error) {
 					console.error(`exec error: ${error}`);
-					vscode.window.showErrorMessage(this._language.get("commitChangesErrorDetail"));
-					console.log(error);
-					return reject(error);
+					vscode.window.showErrorMessage(promThis._language.get("commitChangesErrorDetail"));
+					resolve({ out: error.message });
 				}
 				resolve({ out: stdout, err: stderr });
 			});
@@ -115,10 +136,38 @@ export default class GitCommands {
 				vscode.window.showErrorMessage(this._language.get("gitPushError"));
 				return;
 			}
-			vscode.window.showInformationMessage(this._language.get("gitPushSuccess"))
+			vscode.window.showInformationMessage(this._language.get("gitPushSuccess"));
 			console.log(`stdout: ${stdout}`);
 			console.log(`stderr: ${stderr}`);
 		});
 	}
 
+	public async setConfig(userName: string, eMail: string, path) {
+		var gitConfig = await this.getConfig(path);
+		if (!gitConfig.includes("user.email") || !gitConfig.includes("user.name")) {
+			var command = `git config --local user.email \"${eMail}\" && `;
+			command += `git config --local user.name  \"${userName}\"`;
+			return new Promise(function (resolve, reject) {
+				exec(command, { cwd: path }, (error, stdout, stderr) => {
+					if (error) {
+						console.log("Error setting git config -l --local \n \t" + error);
+						reject(error);
+					}
+					resolve(stdout);
+				});
+			});
+		}
+	}
+
+	public async getConfig(path) {
+		return new Promise(function (resolve, reject) {
+		exec('git config -l --local', { cwd: path }, (error, stdout, stderr) => {
+			if (error) {
+				console.log("Error during git config -l --local \n \t" + error);
+				reject(error);
+			}
+			resolve(stdout);
+		});
+
+	}
 }

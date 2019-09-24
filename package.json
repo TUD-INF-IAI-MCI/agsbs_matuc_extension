@@ -2,7 +2,7 @@
     "name": "agsbsextension",
     "displayName": "AGSBS extension",
     "description": "This package is developed to make the transcription process more effective of our working group",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "publisher": "TUD-AGSBS",
     "categories": [
         "Other"
@@ -13,9 +13,10 @@
     "engines": {
         "vscode": "^1.28.0"
     },
-    "author": {
-        "name": "Jens Voegler"
-    },
+    "contributors": [
+        "Lucas Vogel <lucas.vogel2 [at] tu-dresden.de>",
+        "Jens Voegler"
+    ],
     "license": "",
     "bugs": {
         "url": "https://github.com/TUD-INF-IAI-MCI/agsbs_matuc_extension/issues"
@@ -360,10 +361,20 @@
                     "default": "",
                     "description": "Enter the Path to the repo"
                 },
-                "agsbs.gitUserName": {
+                "agsbs.gitLoginName": {
                     "type": "string",
-                    "default": "Enter your user name",
+                    "default": "Enter your login name for accessing git repos",
                     "description": "Required for working with existing git repositories"
+                },
+                "agsbs.gitUserName":{
+                    "type": "string",
+                    "default": "Enter your first and surname for git commit",
+                    "description": "Required for committing"
+                },
+                "agsbs.gitUserEmail":{
+                    "type": "string",
+                    "default": "Enter your email for git commit",
+                    "description": "Required for committing"
                 },
                 "agsbs.optionalTextboxContent": {
                     "type": "boolean",
