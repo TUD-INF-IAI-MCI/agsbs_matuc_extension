@@ -2,7 +2,7 @@
     "name": "agsbsextension",
     "displayName": "AGSBS extension",
     "description": "This package is developed to make the transcription process more effective of our working group",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "publisher": "TUD-AGSBS",
     "categories": [
         "Other"
@@ -428,7 +428,7 @@
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.10.51",
         "tslint": "^5.18.0",
-        "typescript": "^2.6.1",
+        "typescript": "^3.3.0",
         "vscode": "^1.1.36"
     },
     "dependencies": {
