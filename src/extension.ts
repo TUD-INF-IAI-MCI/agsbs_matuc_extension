@@ -68,6 +68,10 @@ class ExtensionController {
         let helper = new Helper();
         this._settingsHelper = new SettingsHelper;
         this._settingsHelper.setup(); //If settings are not set, this will initialize them
+        // layout für den Editor in Prozent
+        // orientation 1 = zeilen, das andere ist vllt. 0
+        // group 0.15 verändert untere Bereich
+        // summe muss 1.0 ergeben
         this._layout = { orientation: 1, groups: [{ groups: [{ size: 0.8 }, { size: 0.2 }], size: 0.85 }, { size: 0.15 }] };
         this._defaultLayout = { orientation: 1, groups: [{}] };
         this._helper = helper;

@@ -50,7 +50,7 @@ export default class Taskbar {
         return this._taskbarIsVisible;
     }
 
-    /** this Function gets called from the Webview when a button is clicked. 
+    /** this Function gets called from the Webview when a button is clicked.
      * It calls one of the callbacks from EditorFunctions.
      * @param message The content of the message from the Webview
      */
@@ -93,7 +93,7 @@ export default class Taskbar {
     }
 
     /**
-     * Gets triggered when the Layout of the Editor changes. 
+     * Gets triggered when the Layout of the Editor changes.
      * @param panel The WebviewPanel that should be closed, from fype vscode.WebviewPanel
      */
     public async hide(panel: vscode.WebviewPanel) {
@@ -125,6 +125,7 @@ export default class Taskbar {
         }
         var icon = this._helper.getWebviewResourceIconURI(iconName, this._context);
         //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
+        //ToDo Button
         var html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')" style ="-webkit-mask-image: url(${icon});mask-image: url(${icon})"></button>`;
         this._callbacks[id] = callback;
         newSection = "SECTION-" + newSection;
@@ -138,7 +139,7 @@ export default class Taskbar {
                     callback();
                 });
             } catch (e) {
-                //If it tries to re-register a command an error will be trown. However, 
+                //If it tries to re-register a command an error will be trown. However,
                 //because there is no check if a command is already registered, this is the workarround
                 console.log("No need to re-register editor command.");
             }
@@ -180,7 +181,7 @@ export default class Taskbar {
                     callback();
                 });
             } catch (e) {
-                //If it tries to re-register a command an error will be trown. However, 
+                //If it tries to re-register a command an error will be trown. However,
                 //because there is no check if a command is already registered, this is the workarround
                 console.log("No need to re-register project tool command.");
             }
@@ -188,10 +189,10 @@ export default class Taskbar {
 
     }
 
-    /** This adds HTML to the taskbars Webview, at the given point. 
+    /** This adds HTML to the taskbars Webview, at the given point.
      * This point is predefined in the _getBaseHTML-Function and _generateSectionHTML, for example SECTION-*, HEAD_END, BODY_START or BODY_END
      * @param section section Name, see examples above
-     * @param html html to insert 
+     * @param html html to insert
      */
     private _addToHTML = (section: string, html: string) => {
         var marker = "<!--" + section + "-->";
@@ -210,7 +211,7 @@ export default class Taskbar {
     }
 
     /** Checks if a section is in the Webview HTML
-     * @param section name of the sectiton 
+     * @param section name of the sectiton
      * @returns Boolean, true if the section is already in the WebView
      */
     private _sectionIsInWebview(section: string) {
@@ -246,11 +247,9 @@ export default class Taskbar {
          <!--BODY_START-->
          <div class="projectContainer">
             <!--TOOLS_START-->
-           
-            <!--TOOLS_END-->
-            </div>
 
-            <div class="projectContainer">
+            <!--TOOLS_END-->
+
             <!--PROJECTTOOLS_START-->
 
             <!--PROJECTTOOLS_END-->
