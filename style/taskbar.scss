@@ -3,6 +3,7 @@
 //
 html,body{
     width: 99vw!important;
+    height: 40vw;
     margin: 0px;
     padding: 0px;
     overflow-x: hidden;
@@ -12,7 +13,7 @@ fieldset {
     border: 1px solid var(--vscode-foreground);// #9da5b4
     border-left-width: 0px;
     border-right-width: 0px;
-     border-bottom-width: 0px;
+    border-bottom-width: 0px;
     order: 0;
     flex: 0 1 auto;
     align-self: auto;
