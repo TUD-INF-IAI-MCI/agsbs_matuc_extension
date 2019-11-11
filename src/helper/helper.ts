@@ -686,10 +686,13 @@ export default class Helper {
      * @param csvData csv data as String
      * @returns JSON if possible, otherwise false
      */
-    public async parseCSVtoJSON(csvData: string) {
+    public async parseCSVtoJSON(csvData: string, delimiter: string) {
         return new Promise(async (resolve, reject) => {
             try {
-                var result = Papa.parse(csvData);
+                var result = Papa.parse(csvData,
+                {
+                    delimiter: delimiter,
+                });
 
                 resolve(result);
             } catch (e) {

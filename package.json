@@ -2,7 +2,7 @@
     "name": "agsbsextension",
     "displayName": "AGSBS extension",
     "description": "This package is developed to make the transcription process more effective of our working group",
-    "version": "0.3.0",
+    "version": "0.4.1",
     "publisher": "TUD-AGSBS",
     "categories": [
         "Other"
@@ -15,7 +15,7 @@
     },
     "contributors": [
         "Lucas Vogel <lucas.vogel2 [at] tu-dresden.de>",
-        "Jens Voegler"
+        "Jens Voegler <jens.voegler [at] tu-dresden.de"
     ],
     "license": "",
     "bugs": {
@@ -366,12 +366,12 @@
                     "default": "Enter your login name for accessing git repos",
                     "description": "Required for working with existing git repositories"
                 },
-                "agsbs.gitUserName":{
+                "agsbs.gitUserName": {
                     "type": "string",
                     "default": "Enter your first and surname for git commit",
                     "description": "Required for committing"
                 },
-                "agsbs.gitUserEmail":{
+                "agsbs.gitUserEmail": {
                     "type": "string",
                     "default": "Enter your email for git commit",
                     "description": "Required for committing"
@@ -435,7 +435,7 @@
         "chardet": "0.7.0",
         "iconv-lite": "0.4.24",
         "os-locale": "^3.1.0",
-        "papaparse": "^4.6.3",
+        "papaparse": "^5.1.0",
         "path": "^0.12.7"
     }
 }

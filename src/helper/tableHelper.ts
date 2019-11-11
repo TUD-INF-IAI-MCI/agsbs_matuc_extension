@@ -185,7 +185,7 @@ export default class TableHelper {
 
     /**
      * Generates the Markdown-code of a single line of a table with content
-     * @param horizontalChar the Character that seperates the lines horizontally 
+     * @param horizontalChar the Character that seperates the lines horizontally
      * @param crossChar the cross between a horizontal and a vertical line
      * @param lengths array of lengths of the columns
      * @returns a string of Markdown-code
@@ -263,7 +263,7 @@ export default class TableHelper {
 
     /**
      * generates Markdown-code of the seperator line of a table
-     * @param horizontalChar the Character that seperates the lines horizontally 
+     * @param horizontalChar the Character that seperates the lines horizontally
      * @param crossChar the cross between a horizontal and a vertical line
      * @param lengths array of lengths of the columns
      * @returns string of Markdown-code
@@ -326,7 +326,7 @@ export default class TableHelper {
      * Gets all tables in a folder relative to the currently open file
      * @param path path to the folder
      * @param folder optional. the name of the folder, for example 'tables'
-     * @returns Array of objects of files. The objects have the structure 
+     * @returns Array of objects of files. The objects have the structure
      * {fileName:'tabelle.csv', folderPath:'/Users/.../dir/tabellen', completePath:'/Users/.../dir/tabellen/tabelle.csv', relativePath:'./tabellen/tabelle.csv'}
      */
     public async getAllTablesInFolder(pathToFolder: any, folder?: string) {
@@ -484,11 +484,12 @@ export default class TableHelper {
      * @returns a Promise, that resoves to false if no table is found, otherwise a Object with the Table content.
      */
     public async loadSelectedTable(selection: vscode.Selection, currentTextEditor?: vscode.TextEditor) {
+        var delimiter = await this._settings.get("csvDelimiter");
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
         }
         return new Promise(async (resolve, reject) => {
-            var tableStartRegex = /<!--\ ?TABLE\ ?START\ ?T?Y?P?E?\ ?(GRID|PIPE|SIMPLE)\ ?(HAS\ ?HEADER|NO\ ?HEADER)[a-zA-Z\ ?]*\ *(\.\/.*|\.\\.*)\ -->/;              
+            var tableStartRegex = /<!--\ ?TABLE\ ?START\ ?T?Y?P?E?\ ?(GRID|PIPE|SIMPLE)\ ?(HAS\ ?HEADER|NO\ ?HEADER)[a-zA-Z\ ?]*\ *(\.\/.*|\.\\.*)\ -->/;
             var startLineText = currentTextEditor.document.lineAt(selection.start.line).text;
             var pathSep = [["\\", "\/"], ["\/", "\\"]];  //  [[winSep, unixSep],[unixSep, winSep]]
             for (let i = 0; i < pathSep.length; ++i) {
@@ -496,7 +497,7 @@ export default class TableHelper {
                     startLineText = startLineText.replace(pathSep[i][0], pathSep[i][1]);
                     break;
                 }
-            }    
+            }
             var parts = startLineText.match(tableStartRegex);
             if (parts.length !== 4) { //If The number of matched string parts from the first line is too long or too short
                 resolve(false);
@@ -513,12 +514,12 @@ export default class TableHelper {
                 }
                 var content: any = await this._helper.getContentOfFile(pathToFile);
                 content = content.replace(/\n+$/gm, ""); //removes trailing line breaks. Important, otherwise the resulting array will have weird empty arrays (like [""]) at the end.
-                var json = await this._helper.parseCSVtoJSON(content);
+                var json = await this._helper.parseCSVtoJSON(content, delimiter);
                 if (json === false) {
                     vscode.window.showErrorMessage(this._language.get("parsingError"));
                     resolve(false);
                 }
-                if (!json.hasOwnProperty("data")) { //If the Result has no "data"-property 
+                if (!json.hasOwnProperty("data")) { //If the Result has no "data"-property
                     vscode.window.showErrorMessage(this._language.get("parsingError"));
                     resolve(false);
                 }
