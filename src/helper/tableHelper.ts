@@ -484,7 +484,7 @@ export default class TableHelper {
      * @returns a Promise, that resoves to false if no table is found, otherwise a Object with the Table content.
      */
     public async loadSelectedTable(selection: vscode.Selection, currentTextEditor?: vscode.TextEditor) {
-        var delimiter = await this._settings.get("csvDelimiter");
+        var delimiter :any = await this._settings.get("csvDelimiter");
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
         }
