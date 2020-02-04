@@ -68,6 +68,7 @@ export default class ImageHelper {
         return parts[parts.length - 1];
     }
 
+
     /**
      * Checks if the given string of a file name is a file extension of a picture
      * @param filename string of the file name
@@ -75,15 +76,20 @@ export default class ImageHelper {
      */
     public isImage(filename: string) {
         var ext = this.getFileExtension(filename);
-        switch (ext.toLowerCase()) {
-            case 'jpg':
-            case 'gif':
-            case 'bmp':
-            case 'png':
-            case 'jpeg':
-            case 'svg':
-                //etc
-                return true;
+        //filename without e
+        var fname = filename.split(".")[0];
+        // avoid that formulas eqnXXX.svg are listed
+        if (!fname.startsWith('eqn')) {
+            switch (ext.toLowerCase()) {
+                case 'jpg':
+                case 'gif':
+                case 'bmp':
+                case 'png':
+                case 'jpeg':
+                case 'svg':
+                    //etc
+                    return true;
+            }
         }
         return false;
     }
@@ -92,7 +98,7 @@ export default class ImageHelper {
      * Gets all pictures in a folder relative to the currently open file
      * @param path path to the folder
      * @param folder the name of the folder, for example 'pictures'
-     * @returns Array of objects of files. The objects have the structure 
+     * @returns Array of objects of files. The objects have the structure
      * {fileName:'pic.jpg', folderPath:'/Users/.../dir/bilder', completePath:'/Users/.../dir/bilder/pic.jpg', relativePath:'./bilder/pic.jpg', basePath:'/Users/.../dir'}
      */
     public async getAllPicturesInFolder(pathToFolder: any, folder: string) {
