@@ -328,7 +328,7 @@ export default class EditorFunctions {
      * Toggles a unordered list.
      */
     public unorderedList = async () => {
-        await this._helper.toggleCharactersAtBeginningOfLine("- ");
+        this._listHelper.unorderedList();
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 
