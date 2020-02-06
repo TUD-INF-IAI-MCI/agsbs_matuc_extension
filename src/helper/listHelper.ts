@@ -38,7 +38,6 @@ export default class ListHelper {
     }
 
     public async getListBullet(line: number) {
-        var bullet;
         var bulletRegex = /^[*-]/; // looks for * and -
         var lineContent = await this._helper.getLineContent(line);
         var result = lineContent.match(bulletRegex);
