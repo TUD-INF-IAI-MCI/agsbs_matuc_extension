@@ -153,6 +153,7 @@ export default class Helper {
             selection = this.getWordsSelection(currentTextEditor);
         }
         const workSpaceEdit = new vscode.WorkspaceEdit();
+        charactersToInsert = charactersToInsert.replace("images.html", "bilder.html"); //ToDo quick and dirty
         workSpaceEdit.insert(
             currentTextEditor.document.uri,
             selection.start,
