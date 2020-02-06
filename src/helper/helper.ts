@@ -290,7 +290,8 @@ export default class Helper {
             newEndPosition = new vscode.Position(selection.start.line + newLinesExtra, startCharacter + selectionLength);
         }
         var newSelection = new vscode.Selection(newStartPosition, newEndPosition);
-        currentTextEditor.selection = newSelection;
+        return newSelection;
+        //currentTextEditor.selection = newSelection;
     }
 
     /**
@@ -393,6 +394,21 @@ export default class Helper {
 
     }
 
+    public async multiCursorsToggleCharactersAtStartAndEnd(startCharacters: string, endCharacters: string,
+        currentTextEditor?: vscode.TextEditor, selection?: vscode.Range) {
+        var newSelections = [];
+        if (currentTextEditor === undefined) {
+            currentTextEditor = await this.getCurrentTextEditor();
+        }
+        var i;
+        var selections = currentTextEditor.selections;
+        for (i = 0; i < selections.length; i++) {
+            newSelections.push(await this.toggleCharactersAtStartAndEnd(startCharacters, endCharacters, currentTextEditor,
+                selections[i]));
+        }
+        currentTextEditor.selections = newSelections;
+    }
+
     /**
      * Toggles the existence of given Characters in a Selection, also checks around the selection for better matching
      * @param startCharacters Characters at the beginning of the selection that will be added or removed
@@ -466,10 +482,8 @@ export default class Helper {
                 return true;
             }
         }
-
         //If they are different and the selection is not longer than the length of the startCharacters
-        await this.wrapCharactersAroundSelection(currentTextEditor, selection, startCharacters, endCharacters);
-        return true;
+        return await this.wrapCharactersAroundSelection(currentTextEditor, selection, startCharacters, endCharacters);
     }
 
     /**
