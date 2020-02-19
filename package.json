@@ -172,6 +172,10 @@
             {
                 "command": "agsbs.commitChanges",
                 "title": "AGSBS: Commits and pushes all changes."
+            },
+            {
+                "command": "agsbs.newProject",
+                "title": "AGSBS: Opens GUI for creation of a new project"
             }
         ],
         "keybindings": [
@@ -408,9 +412,9 @@
                 },
                 "agsbs.requiredVersion": {
                     "type": "string",
-                    "default": "0.0.1",
+                    "default": "0.8.0",
                     "enum": [
-                        "0.0.1"
+                        "0.8.0"
                     ],
                     "description": "Only the named Version supports all functions of Matuc"
                 }
