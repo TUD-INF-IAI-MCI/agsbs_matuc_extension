@@ -80,10 +80,12 @@ export default class MatucCommands {
      */
 	public imageDescription(desc: string, outsourced: boolean, currentPath: string, title: string, relPathToImg: string) {
 		var cmd = "";
-		if (desc.includes("\n")) {
+		if (desc.includes("\n") || desc.includes("\"")) {
 			outsourced = true;
 			desc = desc.replace(/\n/g, '\\n'); //TODO: Check if neccessary
+			desc = desc.replace(/\"/g, '\\"');  // demask quotes
 		}
+
 		cmd += `matuc_js imgdsc -d \"${desc}\" `;
 		cmd = outsourced ? cmd + '-o ' : cmd;
 		cmd = title ? cmd + '-t "' + title + '" ' : cmd;
