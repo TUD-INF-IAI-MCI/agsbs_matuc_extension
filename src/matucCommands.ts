@@ -88,7 +88,7 @@ export default class MatucCommands {
 
 		cmd += `matuc_js imgdsc -d \"${desc}\" `;
 		cmd = outsourced ? cmd + '-o ' : cmd;
-		cmd = title ? cmd + '-t "' + title + '" ' : cmd;
+		cmd = title ? cmd + '-t "' + title.trim() + '" ' : cmd;
 		cmd += `${relPathToImg}`;
 		console.log(cmd);
 		return new Promise(function (resolve, reject) {
