@@ -304,7 +304,7 @@ export default class EditorFunctions {
             startInsertText = "\n" + startInsertText + "\n";
             endInsertText = "\n" + endInsertText;
         }
-        await this._helper.toggleCharactersAtStartAndEnd(startInsertText, endInsertText);
+        await this._helper.multiCursorsToggleCharactersAtStartAndEnd(startInsertText, endInsertText);
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 
@@ -312,7 +312,7 @@ export default class EditorFunctions {
      * Toggles the current selection as a inline formula
      */
     public inlineFormula = async () => {
-        await this._helper.toggleCharactersAtStartAndEnd("$", "$");
+        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("$", "$");
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 
@@ -320,7 +320,7 @@ export default class EditorFunctions {
      * Toggles the current selection as a formula
      */
     public formula = async () => {
-        await this._helper.toggleCharactersAtStartAndEnd("$$ ", " $$");
+        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("$$ ", " $$");
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 
@@ -328,7 +328,7 @@ export default class EditorFunctions {
      * Toggles a unordered list.
      */
     public unorderedList = async () => {
-        await this._helper.toggleCharactersAtBeginningOfLine("- ");
+        this._listHelper.unorderedList();
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 
@@ -389,6 +389,7 @@ export default class EditorFunctions {
         var folderName: string = params.hiddenFileName.value.substr(0, params.hiddenFileName.value.lastIndexOf("/") - 1);
         var defaultGeneratedFolderName: string = await this._tableHelper.getTableFolderName();
         var savedTable: any;
+        tableData = tableData.replace("\\", "\\\\");
         if (folderName === defaultGeneratedFolderName) {
             savedTable = await this._tableHelper.writeCSVFile(tableData, fileName);
         } else {
@@ -596,7 +597,7 @@ export default class EditorFunctions {
      * Makes the current text bold.
      */
     public bold = async () => {
-        await this._helper.toggleCharactersAtStartAndEnd("**", "**");
+        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("**", "**");
         this._helper.focusDocument(); //Puts focus back to the text editor
 
     }
@@ -605,7 +606,7 @@ export default class EditorFunctions {
      * Makes the current text italic.
      */
     public italic = async () => {
-        await this._helper.toggleCharactersAtStartAndEnd("*", "*");
+        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("*", "*");
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 
@@ -613,7 +614,7 @@ export default class EditorFunctions {
      * Makes the current text strikethrough.
      */
     public strikethrough = async () => {
-        await this._helper.toggleCharactersAtStartAndEnd("~~", "~~");
+        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("~~", "~~");
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 

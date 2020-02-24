@@ -153,11 +153,41 @@ export default class Helper {
             selection = this.getWordsSelection(currentTextEditor);
         }
         const workSpaceEdit = new vscode.WorkspaceEdit();
+        charactersToInsert = charactersToInsert.replace("images.html", "bilder.html"); //ToDo quick and dirty
         workSpaceEdit.insert(
             currentTextEditor.document.uri,
             selection.start,
             charactersToInsert
         );
+        await vscode.workspace.applyEdit(workSpaceEdit);
+    }
+
+    /**
+     * Insert a string at each line of a selection
+     * @param charactersToInsert string that will be inserted
+     * @param currentTextEditor the current text editor
+     * @param selection the current selection
+     */
+    public async insertStringAtStartOfForEachLineOfSelection(charactersToInsert?: any, currentTextEditor?: vscode.TextEditor, selection?: vscode.Range) {
+        if (currentTextEditor === undefined) {
+            currentTextEditor = await this.getCurrentTextEditor();
+        }
+        if (selection === undefined) {
+            selection = this.getWordsSelection(currentTextEditor);
+        }
+        if (charactersToInsert === undefined) {
+            charactersToInsert = 0;
+        }
+
+        const workSpaceEdit = new vscode.WorkspaceEdit();
+        var line; // line of selection
+        for (line = selection.start.line; line <= selection.end.line; line++){
+            charactersToInsert++;
+            if ((await this.getLineContent(line)).length <= 0) { break;}
+            workSpaceEdit.insert(
+                currentTextEditor.document.uri,
+                new vscode.Position(line, 0), charactersToInsert +". ");
+        }
         await vscode.workspace.applyEdit(workSpaceEdit);
     }
 
@@ -260,7 +290,8 @@ export default class Helper {
             newEndPosition = new vscode.Position(selection.start.line + newLinesExtra, startCharacter + selectionLength);
         }
         var newSelection = new vscode.Selection(newStartPosition, newEndPosition);
-        currentTextEditor.selection = newSelection;
+        return newSelection;
+        //currentTextEditor.selection = newSelection;
     }
 
     /**
@@ -320,6 +351,7 @@ export default class Helper {
      * @param currentTextEditor optional. Editor to work with
      */
     public async toggleCharactersAtBeginningOfLine(characters: string, line?: number, currentTextEditor?: vscode.TextEditor) {
+        if (!characters) { return; }
         if (currentTextEditor === undefined) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -327,28 +359,54 @@ export default class Helper {
             var selection = this.getWordsSelection(currentTextEditor);
             line = selection.start.line;
         }
+        // check for tailing whitespace
+        if (characters[characters.length - 1] !== " ") {
+            characters = characters + " ";
+        }
         var lineText = currentTextEditor.document.lineAt(line).text;
         var startSubstring = lineText.substr(0, characters.length);
         if (startSubstring === characters) {
             const workSpaceEdit = new vscode.WorkspaceEdit();
-            var startPosition = new vscode.Position(line, 0);
-            var endPosition = new vscode.Position(line, characters.length);
-            var characterSelection = new vscode.Selection(startPosition, endPosition);
-            await workSpaceEdit.delete(
-                currentTextEditor.document.uri,
-                characterSelection
-            );
+            for (line = selection.start.line; line <= selection.end.line; line++){
+                if ((await this.getLineContent(line)).length <= 0) { break;}
+                var characterSelection = new vscode.Selection(new vscode.Position(line, 0),
+                                         new vscode.Position(line, characters.length));
+                await workSpaceEdit.delete(
+                    currentTextEditor.document.uri,
+                    characterSelection
+                );
+            }
+
             await vscode.workspace.applyEdit(workSpaceEdit);
         } else {
             const workSpaceEdit = new vscode.WorkspaceEdit();
-            workSpaceEdit.insert(
-                currentTextEditor.document.uri,
-                currentTextEditor.document.lineAt(line).range.start,
-                characters
-            );
+            var i;
+            for (i = selection.start.line; i <= selection.end.line; i++){
+                if ((await this.getLineContent(i)).length <= 0) { break;}
+                workSpaceEdit.insert(
+                    currentTextEditor.document.uri,
+                    new vscode.Position(i,0), characters
+                );
+            }
+
             await vscode.workspace.applyEdit(workSpaceEdit);
         }
 
+    }
+
+    public async multiCursorsToggleCharactersAtStartAndEnd(startCharacters: string, endCharacters: string,
+        currentTextEditor?: vscode.TextEditor, selection?: vscode.Range) {
+        var newSelections = [];
+        if (currentTextEditor === undefined) {
+            currentTextEditor = await this.getCurrentTextEditor();
+        }
+        var i;
+        var selections = currentTextEditor.selections;
+        for (i = 0; i < selections.length; i++) {
+            newSelections.push(await this.toggleCharactersAtStartAndEnd(startCharacters, endCharacters, currentTextEditor,
+                selections[i]));
+        }
+        currentTextEditor.selections = newSelections;
     }
 
     /**
@@ -424,10 +482,8 @@ export default class Helper {
                 return true;
             }
         }
-
         //If they are different and the selection is not longer than the length of the startCharacters
-        await this.wrapCharactersAroundSelection(currentTextEditor, selection, startCharacters, endCharacters);
-        return true;
+        return await this.wrapCharactersAroundSelection(currentTextEditor, selection, startCharacters, endCharacters);
     }
 
     /**

@@ -66,7 +66,7 @@ export default class En {
 		this.d['selectType'] = "Typ auswählen:";
 		this.d['titleOfTextbox'] = "Titel der Textbox/Textrahmen";
 		this.d['contentOfTextbox'] = "Inhalt der Textbox/Textrahmen";
-		this.d['annotationNoTitleError'] = "Es ist kein Titel oder Farbe für die Anmerkung angeegben worden. Diese Attribute werden ignorriert.";
+		this.d['annotationNoTitleError'] = "Es ist kein Titel oder Farbe für die Anmerkung angegeben worden. Diese Attribute werden ignorriert.";
 
 		// //footer-panel
 		this.d['emphasis'] = 'Betonung';
@@ -184,7 +184,7 @@ export default class En {
 		this.d['thereAreNoTableInFolder'] = 'Es wurden keine Tabellen in dem Ordner gefunden.';
 		this.d['selectTable'] = '... oder wähle hier eine aus';
 		this.d['importTableError'] = "Fehler während des Tabellenimports";
-		this.d['selectImageFile'] = 'Bild hier auswähen:';
+		this.d['selectImageFile'] = 'Bild hier auswählen:';
 		this.d['altText'] = 'Alternativtext';
 		this.d['outsourceCheckbox'] = 'Beschreibung auslagern';
 		this.d['thereAreNoPicturesInFolder'] = "Keine Bilder in dem Ordner gefunden: ";
