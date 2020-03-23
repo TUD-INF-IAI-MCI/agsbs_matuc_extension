@@ -39,6 +39,9 @@ export default class ProjectToolsFunctions {
         let disposable = vscode.commands.registerCommand("agsbs.showGitView", () => {
             this.cloneRepo();
         });
+        let newPro = vscode.commands.registerCommand("agsbs.newProject", () => {
+            this.createNewProject();
+        })
     }
 
     /**
