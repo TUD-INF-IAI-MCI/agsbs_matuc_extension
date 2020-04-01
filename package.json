@@ -2,7 +2,7 @@
     "name": "agsbsextension",
     "displayName": "AGSBS extension",
     "description": "This package is developed to make the transcription process more effective of our working group",
-    "version": "0.4.1",
+    "version": "0.5.0",
     "publisher": "TUD-AGSBS",
     "categories": [
         "Other"
