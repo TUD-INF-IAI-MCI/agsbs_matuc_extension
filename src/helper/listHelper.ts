@@ -41,7 +41,11 @@ export default class ListHelper {
         var bulletRegex = /^[*-]/; // looks for * and -
         var lineContent = await this._helper.getLineContent(line);
         var result = lineContent.match(bulletRegex);
-        return result;
+        if (result) {
+            return result[0];
+        } else {
+            return null;
+        }
     }
 
     public async unorderedList() {
@@ -72,8 +76,8 @@ export default class ListHelper {
         } else {
             var lastNumber: number = await this.getLineListNumber(line - 1);
             // case if unnumbered list is formatted to numbered one
-            if (lastNumber == 0) {
-                await this._helper.toggleCharactersAtBeginningOfLine(await this.getListBullet(line))
+            if (lastNumber === 0) {
+                await this._helper.toggleCharactersAtBeginningOfLine(await this.getListBullet(line));
             }
             this._helper.insertStringAtStartOfForEachLineOfSelection(lastNumber);
             //Inserts it into the document
