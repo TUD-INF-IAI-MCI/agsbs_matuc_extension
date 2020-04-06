@@ -224,6 +224,8 @@ export default class En {
 		this.d['noFileSelected'] = "No File Selected.";
 		this.d['gitIsNotEnabled'] = "Git is not enabled. Go to Settings -> Extensions -> AGSBS and enable Git to use this function.";
 		this.d['sidebarWelcome'] = "Welcome to AGSBS extension for Visual Studio Code!";
+		this.d['textWhatToDo'] = "Now you can start working. <br \>" +
+		"You can use the icon in task bar below";
 		this.d['sendingError'] = "If you find a bug or have another issue please send a mail."+
 								 "<a href=\"mailto:toAdd@mail.de\">Send mail</a>";
 		this.d['MatucIsInstalledWarning'] = "Matuc is NOT installed! Some features might not work.";
