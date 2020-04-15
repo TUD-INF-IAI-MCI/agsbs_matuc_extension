@@ -389,7 +389,6 @@ export default class EditorFunctions {
         var folderName: string = params.hiddenFileName.value.substr(0, params.hiddenFileName.value.lastIndexOf("/") - 1);
         var defaultGeneratedFolderName: string = await this._tableHelper.getTableFolderName();
         var savedTable: any;
-        tableData = tableData.replace(/\\/g, "\\\\");
         if (folderName === defaultGeneratedFolderName) {
             savedTable = await this._tableHelper.writeCSVFile(tableData, fileName);
         } else {
