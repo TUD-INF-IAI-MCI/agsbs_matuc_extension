@@ -211,6 +211,8 @@ export default class Sidebar {
         var matucIsInstalled = await this._matuc.matucIsInstalled();
         var welcomeText = this._language.get("sidebarWelcome");        
         var form = "<h2>" + welcomeText + "</h2>";
+        var versionNumberText = this._language.get("versionNumber");
+        form += "<br /> " + versionNumberText.replace("$versionNumber$", vscode.extensions.getExtension('TUD-AGSBS.agsbsextension').packageJSON.version);
         form = this._addMultipleText(["textWhatToDo", "sendingError"], form);  
         if (matucIsInstalled === false) {
             form += "<br role='none'><br role='none'>" + this._language.get("MatucIsInstalledWarning");

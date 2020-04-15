@@ -223,13 +223,13 @@ export default class En {
 		this.d['noFileSelected'] = "Keine Datei ausgewählt.";
 		this.d['gitIsNotEnabled'] = "Git ist nicht aktiviert. Zu den Einstellungen -> Erweiterungen -> AGSBS und Git aktivieren um diese Funktion zu nutzen.";
 		this.d['sidebarWelcome'] = "Wilkommen in der AGSBS Erweiterung für Visual studio Code!";
+		this.d['versionNumber'] = "Die Version der AGSBS Extension ist $versionNumber$!";
 		this.d['textWhatToDo'] = "Sie können mit der Bearbeitung der Dateien beginnen. <br \>" +
 								 "Hierfür können Sie  die Icons in der unteren Taskleiste verwenden";
 		this.d['sendingError'] = "Wenn Sie einen Fehler finden, melden Sie Ihn bitte an per <br \> Mail an "+
 								  "<a href=\"mailto:toAdd@mail.de\">Fehler per E-Mail melden </a>";
 		this.d['MatucIsInstalledWarning'] = "Matuc ist NICHT installiert! Manche Funktionen werden nicht verfügbar sein.";
 		this.d['osDocumentsFolderName'] = "Dokumente";//The folder name of the documents folder in the userspace
-
 		this.d['preview'] = "Vorschau";
 
 		this.d['previewNotAvailableCheckWorspaceFolder'] = "Die Vorschau ist aktuell nicht verfügbar. Bitte überprüfen Sie, ob der Ordner, in dem sich die aktuelle Datei befindet, als Workspace-Ordner geöffnet ist (auf der linken Seite des Editors).";
