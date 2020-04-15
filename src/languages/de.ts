@@ -222,7 +222,7 @@ export default class En {
 		this.d['linuxNotSupportedYet'] = "Linux wird leider noch nicht unterstützt.";
 		this.d['noFileSelected'] = "Keine Datei ausgewählt.";
 		this.d['gitIsNotEnabled'] = "Git ist nicht aktiviert. Zu den Einstellungen -> Erweiterungen -> AGSBS und Git aktivieren um diese Funktion zu nutzen.";
-		this.d['sidebarWelcome'] = "Wilkommen in der AGSBS Erweiterung für Visual studio Code!";
+		this.d['sidebarWelcome'] = "Wilkommen in der AGSBS Erweiterung für Visual Studio Code!";
 		this.d['versionNumber'] = "Die Version der AGSBS Extension ist $versionNumber$!";
 		this.d['textWhatToDo'] = "Sie können mit der Bearbeitung der Dateien beginnen. <br \>" +
 								 "Hierfür können Sie  die Icons in der unteren Taskleiste verwenden";
