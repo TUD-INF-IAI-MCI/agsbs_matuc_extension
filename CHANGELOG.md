@@ -1,14 +1,26 @@
 # Change Log
 
+## [v0.5.1] - 2020-04-16
+
+## Changed
+
+- default name of picture folder is now bilder not *B*ilder
+- version number of the extension is now shown in the start tab (see #24 )
+
+### Fixed
+
+- backslash is csv-files are masked correct (see #25)
+
+
 ## [v0.5.0] - 2020-04-01
 
-## Added
+### Added
 
 - multiline cursor selection can be used now for formats (see #21)
 - no formulas (eqn*.svg) are listed in file chooser for images (see #19)
 - the command **matuc conf init** can be executed now (see #14)
 
-## Changed
+### Changed
 
 - remove leading and trailing whitespaces from title (alternative description) (see #22)
 

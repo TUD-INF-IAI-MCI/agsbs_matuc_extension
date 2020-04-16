@@ -2,7 +2,7 @@
     "name": "agsbsextension",
     "displayName": "AGSBS extension",
     "description": "This package is developed to make the transcription process more effective of our working group",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "publisher": "TUD-AGSBS",
     "categories": [
         "Other"
@@ -253,14 +253,14 @@
             },
             {
                 "command": "agsbs.formula",
-                "key": "alt+shift+f",
-                "mac": "alt+shift+f",
+                "key": "ctrl+alt+f",
+                "mac": "ctrl+alt+f",
                 "when": "editorLangId == markdown"
             },
             {
                 "command": "agsbs.inlineFormula",
-                "key": "ctrl+shift+f",
-                "mac": "cmd+shift+f",
+                "key": "ctrl+alt+shift+f",
+                "mac": "cmd+alt+shift+f",
                 "when": "editorLangId == markdown"
             },
             {
