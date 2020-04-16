@@ -464,6 +464,7 @@ export default class TableHelper {
                 await this._helper.mkDir(fileBasePath);
             }
             var fd = fs.openSync(thisPath, 'w+'); //Open in "add"-Mode
+            content = content.replace(/\\/g, "\\\\");
             fs.write(fd, content, (error) => {
                 if (error) {
                     vscode.window.showErrorMessage(this._language.get('writingCSVTableFileError'));
