@@ -187,13 +187,14 @@ export default class EditorFunctions {
      * Adds the 'add Annotation'-Dialogue to to the sidebar.
      */
     public insertAnnotation = async () => {
-        var setttingsTextboxContentIsOptional = await this._settings.get("optionalTextboxContent");
+        var settingsTextboxTitleIsOptional = await this._settings.get("optionalTextboxTitle");
+        var settingsTextboxContentIsOptional = await this._settings.get("optionalTextboxContent");
         var form = this._snippets.get("insertAnnotationHTMLPart1");
-        if (setttingsTextboxContentIsOptional === false) {
+        if (settingsTextboxTitleIsOptional === false) {
             form += "required='true'";
         }
         form += this._snippets.get("insertAnnotationHTMLPart2");
-        if (setttingsTextboxContentIsOptional === false) {
+        if (settingsTextboxContentIsOptional === false) {
             form += "required='true'";
         }
         form += this._snippets.get("insertAnnotationHTMLPart3");
@@ -213,13 +214,17 @@ export default class EditorFunctions {
         var text = "";
         if (annotationType === "textFrame") {
             text = `<div class="frame ${color}">\n`;
-            text += `<span class="title">${title}</span>\n`;
+            if(title !== ""){
+                text += `<span class="title">${title}</span>\n`;
+            }
             text += `${content}\n`;
             text += `</div>\n`;
         }
         if (annotationType === "textBox") {
             text = `<div class="box ${color}">\n`;
-            text += `<span class="title">${title}</span>\n`;
+            if(title !== ""){
+                text += `<span class="title">${title}</span>\n`;
+            }
             text += `${content}\n`;
             text += `</div>\n`;
         }

@@ -379,7 +379,12 @@
                 "agsbs.optionalTextboxContent": {
                     "type": "boolean",
                     "default": false,
-                    "description": "If this is checked, the title and text of a textbox is not required and empty containers are inserted."
+                    "description": "If this is checked, the text of a textbox is not required and empty containers are inserted. Default value is false."
+                },
+                "agsbs.optionalTextboxTitle": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "If this is checked, the title of a textbox is not required and empty containers are inserted. Default value is true."
                 },
                 "agsbs.pictureFolderName": {
                     "type": "string",
