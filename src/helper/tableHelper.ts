@@ -448,10 +448,10 @@ export default class TableHelper {
                 var folderBasePath: any = await this._helper.getCurrentDocumentFolderPath();
                 var fileBasePath = path.join(folderBasePath, folderName);
             }
-
             if (fileName === undefined) {
                 var date = new Date;
-                var newFileName = "generatedTable-" + date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + "-" + date.getHours() + "-" + date.getMinutes() + "-" + date.getSeconds() + ".csv";
+                var month = date.getMonth() + 1;
+                var newFileName = "generatedTable-" + date.getFullYear() + "-" + month + "-" + date.getDate() + "_" + date.getHours() + "-" + date.getMinutes() + "-" + date.getSeconds() + ".csv";
                 fileName = newFileName;
             }
             if (!fileName.endsWith(".csv")) {
