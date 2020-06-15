@@ -29,42 +29,6 @@ export default class GitCommands {
 	 * @param user ZIH-Username as a String
 	 * @param repoName Name of the repo
 	 */
-	public async _clone(user, repoName) {
-		var gitLocalPath: any = await this._settings.get("gitLocalPath");
-		var gitServerPath: any = await this._settings.get("gitServerPath");
-		var usesHttpsOrSshForGit = await this._settings.get("usesHttpsOrSshForGit");
-		if (gitServerPath.endsWith("/")) {
-			gitServerPath = gitServerPath.substring(0, gitServerPath.length - 1);
-			this._settings.update("gitServerPath", gitServerPath); //If Path in Settings ends with a /
-		}
-		if (gitServerPath === "") {
-			vscode.window.showErrorMessage(this._language.get("missingGitServerPath"));
-			return;
-		}
-		var gitCmd = `git clone ${usesHttpsOrSshForGit}://${user}@${gitServerPath}/${repoName}`;
-		console.log("gitCmd " + gitCmd);
-		if (!await this._helper.folderExists(gitLocalPath)) {
-			this._helper.mkDir(gitLocalPath);
-		}
-		exec(gitCmd, { cwd: gitLocalPath }, (error, stdout, stderr) => {
-			if (error) {
-				console.warn(`exec error: ${error}`);
-				vscode.window.showErrorMessage(this._language.get("gitCloneError"));
-			} else {
-				vscode.window.showInformationMessage(this._language.get("gitCloneSucess"));
-				// possible are url/pfad/repo
-				// so the repoName is pfad/repo
-				if (repoName.includes("/")) {
-					var arr = repoName.split("/");
-					repoName = arr[arr.length - 1];
-				}
-				var newFolderName = path.join(gitLocalPath, repoName);
-				this._helper.addWorkspaceFolder(newFolderName);
-				this.track(newFolderName);
-			}
-		});
-	}
-
 	public async clone(user, repoName){
 		var gitLocalPath: any = await this._settings.get("gitLocalPath");
 		var gitServerPath: any = await this._settings.get("gitServerPath");
@@ -89,7 +53,6 @@ export default class GitCommands {
 				return this.gitClone(progress, token, gitServerPath, gitLocalPath, repoName);
 			}
 		);
-
 	}
 
   /**
