@@ -350,14 +350,19 @@ export default class MatucCommands {
 		exec(cmd, { env: this.getOsLocale() }, (error, stdout, stderr) => {
 			if (error) {
 				let fragment = JSON.parse(stdout);
-				let message = "";
+				var message = "";
+				if (fragment.error.hasOwnProperty('message')){
+					message += fragment.error.message;
+				}
 				if (fragment.error.hasOwnProperty('line')) {
 					message += "\n\n\n" + this._language.get("checkLine") + fragment.error.line;
 				}
 				if (fragment.error.hasOwnProperty('path')) {
 					message += "\n\n" + this._language.get("checkFile") + " " + fragment.error.path;
 				}
-				vscode.window.showErrorMessage(this._language.get("unExpectedMatucError") + message);
+				//this._helper.ShowMkErrorMessage(fragment.result);
+				vscode.window.showErrorMessage(this._language.get("error") + message);
+
 				console.error(`exec error: ${error}`);
 				console.log(`stderr: ${stderr}`);
 				console.log(`stdout: ${stdout}`);
