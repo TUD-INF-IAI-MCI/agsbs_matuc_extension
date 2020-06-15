@@ -112,6 +112,7 @@ export default class En {
 		// //git
 		this.d['gitUser'] = 'Nutzername  (ZIH-Login)';
 		this.d['gitCloneSucess'] = "Repo wurde erfolgreich geklont!";
+		this.d['gitCloneInProgess'] = "Das Repo \$repoName\$ wird gerade geklont. Haben Sie etwas Geduld";
 		this.d['gitCloneError'] = "Während des Klonen ist ein Fehler aufgetreten. Überprüfen Sie, ob sie ihren privaten Schlüssel geladen haben oder der Ordner bereits existiert. Mehr Informationen finden Sie auf der Konsole.";
 		this.d['gitPushError']	= "Während des Push auf den Server ist ein Fehler aufgetreten. Mehr Informationen finden Sie im Terminal";
 		this.d['gitPushSuccess'] = "Der Git-Push auf den Server war erfolgreich";
@@ -119,6 +120,7 @@ export default class En {
 		this.d['mailadresse'] = "E-Mailadresse";
 		this.d['noUserDataIsSet'] = "Es sind keine Mailadresse und Username in der git Config gespeichert.";
 		this.d['SetUserDataInConfig'] = "Es wurde die E-Mailadresse \"$emailAddress$\" und der Username \"$userName$\"  aus den Einstellung der Erweiterung in die lokale Konfiguration geschrieben.";
+		this.d['repoNameContainsSpaces'] = "Der Reponame enthielt Leerzeichen. Sollte das Klonen nicht erfolgreich gewesen sein. Überprüfen Sie den Reponamen und starten Sie das Klonen erneut!";
 		// //new-project
 		this.d['noFolder'] = 'Kein Ordner ausgewählt';
 		this.d['preface'] = 'Vorwort einfügen';
@@ -213,7 +215,7 @@ export default class En {
 		this.d['pagenumbering'] = 'Seitennummerierung';
 		this.d['doYouWantToAutocorrect'] = 'Wenn die Seitennummerierung automatisch korrigiert werden soll, muss folgende Checkbox ausgewählt werden. Wenn nicht müssen die Seitennummern manuell korrigiert werden.';
 		this.d['autocorrectPagenumberingCheckbox'] = 'Seitennummerierung automatisch korrigieren';
-		this.d['checkLine'] = 'Zeiel überprüfen: ';
+		this.d['checkLine'] = 'Zeile überprüfen: ';
 
 		// Reading Files and Folders
 		this.d['readingFileError'] = 'Ein unerwarteter Fehler ist aufgetreten beim Lesen der Datei.';

@@ -112,6 +112,7 @@ export default class En {
 		// //git
 		this.d['gitUser'] = 'Username  (ZIH-Login)';
 		this.d['gitCloneSucess'] = "Repo was cloned successfully!";
+		this.d['gitCloneInProgess'] = "Repo \$repoName\$ is cloning. Be patient.";
 		this.d['gitCloneError'] = "An error occurs during the cloning. Check whether you load your private key or whether the git directory is existing. Find more information in the terminal";
 		this.d['gitPushError']	= "During the push an error occurs. Find more information in the terminal";
 		this.d['gitPushSuccess'] = "Git push was successful";
@@ -119,7 +120,7 @@ export default class En {
 		this.d['mailadresse'] = "E-mail address";
 		this.d['noUserDataIsSet'] = "Es sind keine Mailadresse und Username in der git Config gespeichert.";
 		this.d['SetUserDataInConfig'] = "The email address \"$emailAddress$\" and user name \"$userName$\" of the user settings were set in the local configuration.";
-
+		this.d['repoNameContainsSpaces'] = "The repo contained spaces. If the clone did not successed. Please checkout the repo name and try it again";
 		// //new-project
 		this.d['noFolder'] = 'No folder set';
 		this.d['preface'] = 'Add a preface to the document.';
