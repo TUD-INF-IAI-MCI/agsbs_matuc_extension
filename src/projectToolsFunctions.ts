@@ -41,7 +41,8 @@ export default class ProjectToolsFunctions {
         });
         let newPro = vscode.commands.registerCommand("agsbs.newProject", () => {
             this.createNewProject();
-        })
+        });
+
     }
 
     /**
