@@ -86,7 +86,7 @@ export default class GitCommands {
 			title: "Klonen (hardcoded) ",
 			cancellable: true},
 			(progress, token) =>{
-				return this.gitClone(progress, token, gitServerPath, gitLocalPath);
+				return this.gitClone(progress, token, gitServerPath, gitLocalPath, repoName);
 			}
 		);
 
@@ -98,13 +98,13 @@ export default class GitCommands {
 	* @param gitServerPath like ssh://USER@URL
 	* @param gitLocalPath
 	*/
-	public gitClone(progress: vscode.Progress<{ message?: string; increment?: number}>, token: vscode.CancellationToken, gitServerPath: string, gitLocalPath: string): Promise<void> {
+	public gitClone(progress: vscode.Progress<{ message?: string; increment?: number}>, token: vscode.CancellationToken, gitServerPath: string, gitLocalPath: string, repoName: string): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			if (token.isCancellationRequested) {
 				return;
 			}
 			console.log("try to execute command:");
-			console.log(`\t git clone ${gitServerPath} `)
+			console.log(`\t git clone ${gitServerPath}`);
 			let lastStderr;
 			let gitCloneProcess = spawn('git', ['clone', gitServerPath,'--progress'], {cwd: gitLocalPath, shell: true});
 			gitCloneProcess.stderr.on('data', (data) => {
@@ -114,6 +114,13 @@ export default class GitCommands {
 			gitCloneProcess.on('close', (code) => {
 				if(code === 0){
 				vscode.window.showInformationMessage(this._language.get ("gitCloneSucess"));
+				if (repoName.includes("/")) {
+					var arr = repoName.split("/");
+					repoName = arr[arr.length - 1];
+				}
+				var newFolderName = path.join(gitLocalPath, repoName);
+				this._helper.addWorkspaceFolder(newFolderName);
+				this.track(newFolderName);
 				resolve();
 				}
 				if(code === 128){
