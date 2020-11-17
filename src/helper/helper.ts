@@ -492,7 +492,7 @@ export default class Helper {
      * @param context Context of the Extension
      * @returns resource from type vscode.Uri
      */
-    public getWebviewResourceIconURI(name, context): vscode.Uri {
+    public getWebviewResourceIconURI(panel, name, context): vscode.Uri {
         var ressource = this.getWebviewResourceURI(name, "icons", context);
         return ressource;
     }
