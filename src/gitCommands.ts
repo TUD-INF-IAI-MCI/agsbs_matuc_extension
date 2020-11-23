@@ -41,7 +41,12 @@ export default class GitCommands {
 			vscode.window.showErrorMessage(this._language.get("missingGitServerPath"));
 			return;
 		}
-		 gitServerPath = `${usesHttpsOrSshForGit}://${user}@${gitServerPath}/${repoName}`;
+		// for using matShare
+		if(repoName.startsWith("https://elvis.inf.tu-dresden.de/matshare/")){
+			gitServerPath = repoName;
+		}else{
+			gitServerPath = `${usesHttpsOrSshForGit}://${user}@${gitServerPath}/${repoName}`;
+		}
 		if (!await this._helper.folderExists(gitLocalPath)) {
 			this._helper.mkDir(gitLocalPath);
 		}
