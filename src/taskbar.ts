@@ -130,7 +130,6 @@ export default class Taskbar {
 
         this._callbacks[id] = callback;
         newSection = "SECTION-" + newSection;
-        console.log("BUTTON \t"+ html);
         this._addToHTML(newSection, html);
         if (commandIdentifier !== undefined) {
             if (!commandIdentifier.includes("agsbs.")) {
@@ -174,8 +173,6 @@ export default class Taskbar {
         //var html="";
         this._callbacks[id] = callback;
         newSection = "SECTION-" + newSection;
-
-        console.log("BUTTON \t"+ html);
         this._addToHTML(newSection, html);
         if (commandIdentifier !== undefined) {
             if (!commandIdentifier.includes("agsbs.")) {
