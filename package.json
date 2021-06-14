@@ -401,21 +401,11 @@
                     "default": "generatedTables",
                     "description": "The name of the Folder in the project that will save all the generated tables."
                 },
-                "agsbs.conversionProfile": {
-                    "type": "string",
-                    "default": "check manually every time",
-                    "enum": [
-                        "check manually every time",
-                        "blind",
-                        "visually impaired"
-                    ],
-                    "description": "Only the named Version supports all functions of Matuc"
-                },
                 "agsbs.requiredVersion": {
                     "type": "string",
-                    "default": "0.8.0",
+                    "default": "0.9.0",
                     "enum": [
-                        "0.8.0"
+                        "0.9.0"
                     ],
                     "description": "Only the named Version supports all functions of Matuc"
                 }
