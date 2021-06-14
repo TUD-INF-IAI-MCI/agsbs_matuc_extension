@@ -39,6 +39,8 @@ export default class En {
 		this.d['generateFile'] = 'Generate HTML';
 		this.d['convertEntireProject'] = 'Generate HTML for all project files';
 		this.d['generate'] = 'Generate';
+		this.d['generateMaterial'] = 'Generating of material is started. Be patient.';
+		this.d['generatingSuccess'] = 'Generating of material finished';
 		this.d['conversionProfile'] = 'conversion profile';
 		this.d['blind'] = 'blind';
 		this.d['visuallyImpaired'] = 'visually impaired';
@@ -155,6 +157,7 @@ export default class En {
 		this.d['noConfiguration'] = "No configuration, .lecture_meta_data.dcxml, in a directory exists in this project";
 		this.d['unExpectedMatucError'] = 'An unexpected matuc error occured';
 		this.d['documentHasBeenSaved'] = 'The current document has been saved, as it was neccessary for the execution of this action.';
+		this.d['matucErrorDetails'] = '$message$ <br/> <strong> Check <br /> file: $path$ <br/> line: $line$ <br/>position: $position$ <br/> </strong>';
 
 		// //editor functions
 

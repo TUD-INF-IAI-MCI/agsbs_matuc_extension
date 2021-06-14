@@ -39,6 +39,8 @@ export default class En {
 		this.d['generateFile'] = 'HTML generieren';
 		this.d['convertEntireProject'] = 'Generiere HTML für alle Projektdokumente';
 		this.d['generate'] = 'Generieren';
+		this.d['generateMaterial'] = 'Generierung von Materialien ist gestartet. Bitte warten';
+		this.d['generatingSuccess'] = 'Generierung von Materialien wurde beendet.';
 		this.d['conversionProfile'] = 'Konvertierungprofil';
 		this.d['blind'] = 'Blind';
 		this.d['visuallyImpaired'] = 'Sehbehindert';
@@ -155,6 +157,7 @@ export default class En {
 		this.d['noConfiguration'] = "Konfigurationsdatei, .lecture_meta_data.dcxml, fehlt im Projekt";
 		this.d['unExpectedMatucError'] = 'Ein unerwarteter Matuc-Fehler trat auf';
 		this.d['documentHasBeenSaved'] = 'Das aktuelle Dokument wurde gespeichert, weil es für die aktuelle Aktion benötigt wurde.';
+		this.d['matucErrorDetails'] = '$message$ <br/> <strong>Überprüfen Sie die <br/>Datei: $path$ <br/> Zeile: $line$<strong> <br/> Position: $position$ <br/> </strong>';
 
 		// //editor functions
 
