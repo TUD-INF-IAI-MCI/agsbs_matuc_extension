@@ -1,3 +1,4 @@
 out
 log.log
 node_modules
+*.vsix
