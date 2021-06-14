@@ -824,6 +824,20 @@ export default class Helper {
         return path.normalize(path2normalize);
     }
 
+    public FormatMatucErrorMessage(matucError: Object) {
+        let errorMessage = this._language.get('matucErrorDetails');
+        errorMessage = errorMessage.replace("$message$", matucError['message']);
+        errorMessage = errorMessage.replace("$path$", path.basename(matucError['path']));
+        errorMessage = errorMessage.replace("$line$", matucError['line']);
+        errorMessage = errorMessage.replace("$position$", matucError['position']
+        );
+        return errorMessage;
+    }
+
+    /**
+     * Show error message with the error info, line number and name of file
+     * @param mkResult
+     */
     public async ShowMkErrorMessage(mkResult: Object) {
         Object.keys(mkResult).forEach(key => {
             var location = key.split(path.sep).reverse()[0];  // file name or directory name
