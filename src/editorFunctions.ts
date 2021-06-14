@@ -40,7 +40,7 @@ export default class EditorFunctions {
         this._sidebarCallback = sidebarCallback;
         this._taskbarCallback = taskbarCallback;
         this._language = new Language;
-        this._matucCommands = new MatucCommands;
+        this._matucCommands = new MatucCommands(sidebarCallback);
         this._snippets = new EditorFunctionSnippets;
         this._tableHelper = new TableHelper;
         this._listHelper = new ListHelper;
@@ -360,14 +360,27 @@ export default class EditorFunctions {
             var script = this._snippets.get('editTableSCRIPT');
             script += this._snippets.get('editTableScriptPart1');
             var jsonToInsert = JSON.stringify(tableData["data"]);
-            jsonToInsert = jsonToInsert.replace(/\\n/g, "\\\\n")
+            jsonToInsert = jsonToInsert.replace(/\\n/g, "___LINE_BREAK___")
+                //.replace(/\\{4}([[]()])/g, "$1")
+                .replace(/\\\\\\\\/g, "___BACK_SLASH___")
+                .replace(/\\\\/g, "") // remove existing
+                .replace(/\\([tr])/g, "___SLASH__$1")
+                //.replace(/\\{8}/g, "HIER ABER")
+                .replace(/\\/g, "\\\\")
                 .replace(/\\"/g, "\\\\\"")
                 .replace(/\\'/g, "\\\\'")
                 .replace(/\\&/g, "\\\\&")
                 .replace(/\\r/g, "\\\\r")
                 .replace(/\\t/g, "\\\\t")
                 .replace(/\\b/g, "\\\\b")
+                //.replace(/\\\\/g, "\\\\b")
+                //.replace(/\\{3}([tr])/g, "\\\\$1")
+
                 .replace(/\\f/g, "|\f");
+            jsonToInsert = jsonToInsert.replace(/___LINE_BREAK___/g, "\\\\n");
+            jsonToInsert = jsonToInsert.replace(/___BACK_SLASH___/g, "\\\\\\\\")
+            .replace(/___SLASH__([tr])/g, "\\\\$1");
+            console.log("#####\nJsonToInsert " + jsonToInsert);
             script += jsonToInsert;
             script += this._snippets.get('editTableScriptPart2');
             var style = this._snippets.get('editTableSTYLE');
@@ -610,7 +623,7 @@ export default class EditorFunctions {
      * Makes the current text italic.
      */
     public italic = async () => {
-        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("*", "*");
+        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("_", "_");
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 
