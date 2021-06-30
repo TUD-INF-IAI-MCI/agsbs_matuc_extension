@@ -360,6 +360,7 @@ export default class MatucCommands {
 			(progress, token) =>{
 					return this.executeConversion(progress, token, parameter);
 			});
+			this.loadGeneratedHtml(filePath);
 	}
 
 	public executeConversion(progress: vscode.Progress<{ message?: string; increment?: number}>, token: vscode.CancellationToken, parameter: string): Promise<void> {
@@ -389,7 +390,7 @@ export default class MatucCommands {
 				}
 			});
 			matucProcess.on('close', (code) => {
-				console.log("close "+ code.toString());
+
 				if(code === 0){
 					vscode.window.showInformationMessage(this._language.get("generatingSuccess"));
 					resolve();

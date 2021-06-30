@@ -10,6 +10,8 @@ import * as Papa from 'papaparse';
 import * as chardet from 'chardet';
 import * as iconvLite from 'iconv-lite';
 
+const open = require('open');
+
 export default class Helper {
     private _language: Language;
     constructor() {
@@ -46,6 +48,16 @@ export default class Helper {
             }
             resolve(true);
         });
+    }
+
+    public openFileInBrowser(filePath: string){
+        if(filePath.toLowerCase().endsWith(".md")){
+            filePath = filePath.toLowerCase().replace(".md", ".html");
+        }else if (!filePath.toLowerCase().endsWith(".html")){
+            console.log("file is not a md or html file");
+            return;
+        }
+        open(filePath);
     }
 
     /**
@@ -370,7 +382,7 @@ export default class Helper {
             for (line = selection.start.line; line <= selection.end.line; line++){
                 if ((await this.getLineContent(line)).length <= 0) { break;}
                 var characterSelection = new vscode.Selection(new vscode.Position(line, 0),
-                                         new vscode.Position(line, characters.length));
+                   new vscode.Position(line, characters.length));
                 await workSpaceEdit.delete(
                     currentTextEditor.document.uri,
                     characterSelection
@@ -388,10 +400,8 @@ export default class Helper {
                     new vscode.Position(i,0), characters
                 );
             }
-
             await vscode.workspace.applyEdit(workSpaceEdit);
         }
-
     }
 
     public async multiCursorsToggleCharactersAtStartAndEnd(startCharacters: string, endCharacters: string,
@@ -406,7 +416,7 @@ export default class Helper {
             newSelections.push(await this.toggleCharactersAtStartAndEnd(startCharacters, endCharacters, currentTextEditor,
                 selections[i]));
         }
-        currentTextEditor.selections = newSelections;
+        //currentTextEditor.selections = newSelections;
     }
 
     /**
@@ -430,7 +440,7 @@ export default class Helper {
         if (await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor, selection, startCharacters, endCharacters) === true) {
             //If they match immediately
             await this.deleteCharactersInSelection(currentTextEditor, selection, startCharacters.length, endCharacters.length);
-            return true;
+            return selection;
         }
 
         //If they don't match
@@ -441,7 +451,7 @@ export default class Helper {
             if (await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor, extendedSelection, startCharacters, endCharacters) === true) {
                 //Extended Selection, if the beginning was not selected
                 await this.deleteCharactersInSelection(currentTextEditor, extendedSelection, startCharacters.length, endCharacters.length);
-                return true;
+                return extendedSelection;
             }
         }
         if (selection.start.character >= (startCharacters.length + endCharacters.length)) {//Extend selection to the Left (stadt + endcharacters) if it is possible
@@ -450,7 +460,7 @@ export default class Helper {
             if (await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor, extendedSelection, startCharacters, endCharacters) === true) {
                 //Extended Selection, if the beginning was not selected
                 await this.deleteCharactersInSelection(currentTextEditor, extendedSelection, startCharacters.length, endCharacters.length);
-                return true;
+                return extendedSelection;
             }
         }
         var lineLength = currentTextEditor.document.lineAt(selection.end.line).range.end.character;
@@ -460,7 +470,7 @@ export default class Helper {
             if (await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor, extendedSelection, startCharacters, endCharacters) === true) {
                 //Extended Selection, if the beginning was not selected
                 await this.deleteCharactersInSelection(currentTextEditor, extendedSelection, startCharacters.length, endCharacters.length);
-                return true;
+                return extendedSelection;
             }
         }
         if (selection.start.character >= startCharacters.length && selection.end.character <= lineLength - endCharacters.length) {//Extend selection in both directions if it is possible
@@ -469,7 +479,7 @@ export default class Helper {
             if (await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor, extendedSelection, startCharacters, endCharacters) === true) {
                 //Extended Selection, if the beginning was not selected
                 await this.deleteCharactersInSelection(currentTextEditor, extendedSelection, startCharacters.length, endCharacters.length);
-                return true;
+                return extendedSelection;
             }
         }
         if (selection.start.character >= startCharacters.length && selection.end.character <= lineLength - endCharacters.length) {//Extend selection to the full length of the line
@@ -479,7 +489,7 @@ export default class Helper {
             if (await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor, extendedSelection, startCharacters, endCharacters) === true) {
                 //Extended Selection, if the beginning was not selected
                 await this.deleteCharactersInSelection(currentTextEditor, extendedSelection, startCharacters.length, endCharacters.length);
-                return true;
+                return extendedSelection;
             }
         }
         //If they are different and the selection is not longer than the length of the startCharacters
@@ -508,6 +518,8 @@ export default class Helper {
         const onDiskPath = vscode.Uri.file(path.join(context.extensionPath, folder, name));
         // And get the special URI to use with the webview
         const ressource = onDiskPath.with({ scheme: 'vscode-resource' });
+
+
         return ressource;
     }
 
@@ -854,6 +866,5 @@ export default class Helper {
             }
             vscode.window.showErrorMessage(errorMessage);
         });
-
     }
 }
