@@ -403,7 +403,6 @@ export default class Helper {
             await vscode.workspace.applyEdit(workSpaceEdit);
         }
     }
-    // ** ** test
     public async multiCursorsToggleCharactersAtStartAndEnd(startCharacters: string, endCharacters: string) {
         const currentTextEditor = await this.getCurrentTextEditor();
         var newSelections = [];
@@ -414,9 +413,11 @@ export default class Helper {
 
         //set cursor to the middle of the selection
         const cursorPosition = currentTextEditor.selection.active;
-        const newCursorPosition = cursorPosition.translate(0, -1 * endCharacters.length);
-        const newSelection = new vscode.Selection(newCursorPosition, newCursorPosition);
-        currentTextEditor.selection = newSelection;
+        if(cursorPosition.character > 0) {
+            const newCursorPosition = cursorPosition.translate(0, -1 * endCharacters.length);
+            const newSelection = new vscode.Selection(newCursorPosition, newCursorPosition);
+            currentTextEditor.selection = newSelection;
+        }
     }
 
     /**
