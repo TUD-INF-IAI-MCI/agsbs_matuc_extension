@@ -16,7 +16,7 @@ export default class En {
 		this.d['en'] = 'Englisch';
 		this.d['de'] = 'Deutsch';
 		this.d['fr'] = 'Französisch';
-		this.d['noOpenEditors'] = 'Keine offenen Editoren.';
+		this.d['noActiveEditor'] = 'Kein aktiver Editor';
 		this.d['tooManyOpenEditors'] = 'Zu viele offenen Editoren. Bitte öffnen Sie nur einen Editor ohne Split View.';
 		this.d['ActionErrorNotMarkdown'] = 'Die aktuelle Datei ist keine Markdown-Datei und die aktuelle Aktion kann nicht ausgeführt werden. Bitte eine Markdown-Datei öffnen.';
 		this.d['error'] = 'Ein Fehler ist aufgetreten.';
