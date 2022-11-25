@@ -71,6 +71,8 @@ export default class EditorFunctions {
         this._taskbarCallback.addButton('table.svg', this._language.get('insertTable'), this.insertTable, this._language.get('table'), "agsbs.table");
         this._taskbarCallback.addButton('import_table_csv.svg', this._language.get('importTableCsv'), this.insertCSVTable, this._language.get('table'), "agsbs.importTableCSV");
         this._taskbarCallback.addButton("edit_table.svg", this._language.get("editTable"), this.editTable, this._language.get("table"), "agsbs.editTable");
+        // edit csv call
+        this._taskbarCallback.addButton("h.svg", this._language.get("editTable"), this.editTableGui, this._language.get("table"), "agsbs.editTableGui");
 
         this._taskbarCallback.addButton("formula.svg", this._language.get("formula"), this.formula, this._language.get("formatting"), "agsbs.formula");
         this._taskbarCallback.addButton("inline_formula.svg", this._language.get("formulaInline"), this.inlineFormula, this._language.get("formatting"), "agsbs.inlineFormula");
@@ -345,9 +347,36 @@ export default class EditorFunctions {
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 
+
+    /**
+     * new function editCsv may complete change
+     */
+
+    public editTableGui = async () => {
+        var editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
+
+        var loc = vscode.Uri.file("C:\\Users\\Jens Voegler\\Documents\\AGSBS_Git\\b-354-2021_klinische_psychologie_und_psychotherapie\\bearbeitet\\k13\\generatedTables\\generatedTable-2021-11-17_23-36-53.csv");
+        vscode.commands.executeCommand("vscode.open", loc);
+        var ext = vscode.window.activeTextEditor;
+        if(editCsv.isActive == false){
+                editCsv.activate().then(
+                    function(){
+                        vscode.commands.executeCommand("edit-csv.edit");
+                        //vscode.commands.executeCommand<vscode.Location[]>("edit-csv.edit", "C:\Users\Jens Voegler\Documents\AGSBS_Git\b-354-2021_klinische_psychologie_und_psychotherapie\bearbeitet\k13\generatedTables\generatedTable-2021-11-17_23-36-53.csv");
+                    }, function(){
+                        console.log("Cannot start vscode-edit-csv");
+                    }
+                )
+                vscode.commands.executeCommand("edit-csv.edit");
+            }
+    }
+
+
     /**
      * Editing a existing Table
      */
+
+
     public editTable = async () => {
         var insertPosition: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
         if (insertPosition === false) {
