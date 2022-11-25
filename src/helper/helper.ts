@@ -411,7 +411,12 @@ export default class Helper {
             newSelections.push(
                 await this.toggleCharactersAtStartAndEnd(startCharacters, endCharacters, currentTextEditor, currentTextEditor.selections[i]));
         }
-        //currentTextEditor.selections = newSelections;
+
+        //set cursor to the middle of the selection
+        const cursorPosition = currentTextEditor.selection.active;
+        const newCursorPosition = cursorPosition.translate(0, -1 * endCharacters.length);
+        const newSelection = new vscode.Selection(newCursorPosition, newCursorPosition);
+        currentTextEditor.selection = newSelection;
     }
 
     /**
