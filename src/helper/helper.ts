@@ -403,18 +403,13 @@ export default class Helper {
             await vscode.workspace.applyEdit(workSpaceEdit);
         }
     }
-
-    public async multiCursorsToggleCharactersAtStartAndEnd(startCharacters: string, endCharacters: string,
-        currentTextEditor?: vscode.TextEditor, selection?: vscode.Range) {
+    // ** ** test
+    public async multiCursorsToggleCharactersAtStartAndEnd(startCharacters: string, endCharacters: string) {
+        const currentTextEditor = await this.getCurrentTextEditor();
         var newSelections = [];
-        if (currentTextEditor === undefined) {
-            currentTextEditor = await this.getCurrentTextEditor();
-        }
-        var i;
-        var selections = currentTextEditor.selections;
-        for (i = 0; i < selections.length; i++) {
-            newSelections.push(await this.toggleCharactersAtStartAndEnd(startCharacters, endCharacters, currentTextEditor,
-                selections[i]));
+        for (var i = 0; i < currentTextEditor.selections.length; i++) {
+            newSelections.push(
+                await this.toggleCharactersAtStartAndEnd(startCharacters, endCharacters, currentTextEditor, currentTextEditor.selections[i]));
         }
         //currentTextEditor.selections = newSelections;
     }
