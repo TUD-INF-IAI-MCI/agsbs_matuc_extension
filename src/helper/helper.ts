@@ -65,16 +65,9 @@ export default class Helper {
      */
     public async getCurrentDocumentFolderPath() {
         return new Promise(async (resolve, reject) => {
-            const textEditors = await vscode.window.visibleTextEditors;
-            if (textEditors.length < 1) {
-                vscode.window.showErrorMessage(this._language.get('noOpenEditors'));
-                resolve(null);
-            }
-            if (textEditors.length > 1) {
-                vscode.window.showErrorMessage(this._language.get('tooManyOpenEditors'));
-                resolve(null);
-            }
-            var currentTextEditor = textEditors[0];
+
+            const currentTextEditor = await this.getCurrentTextEditor();
+
             var currentDocumentFileName = currentTextEditor.document.fileName;
             var currentPath = currentDocumentFileName.substr(0, currentDocumentFileName.lastIndexOf(path.sep));
             resolve(currentPath.toString());
@@ -87,25 +80,28 @@ export default class Helper {
      */
     public async getCurrentTextEditor() {
 
+        const currentActiveTextEditor = await vscode.window.activeTextEditor;
         const textEditors = await vscode.window.visibleTextEditors;
-        if (textEditors !== undefined) {
-            if (textEditors.length < 1) {
-                vscode.window.showErrorMessage(this._language.get('noOpenEditors'));
-                return null;
-            }
-            if (textEditors.length > 1) {
-                vscode.window.showErrorMessage(this._language.get('tooManyOpenEditors'));
-                return null;
-            }
-            var currentTextEditor = textEditors[0];
+        const openedTextEditor = textEditors[0];
 
-            if (currentTextEditor.document.languageId !== "markdown") {
-                vscode.window.showErrorMessage(this._language.get('ActionErrorNotMarkdown'));
-                return null;
-            }
-            return currentTextEditor;
-
+        // check if markdown
+        if ((currentActiveTextEditor && currentActiveTextEditor.document.languageId !== "markdown") || (openedTextEditor && openedTextEditor.document.languageId !== "markdown")) {
+            vscode.window.showErrorMessage(this._language.get('ActionErrorNotMarkdown'));
+            return null;
         }
+
+        //check if there is an active Text Editor
+        if (!currentActiveTextEditor && textEditors.length > 1) {
+            vscode.window.showErrorMessage(this._language.get('noActiveEditor'));
+            return null;
+        }
+
+        //if there is no active editor but only one visible editor, use that one
+        else if (!currentActiveTextEditor && textEditors.length === 1) {
+            return openedTextEditor;
+        }
+
+        return currentActiveTextEditor;
     }
     /**
      * Returns the primary Selection of the given Text Editor
