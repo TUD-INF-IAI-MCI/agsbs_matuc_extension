@@ -2,7 +2,7 @@
     "name": "agsbsextension",
     "displayName": "AGSBS extension",
     "description": "This package is developed to make the transcription process more effective of our working group",
-    "version": "0.5.1",
+    "version": "0.6.0",
     "publisher": "TUD-AGSBS",
     "categories": [
         "Other"
@@ -11,7 +11,7 @@
         "blind, visually impaired, accessible materials, transcript, markdown, html, epub, pandoc, table editor, csv import, csv export"
     ],
     "engines": {
-        "vscode": "^1.28.0"
+        "vscode": "^1.57.0"
     },
     "contributors": [
         "Lucas Vogel <lucas.vogel2 [at] tu-dresden.de>",
@@ -95,6 +95,10 @@
             },
             {
                 "command": "agsbs.editTable",
+                "title": "AGSBS: Opens a sidebar dialogue to edit the table the selection is currently in"
+            },
+            {
+                "command": "agsbs.editTableGui",
                 "title": "AGSBS: Opens a sidebar dialogue to edit the table the selection is currently in"
             },
             {
@@ -379,7 +383,12 @@
                 "agsbs.optionalTextboxContent": {
                     "type": "boolean",
                     "default": false,
-                    "description": "If this is checked, the title and text of a textbox is not required and empty containers are inserted."
+                    "description": "If this is checked, the text of a textbox is not required and empty containers are inserted. Default value is false."
+                },
+                "agsbs.optionalTextboxTitle": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "If this is checked, the title of a textbox is not required and empty containers are inserted. Default value is true."
                 },
                 "agsbs.pictureFolderName": {
                     "type": "string",
@@ -396,21 +405,11 @@
                     "default": "generatedTables",
                     "description": "The name of the Folder in the project that will save all the generated tables."
                 },
-                "agsbs.conversionProfile": {
-                    "type": "string",
-                    "default": "check manually every time",
-                    "enum": [
-                        "check manually every time",
-                        "blind",
-                        "visually impaired"
-                    ],
-                    "description": "Only the named Version supports all functions of Matuc"
-                },
                 "agsbs.requiredVersion": {
                     "type": "string",
-                    "default": "0.8.0",
+                    "default": "0.9.0",
                     "enum": [
-                        "0.8.0"
+                        "0.9.0"
                     ],
                     "description": "Only the named Version supports all functions of Matuc"
                 }
@@ -438,7 +437,8 @@
         "iconv-lite": "0.4.24",
         "npm": "^6.14.4",
         "os-locale": "^3.1.0",
-        "papaparse": "^5.2.0",
-        "path": "^0.12.7"
+        "papaparse": ">=5.2.0",
+        "path": "^0.12.7",
+        "open": "8.2.0"
     }
 }

@@ -9,7 +9,7 @@ It is a GUI toolkit which helps to transcribe study material to markdown which f
 
 ## What is AGSBS?
 
-AGSBS (Arbeitsgruppe Studium für Blinde und Sehbehinderte eng. working group for blind and visually impaired Students) is a working group of TU Dresden (germany). AGSBS works on (automatically) transcribing study material to offer it to the blind an visually impaired students.
+AGSBS (Arbeitsgruppe Services Behinderung und Studium  eng. Working group Services Disability and Studies ) is a working group of TU Dresden (germany). AGSBS works on (automatically) transcribing study material to offer it to the blind an visually impaired students.
 
 ## Issues and new features
 

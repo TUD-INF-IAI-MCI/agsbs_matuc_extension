@@ -27,7 +27,7 @@ export default class Sidebar {
         this._panel = null;
         this._sidebarCallback = null;
         this._snippets = new SidebarSnippets;
-        this._matuc = new MatucCommands;
+        this._matuc = new MatucCommands(this);
         this._language = new Language;
         this._wasOpenendBefore = false;
 
@@ -106,7 +106,7 @@ export default class Sidebar {
     }
 
     /**
-     * Gets triggered when the Layout of the Editor changes. 
+     * Gets triggered when the Layout of the Editor changes.
      * @param panel The WebviewPanel that should be closed, from fype vscode.WebviewPanel
      * @returns a promise that resolves to true if its finished.
      */
@@ -134,7 +134,7 @@ export default class Sidebar {
         if (headline !== undefined && headline !== "") {
             this._addToHTML("HEADLINE", `<h2>${headline}</h2>`);
         }
-        var closeButtonRessource = this._helper.getWebviewResourceIconURI("close.svg", this._context);
+        var closeButtonRessource = this._helper.getWebviewResourceIconURI(this._panel, "close.svg", this._context);
         this._addToHTML("CANCEL", `<br><button id='cancel' value="cancel" onclick='sendMessageCancel()' title='cancel'><img src='${closeButtonRessource}'></button>`);
         if (buttonText !== undefined) {
             this._addToHTML("BUTTON", `<input type="submit" value="${buttonText}">`);
@@ -152,10 +152,10 @@ export default class Sidebar {
 
     }
 
-    /** This adds HTML to the taskbars Webview, at the given point. 
+    /** This adds HTML to the taskbars Webview, at the given point.
      * This point is predefined in the _getBaseHTML-Function and _generateSectionHTML, for example SECTION-*, HEAD_END, BODY_START or BODY_END
      * @param section section Name, see examples above
-     * @param html html to insert 
+     * @param html html to insert
      */
     private _addToHTML = (section: string, html: string) => {
         var marker = "<!--" + section + "-->";
@@ -182,20 +182,20 @@ export default class Sidebar {
                 <!--CSS-->
                 </style>
             </head>
-            <body>  
+            <body>
             <!--CANCEL-->
                 <!--HEADLINE-->
-                
+
                 <form id="inputForm">
                <!--FORM_START-->
                <!--FORM_END-->
-               
+
                <!--BUTTON-->
                 </form>
                 <script>
                 <!--SCRIPT-->
                 </script>
-                
+
                 <script>
                 ${script}
                 </script>
@@ -209,11 +209,11 @@ export default class Sidebar {
      */
     private _addWelcomeMessage = async () => {
         var matucIsInstalled = await this._matuc.matucIsInstalled();
-        var welcomeText = this._language.get("sidebarWelcome");        
+        var welcomeText = this._language.get("sidebarWelcome");
         var form = "<h2>" + welcomeText + "</h2>";
         var versionNumberText = this._language.get("versionNumber");
         form += "<br /> " + versionNumberText.replace("$versionNumber$", vscode.extensions.getExtension('TUD-AGSBS.agsbsextension').packageJSON.version);
-        form = this._addMultipleText(["textWhatToDo", "sendingError"], form);  
+        form = this._addMultipleText(["textWhatToDo", "sendingError"], form);
         if (matucIsInstalled === false) {
             form += "<br role='none'><br role='none'>" + this._language.get("MatucIsInstalledWarning");
         }
@@ -223,7 +223,7 @@ export default class Sidebar {
 
     /**
      * Create multiple paragraph basing on a string list and returns new element
-     *  @param textList the string list 
+     *  @param textList the string list
      *  @param element where the paragraph should be appended
      */
     private _addMultipleText(textList, element)  {

@@ -123,10 +123,11 @@ export default class Taskbar {
             var newSectionHTML = this._generateSectionHTML(section);
             this._addToHTML("TOOLS_END", newSectionHTML);
         }
-        var icon = this._helper.getWebviewResourceIconURI(iconName, this._context);
+        var icon = this._helper.getWebviewResourceIconURI(this._panel, iconName, this._context);
         //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
         //ToDo Button
-        var html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')" style ="-webkit-mask-image: url(${icon});mask-image: url(${icon})"></button>`;
+        var html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')"><img src="${icon}"></button>`;
+
         this._callbacks[id] = callback;
         newSection = "SECTION-" + newSection;
         this._addToHTML(newSection, html);
@@ -166,9 +167,10 @@ export default class Taskbar {
             var newSectionHTML = this._generateSectionHTML(section);
             this._addToHTML("PROJECTTOOLS_END", newSectionHTML);
         }
-        var icon = this._helper.getWebviewResourceIconURI(iconName, this._context);
+        var icon = this._helper.getWebviewResourceIconURI(this._panel, iconName, this._context);
         //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
-        var html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')" style ="-webkit-mask-image: url(${icon});mask-image: url(${icon})"></button>`;
+        var html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')"><img src="${icon}"></button>`;
+        //var html="";
         this._callbacks[id] = callback;
         newSection = "SECTION-" + newSection;
         this._addToHTML(newSection, html);

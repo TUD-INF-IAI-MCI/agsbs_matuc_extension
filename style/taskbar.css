@@ -61,7 +61,7 @@ button {
   display: inline;
   margin: 0px;
   padding: 0px;
-  background-color: var(--vscode-foreground);
+  background-color: var(--vscode-background);
   overflow: hidden;
   max-width: 30px;
   max-height: 30px;
@@ -77,7 +77,11 @@ button {
   vertical-align: top;
 }
 
-buton:hover {
+image{
+  background: no-repeat;
+}
+
+button:hover {
   border: 1px solid white;
 }
 /*# sourceMappingURL=taskbar.css.map */

@@ -1,8 +1,28 @@
 # Change Log
 
-## [v0.5.1] - 2020-04-16
+## [v0.6.0] - 2021-06-30
+
+### Added
+
+- activity of long processes like:
+  - cloning a repo
+  - generating
+- more detailled information in error notifications
+
+### Fixed
+
+- spaces in url of repository causes exception
+- filename of generated csv-file is now correct (see #29)
+- problems with backslashes in generated csv-files
 
 ## Changed
+
+- title in a text box and text frame are now optional (can be change in the settings) (see #28)
+
+
+## [v0.5.1] - 2020-04-16
+
+### Changed
 
 - default name of picture folder is now bilder not *B*ilder
 - version number of the extension is now shown in the start tab (see #24 )

@@ -16,7 +16,7 @@ export default class En {
 		this.d['en'] = 'English';
 		this.d['de'] = 'German';
 		this.d['fr'] = 'French';
-		this.d['noOpenEditors'] = 'No open Editors.';
+		this.d['noActiveEditor'] = 'No active editor';
 		this.d['tooManyOpenEditors'] = 'Too many open editors. Please just open one file and without a split view.';
 		this.d['ActionErrorNotMarkdown'] = 'The current File is not a Markdown file and the current Action cannot be executed. Please open a Markdown File.';
 		this.d['error'] = 'A error occurs';
@@ -39,6 +39,8 @@ export default class En {
 		this.d['generateFile'] = 'Generate HTML';
 		this.d['convertEntireProject'] = 'Generate HTML for all project files';
 		this.d['generate'] = 'Generate';
+		this.d['generateMaterial'] = 'Generating of material is started. Be patient.';
+		this.d['generatingSuccess'] = 'Generating of material finished';
 		this.d['conversionProfile'] = 'conversion profile';
 		this.d['blind'] = 'blind';
 		this.d['visuallyImpaired'] = 'visually impaired';
@@ -112,6 +114,7 @@ export default class En {
 		// //git
 		this.d['gitUser'] = 'Username  (ZIH-Login)';
 		this.d['gitCloneSucess'] = "Repo was cloned successfully!";
+		this.d['gitCloneInProgess'] = "Repo \$repoName\$ is cloning. Be patient.";
 		this.d['gitCloneError'] = "An error occurs during the cloning. Check whether you load your private key or whether the git directory is existing. Find more information in the terminal";
 		this.d['gitPushError']	= "During the push an error occurs. Find more information in the terminal";
 		this.d['gitPushSuccess'] = "Git push was successful";
@@ -119,7 +122,7 @@ export default class En {
 		this.d['mailadresse'] = "E-mail address";
 		this.d['noUserDataIsSet'] = "Es sind keine Mailadresse und Username in der git Config gespeichert.";
 		this.d['SetUserDataInConfig'] = "The email address \"$emailAddress$\" and user name \"$userName$\" of the user settings were set in the local configuration.";
-
+		this.d['repoNameContainsSpaces'] = "The repo contained spaces. If the clone did not successed. Please checkout the repo name and try it again";
 		// //new-project
 		this.d['noFolder'] = 'No folder set';
 		this.d['preface'] = 'Add a preface to the document.';
@@ -154,6 +157,7 @@ export default class En {
 		this.d['noConfiguration'] = "No configuration, .lecture_meta_data.dcxml, in a directory exists in this project";
 		this.d['unExpectedMatucError'] = 'An unexpected matuc error occured';
 		this.d['documentHasBeenSaved'] = 'The current document has been saved, as it was neccessary for the execution of this action.';
+		this.d['matucErrorDetails'] = '$message$ <br/> <strong> Check <br /> file: $path$ <br/> line: $line$ <br/>position: $position$ <br/> </strong>';
 
 		// //editor functions
 

@@ -6,6 +6,9 @@
 import * as vscode from 'vscode';
 import Language from './languages';
 import Helper from './helper/helper';
+import { resolve } from 'url';
+import { spawn } from 'child_process';
+import Sidebar from './sidebar';
 const osLocale = require('os-locale');
 const path = require('path');
 const exec = require('child_process').exec;
@@ -16,10 +19,12 @@ const exec = require('child_process').exec;
 export default class MatucCommands {
 	private _language: Language;
 	private _helper: Helper;
+	private _sidebarCallback: Sidebar;
 
-	constructor() {
+	constructor(sidebarCallback) {
 		this._language = new Language;
 		this._helper = new Helper;
+		this._sidebarCallback = sidebarCallback;
 	}
 
 	/**
@@ -331,6 +336,69 @@ export default class MatucCommands {
 		env.LANG = `${lang}.UTF-8`; // form should be "de_DE.UTF-8";
 		return env;
 	}
+	/**
+	 * Converts a single file or all file with a project
+	 * @param isOnlyFile if true only a file is convert, if false all markdown file will converted
+	 */
+	public async convertMaterial(isOnlyFile: boolean){
+		let	currentTextEditor = await this._helper.getCurrentTextEditor();
+		let filePath = currentTextEditor.document.uri.fsPath;
+		let parameter;
+		if (await currentTextEditor.document.isDirty) {
+			await currentTextEditor.document.save();
+		}
+		if(isOnlyFile){
+			parameter = filePath;
+		}else{
+			// path is needed
+			parameter = path.dirname(path.dirname(filePath));
+		}
+		vscode.window.withProgress({
+			location: vscode.ProgressLocation.Notification,
+			title: this._language.get("generateMaterial"),
+			cancellable: true},
+			(progress, token) =>{
+					return this.executeConversion(progress, token, parameter);
+			});
+			this.loadGeneratedHtml(filePath);
+	}
+
+	public executeConversion(progress: vscode.Progress<{ message?: string; increment?: number}>, token: vscode.CancellationToken, parameter: string): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
+			let matucProcess = spawn("matuc_js", ["conv", parameter]);
+			matucProcess.stderr.on('data', (data) => {
+				console.log("stderr "+ data.toString());
+				vscode.window.showErrorMessage("Fehler");
+			});
+			matucProcess.stdout.on('data', (data) => {
+				console.log("stdout "+ data.toString());
+
+				var parsedData = JSON.parse(data.toString());
+				if (typeof parsedData.result === 'string') {
+				vscode.window.showInformationMessage(this._language.get("mistkerlDidNotFindAnyError"));
+				} else {
+					if (parsedData.hasOwnProperty("error")){
+						this._sidebarCallback.addToSidebar(this._helper.FormatMatucErrorMessage(parsedData.error), this._language.get("error"), null );
+						reject();
+					}else{
+						if (parsedData.hasOwnProperty("result")){
+							this._sidebarCallback.addToSidebar(parsedData.error, this._language.get("error"), null );
+							//this._helper.ShowMkErrorMessage(parsedData.result);
+							reject();
+						}
+					}
+				}
+			});
+			matucProcess.on('close', (code) => {
+
+				if(code === 0){
+					vscode.window.showInformationMessage(this._language.get("generatingSuccess"));
+					resolve();
+				}
+			});
+			token.onCancellationRequested(_ => matucProcess.kill());
+		});
+	}
 
 	/**
 	 * Converts a File
@@ -350,14 +418,19 @@ export default class MatucCommands {
 		exec(cmd, { env: this.getOsLocale() }, (error, stdout, stderr) => {
 			if (error) {
 				let fragment = JSON.parse(stdout);
-				let message = "";
+				var message = "";
+				if (fragment.error.hasOwnProperty('message')){
+					message += fragment.error.message;
+				}
 				if (fragment.error.hasOwnProperty('line')) {
 					message += "\n\n\n" + this._language.get("checkLine") + fragment.error.line;
 				}
 				if (fragment.error.hasOwnProperty('path')) {
 					message += "\n\n" + this._language.get("checkFile") + " " + fragment.error.path;
 				}
-				vscode.window.showErrorMessage(this._language.get("unExpectedMatucError") + message);
+				//this._helper.ShowMkErrorMessage(fragment.result);
+				vscode.window.showErrorMessage(this._language.get("error") + message);
+
 				console.error(`exec error: ${error}`);
 				console.log(`stderr: ${stderr}`);
 				console.log(`stdout: ${stdout}`);
@@ -390,10 +463,11 @@ export default class MatucCommands {
 
 	/**
 	* Checks and saves changes in the current opened file invoking mistkerl, executes `matuc_js mk`
+	If an error occur false is returned otherwise true for no error.
 	@param currentTextEditor optional. The Text Editor to work with.
 	*/
 	public async checkAndSaveChanges(currentTextEditor?: vscode.TextEditor) {
-
+		let noErrorFound: boolean = false;
 		if (currentTextEditor === undefined) {
 			currentTextEditor = await this._helper.getCurrentTextEditor();
 		}
@@ -402,20 +476,21 @@ export default class MatucCommands {
 			await currentTextEditor.document.save();
 		}
 		var cmd = `matuc_js mk \"${filePath}\" `;
-		exec(cmd, (error, stdout, stderr) => {
+		await exec(cmd, (error, stdout, stderr) => {
 			if (error) {
 				console.error(`exec error: ${error}`);
-				return;
+				noErrorFound = false;
 			}
 			var mistkerl = JSON.parse(stdout);
 			if (typeof mistkerl.result === 'string') {
 				vscode.window.showInformationMessage(this._language.get("mistkerlDidNotFindAnyErrorAndSavedFile"));
+				noErrorFound = true;
 			} else {
-				vscode.window.showErrorMessage(mistkerl.result);
+				this._helper.ShowMkErrorMessage(mistkerl.result);
+				noErrorFound = false;
 			}
-			console.log(`stdout: ${stdout}`);
-			console.log(`stderr: ${stderr}`);
 		});
+		return noErrorFound;
 	}
 
 	/**
@@ -463,6 +538,8 @@ export default class MatucCommands {
 		//open file
 		this.loadGeneratedHtml(filePath);
 	}
+
+
 
 	/**
 	 * Fixes the page numbering of a given file

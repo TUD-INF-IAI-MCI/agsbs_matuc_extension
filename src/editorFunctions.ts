@@ -40,7 +40,7 @@ export default class EditorFunctions {
         this._sidebarCallback = sidebarCallback;
         this._taskbarCallback = taskbarCallback;
         this._language = new Language;
-        this._matucCommands = new MatucCommands;
+        this._matucCommands = new MatucCommands(sidebarCallback);
         this._snippets = new EditorFunctionSnippets;
         this._tableHelper = new TableHelper;
         this._listHelper = new ListHelper;
@@ -71,6 +71,8 @@ export default class EditorFunctions {
         this._taskbarCallback.addButton('table.svg', this._language.get('insertTable'), this.insertTable, this._language.get('table'), "agsbs.table");
         this._taskbarCallback.addButton('import_table_csv.svg', this._language.get('importTableCsv'), this.insertCSVTable, this._language.get('table'), "agsbs.importTableCSV");
         this._taskbarCallback.addButton("edit_table.svg", this._language.get("editTable"), this.editTable, this._language.get("table"), "agsbs.editTable");
+        // edit csv call
+        this._taskbarCallback.addButton("h.svg", this._language.get("editTable"), this.editTableGui, this._language.get("table"), "agsbs.editTableGui");
 
         this._taskbarCallback.addButton("formula.svg", this._language.get("formula"), this.formula, this._language.get("formatting"), "agsbs.formula");
         this._taskbarCallback.addButton("inline_formula.svg", this._language.get("formulaInline"), this.inlineFormula, this._language.get("formatting"), "agsbs.inlineFormula");
@@ -187,13 +189,14 @@ export default class EditorFunctions {
      * Adds the 'add Annotation'-Dialogue to to the sidebar.
      */
     public insertAnnotation = async () => {
-        var setttingsTextboxContentIsOptional = await this._settings.get("optionalTextboxContent");
+        var settingsTextboxTitleIsOptional = await this._settings.get("optionalTextboxTitle");
+        var settingsTextboxContentIsOptional = await this._settings.get("optionalTextboxContent");
         var form = this._snippets.get("insertAnnotationHTMLPart1");
-        if (setttingsTextboxContentIsOptional === false) {
+        if (settingsTextboxTitleIsOptional === false) {
             form += "required='true'";
         }
         form += this._snippets.get("insertAnnotationHTMLPart2");
-        if (setttingsTextboxContentIsOptional === false) {
+        if (settingsTextboxContentIsOptional === false) {
             form += "required='true'";
         }
         form += this._snippets.get("insertAnnotationHTMLPart3");
@@ -213,13 +216,17 @@ export default class EditorFunctions {
         var text = "";
         if (annotationType === "textFrame") {
             text = `<div class="frame ${color}">\n`;
-            text += `<span class="title">${title}</span>\n`;
+            if(title !== ""){
+                text += `<span class="title">${title}</span>\n`;
+            }
             text += `${content}\n`;
             text += `</div>\n`;
         }
         if (annotationType === "textBox") {
             text = `<div class="box ${color}">\n`;
-            text += `<span class="title">${title}</span>\n`;
+            if(title !== ""){
+                text += `<span class="title">${title}</span>\n`;
+            }
             text += `${content}\n`;
             text += `</div>\n`;
         }
@@ -340,9 +347,36 @@ export default class EditorFunctions {
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 
+
+    /**
+     * new function editCsv may complete change
+     */
+
+    public editTableGui = async () => {
+        var editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
+
+        var loc = vscode.Uri.file("C:\\Users\\Jens Voegler\\Documents\\AGSBS_Git\\b-354-2021_klinische_psychologie_und_psychotherapie\\bearbeitet\\k13\\generatedTables\\generatedTable-2021-11-17_23-36-53.csv");
+        vscode.commands.executeCommand("vscode.open", loc);
+        var ext = vscode.window.activeTextEditor;
+        if(editCsv.isActive == false){
+                editCsv.activate().then(
+                    function(){
+                        vscode.commands.executeCommand("edit-csv.edit");
+                        //vscode.commands.executeCommand<vscode.Location[]>("edit-csv.edit", "C:\Users\Jens Voegler\Documents\AGSBS_Git\b-354-2021_klinische_psychologie_und_psychotherapie\bearbeitet\k13\generatedTables\generatedTable-2021-11-17_23-36-53.csv");
+                    }, function(){
+                        console.log("Cannot start vscode-edit-csv");
+                    }
+                )
+                vscode.commands.executeCommand("edit-csv.edit");
+            }
+    }
+
+
     /**
      * Editing a existing Table
      */
+
+
     public editTable = async () => {
         var insertPosition: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
         if (insertPosition === false) {
@@ -355,14 +389,27 @@ export default class EditorFunctions {
             var script = this._snippets.get('editTableSCRIPT');
             script += this._snippets.get('editTableScriptPart1');
             var jsonToInsert = JSON.stringify(tableData["data"]);
-            jsonToInsert = jsonToInsert.replace(/\\n/g, "\\\\n")
+            jsonToInsert = jsonToInsert.replace(/\\n/g, "___LINE_BREAK___")
+                //.replace(/\\{4}([[]()])/g, "$1")
+                .replace(/\\\\\\\\/g, "___BACK_SLASH___")
+                .replace(/\\\\/g, "") // remove existing
+                .replace(/\\([tr])/g, "___SLASH__$1")
+                //.replace(/\\{8}/g, "HIER ABER")
+                .replace(/\\/g, "\\\\")
                 .replace(/\\"/g, "\\\\\"")
                 .replace(/\\'/g, "\\\\'")
                 .replace(/\\&/g, "\\\\&")
                 .replace(/\\r/g, "\\\\r")
                 .replace(/\\t/g, "\\\\t")
                 .replace(/\\b/g, "\\\\b")
+                //.replace(/\\\\/g, "\\\\b")
+                //.replace(/\\{3}([tr])/g, "\\\\$1")
+
                 .replace(/\\f/g, "|\f");
+            jsonToInsert = jsonToInsert.replace(/___LINE_BREAK___/g, "\\\\n");
+            jsonToInsert = jsonToInsert.replace(/___BACK_SLASH___/g, "\\\\\\\\")
+            .replace(/___SLASH__([tr])/g, "\\\\$1");
+            console.log("#####\nJsonToInsert " + jsonToInsert);
             script += jsonToInsert;
             script += this._snippets.get('editTableScriptPart2');
             var style = this._snippets.get('editTableSTYLE');
@@ -605,7 +652,7 @@ export default class EditorFunctions {
      * Makes the current text italic.
      */
     public italic = async () => {
-        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("*", "*");
+        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("_", "_");
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
 

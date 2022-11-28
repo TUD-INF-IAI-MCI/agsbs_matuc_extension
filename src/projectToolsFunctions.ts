@@ -11,6 +11,8 @@ import ProjectHelper from './helper/projectHelper';
 import ProjectToolsFunctionSnippets from './snippets/projectToolsFunctionsSnippets';
 import SettingsHelper from './helper/settingsHelper';
 import GitCommands from './gitCommands';
+import { resolve } from 'url';
+import { start } from 'repl';
 
 /**
  * This Class contains all functions of the project tools bar in the Taskbar. Here all Buttons are registered.
@@ -31,7 +33,7 @@ export default class ProjectToolsFunctions {
         this._language = new Language;
         this._sidebarCallback = sidebarCallback;
         this._taskbarCallback = taskbarCallback;
-        this._matuc = new MatucCommands;
+        this._matuc = new MatucCommands(sidebarCallback);
         this._projectHelper = new ProjectHelper;
         this._snippets = new ProjectToolsFunctionSnippets;
         this._settings = new SettingsHelper;
@@ -41,7 +43,8 @@ export default class ProjectToolsFunctions {
         });
         let newPro = vscode.commands.registerCommand("agsbs.newProject", () => {
             this.createNewProject();
-        })
+        });
+
     }
 
     /**
@@ -233,28 +236,21 @@ export default class ProjectToolsFunctions {
             vscode.window.showErrorMessage(this._language.get("matucNotInstalled"));
             return;
         }
-        var currentEditor = await this._helper.getCurrentTextEditor();
-        var filePath = currentEditor.document.uri.fsPath;
-        var isInLecture = await this._matuc.checkIfFileIsWithinLecture(filePath);
-        if (isInLecture === false) {
-            vscode.window.showErrorMessage(this._language.get("notInsideLecture"));
-            return;
+        //
+        // var isInLecture = await this._matuc.checkIfFileIsWithinLecture(filePath);
+        // if (isInLecture === false) {
+        //     vscode.window.showErrorMessage(this._language.get("notInsideLecture"));
+        //     return;
+        // }
+        let foundError = await this._matuc.checkAndSaveChanges();
+        if (!foundError){
+            this._matuc.convertMaterial(true);
+            this._helper.focusDocument(); //Puts focus back to the text editor
+
+        }else{
+            console.log("error in generateHTML line 233")
         }
 
-        var conversionProfilePromise: any = await this._settings.get("conversionProfile");
-        var conversionProfile: string = conversionProfilePromise;
-        if (conversionProfile !== "blind" && conversionProfile !== "visually impaired" && conversionProfile !== "visually") {
-            //Fallback if conversion profile cannot be resolved
-            var form = this._projectHelper.getConversionProfileHTML();
-            this._sidebarCallback.addToSidebar(form, this._language.get("generateFile"), this.generateHTMLSidebarCallback, this._language.get("generate"));
-        } else {
-            if (conversionProfile === "visually impaired") {
-                conversionProfile = "visually";
-            }
-            await this._matuc.checkAndSaveChanges();
-            await this._matuc.convertFile(conversionProfile);
-            this._helper.focusDocument(); //Puts focus back to the text editor
-        }
     }
     /**
      * Callback for generating the HTML for the current File. Fallback if this is not set in the settings.
@@ -283,19 +279,11 @@ export default class ProjectToolsFunctions {
             vscode.window.showErrorMessage(this._language.get("notInsideLecture"));
             return;
         }
-        var conversionProfilePromise: any = await this._settings.get("conversionProfile");
-        var conversionProfile: string = conversionProfilePromise;
-        if (conversionProfile !== "blind" && conversionProfile !== "visually impaired" && conversionProfile !== "visually") {
-            var form = this._projectHelper.getConversionProfileHTML();
-            this._sidebarCallback.addToSidebar(form, this._language.get("convertEntireProject"), this.generateHTMLForAllProjectsSidebarCallback, this._language.get("generate"));
-        } else {
-            if (conversionProfile === "visually impaired") {
-                conversionProfile = "visually";
-            }
             await this._matuc.checkAndSaveChanges();
-            await this._matuc.convertEntireProject(conversionProfile);
+            await this._matuc.convertMaterial(false);
             this._helper.focusDocument(); //Puts focus back to the text editor
-        }
+
+        // }
     }
 
     /**

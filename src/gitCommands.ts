@@ -9,7 +9,9 @@ import Language from './languages';
 import SettingsHelper from './helper/settingsHelper';
 import * as path from 'path';
 import { getMaxListeners, removeAllListeners } from 'cluster';
+import { ClientRequest } from 'http';
 const exec = require('child_process').exec;
+const spawn = require('child_process').spawn;
 
 export default class GitCommands {
 	private _helper: Helper;
@@ -27,7 +29,7 @@ export default class GitCommands {
 	 * @param user ZIH-Username as a String
 	 * @param repoName Name of the repo
 	 */
-	public async clone(user, repoName) {
+	public async clone(user, repoName){
 		var gitLocalPath: any = await this._settings.get("gitLocalPath");
 		var gitServerPath: any = await this._settings.get("gitServerPath");
 		var usesHttpsOrSshForGit = await this._settings.get("usesHttpsOrSshForGit");
@@ -39,19 +41,47 @@ export default class GitCommands {
 			vscode.window.showErrorMessage(this._language.get("missingGitServerPath"));
 			return;
 		}
-		var gitCmd = `git clone ${usesHttpsOrSshForGit}://${user}@${gitServerPath}/${repoName}`;
-		console.log("gitCmd " + gitCmd);
+		// for using matShare
+		if(repoName.startsWith("https://elvis.inf.tu-dresden.de/matshare/")){
+			gitServerPath = repoName;
+		}else{
+			gitServerPath = `${usesHttpsOrSshForGit}://${user}@${gitServerPath}/${repoName}`;
+		}
 		if (!await this._helper.folderExists(gitLocalPath)) {
 			this._helper.mkDir(gitLocalPath);
 		}
-		exec(gitCmd, { cwd: gitLocalPath }, (error, stdout, stderr) => {
-			if (error) {
-				console.warn(`exec error: ${error}`);
-				vscode.window.showErrorMessage(this._language.get("gitCloneError"));
-			} else {
-				vscode.window.showInformationMessage(this._language.get("gitCloneSucess"));
-				// possible are url/pfad/repo
-				// so the repoName is pfad/repo
+		vscode.window.withProgress({
+			location: vscode.ProgressLocation.Notification,
+			title: "Klonen (hardcoded) ",
+			cancellable: true},
+			(progress, token) =>{
+				return this.gitClone(progress, token, gitServerPath, gitLocalPath, repoName);
+			}
+		);
+	}
+
+  /**
+	* @param progress
+	* @param token
+	* @param gitServerPath like ssh://USER@URL
+	* @param gitLocalPath
+	*/
+	public gitClone(progress: vscode.Progress<{ message?: string; increment?: number}>, token: vscode.CancellationToken, gitServerPath: string, gitLocalPath: string, repoName: string): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
+			if (token.isCancellationRequested) {
+				return;
+			}
+			console.log("try to execute command:");
+			console.log(`\t git clone ${gitServerPath}`);
+			let lastStderr;
+			let gitCloneProcess = spawn('git', ['clone', gitServerPath,'--progress'], {cwd: gitLocalPath, shell: true});
+			gitCloneProcess.stderr.on('data', (data) => {
+				lastStderr = data.toString();
+				progress.report({message: lastStderr});
+		  });
+			gitCloneProcess.on('close', (code) => {
+				if(code === 0){
+				vscode.window.showInformationMessage(this._language.get ("gitCloneSucess"));
 				if (repoName.includes("/")) {
 					var arr = repoName.split("/");
 					repoName = arr[arr.length - 1];
@@ -59,9 +89,23 @@ export default class GitCommands {
 				var newFolderName = path.join(gitLocalPath, repoName);
 				this._helper.addWorkspaceFolder(newFolderName);
 				this.track(newFolderName);
-			}
+				resolve();
+				}
+				if(code === 128){
+					console.log("clone error");
+					vscode.window.showErrorMessage(this._language.get("gitCloneError") + " " + lastStderr);
+					reject();
+				}
+			});
+			gitCloneProcess.stdout.on('data', (data) => {
+			});
+
+			token.onCancellationRequested(_ => gitCloneProcess.kill());
 		});
 	}
+
+	// async end
+
 	/**
 	 * Track git repo
 	 * @param path
