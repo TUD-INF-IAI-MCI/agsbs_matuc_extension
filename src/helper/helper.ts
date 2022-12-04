@@ -861,21 +861,31 @@ export default class Helper {
                     errorMessage = `Fehler in ${location}: ${key2} : ${mkMessageContent[key2]}`;
                 });
             }
-            vscode.window.showErrorMessage(errorMessage);
+            //vscode.window.showErrorMessage(errorMessage);
+            vscode.window
+            .showInformationMessage(errorMessage,'Springe zum Fehler' )
+            .then(selection => {
+                if (selection) {
+                    vscode.commands.executeCommand('workbench.action.gotoError');
+                }
+           
+            });
+            
         });
     }
-    public showErrorFunction(errorMessage) {
-        vscode.window.showErrorMessage(errorMessage);
-        vscode.window
-        .showInformationMessage('Springe zum Fehler','Springe zum Fehler' )
-        .then(selection => {
-            if (selection) {
-                vscode.commands.executeCommand('workbench.action.gotoError');
-            }
+
+    // public showErrorFunction(errorMessage) {
+    //     vscode.window.showErrorMessage(errorMessage);
+    //     vscode.window
+    //     .showInformationMessage('Springe zum Fehler','Springe zum Fehler' )
+    //     .then(selection => {
+    //         if (selection) {
+    //             vscode.commands.executeCommand('workbench.action.gotoError');
+    //         }
        
-        });
+    //     });
         
-    }
+    // }
 
 
 
