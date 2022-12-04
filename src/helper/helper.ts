@@ -864,4 +864,19 @@ export default class Helper {
             vscode.window.showErrorMessage(errorMessage);
         });
     }
+    public showErrorFunction(errorMessage) {
+        vscode.window.showErrorMessage(errorMessage);
+        vscode.window
+        .showInformationMessage('Springe zum Fehler','Springe zum Fehler' )
+        .then(selection => {
+            if (selection) {
+                vscode.commands.executeCommand('workbench.action.gotoError');
+            }
+       
+        });
+        
+    }
+
+
+
 }
