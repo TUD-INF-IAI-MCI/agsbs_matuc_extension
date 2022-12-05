@@ -9,8 +9,7 @@ import Language from '../languages';
 import * as Papa from 'papaparse';
 import * as chardet from 'chardet';
 import * as iconvLite from 'iconv-lite';
-import EditorFunctionSnippets from '../snippets/editorFunctionsSnippets';
-import { type } from 'os';
+
 
 const open = require('open');
 
@@ -859,11 +858,9 @@ export default class Helper {
             } else {
                 // mk is an object and looks like the following example
                 //  {line number: " Detailed description of error"}
-                // Messagebox has button that makes the cursor jump to the issue
+                // Messagebox has a button that makes the cursor jump to the issue
                 Object.keys(mkMessageContent).forEach(key2 => {
                     errorMessage = `Fehler in ${location}: ${key2} : ${mkMessageContent[key2]}`;
-                    console.log(typeof key2);
-                    console.log(key2);
                     const lineNum = key2.split(",")[0];
                     vscode.window
                     .showInformationMessage(errorMessage,'Springe zum Fehler' )
@@ -873,10 +870,9 @@ export default class Helper {
                         let range = editor.document.lineAt(parseInt(lineNum)-1).range;
                         editor.selection =  new vscode.Selection(range.start, range.end);
                         editor.revealRange(range);               
-                }
-           
+                    }
                 });
-                });
+            });
             }
         });
     }
