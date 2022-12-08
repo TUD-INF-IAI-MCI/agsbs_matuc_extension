@@ -102,6 +102,10 @@
                 "title": "AGSBS: Opens a sidebar dialogue to edit the table the selection is currently in"
             },
             {
+                "command": "agsbs.deleteTable",
+                "title": "AGSBS: Deletes currently selected table"
+            },
+            {
                 "command": "agsbs.formula",
                 "title": "AGSBS: Inserts marker to mark current selection as a formula"
             },
