@@ -876,9 +876,4 @@ export default class Helper {
             }
         });
     }
-
-    public getTableStartKeyword(){
-        
-    }
-
 }
