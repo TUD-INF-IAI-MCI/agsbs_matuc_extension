@@ -9,6 +9,7 @@ import Language from '../languages';
 import Helper from './helper';
 import * as Papa from 'papaparse';
 import SettingsHelper from './settingsHelper';
+import { removeAllListeners } from 'process';
 
 /**
  * A Helper for all the table functions.
@@ -535,4 +536,17 @@ export default class TableHelper {
             }
         });
     }
-}
+
+    //delete CSVFile with the Path  
+    public async deleteCSVFile(pathToFile: string) {
+        return new Promise(async (resolve, reject) => {
+            var fileExists = await this._helper.fileExists(pathToFile);
+            if (fileExists === false) {
+                resolve(false);
+            } 
+            else {
+                fs.unlink(pathToFile, (err) => {"No such file found"});
+                resolve(true);}
+                });
+            }
+        }
