@@ -876,5 +876,4 @@ export default class Helper {
             }
         });
     }
-
 }

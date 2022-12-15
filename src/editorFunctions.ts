@@ -16,6 +16,7 @@ import ListHelper from './helper/listHelper';
 import InsertHelper from './helper/insertHelper';
 import HeadlineHelper from './helper/headlineHelper';
 import SettingsHelper from './helper/settingsHelper';
+import { TextDecoder } from 'util';
 
 /**
  * The Main Class to add Buttons and their functionality of the Editor Tools Bar.
@@ -73,6 +74,7 @@ export default class EditorFunctions {
         this._taskbarCallback.addButton("edit_table.svg", this._language.get("editTable"), this.editTable, this._language.get("table"), "agsbs.editTable");
         // edit csv call
         this._taskbarCallback.addButton("h.svg", this._language.get("editTable"), this.editTableGui, this._language.get("table"), "agsbs.editTableGui");
+        this._taskbarCallback.addButton("deleteTable.svg", this._language.get("deleteTable"), this.deleteTable, this._language.get("table"), "agsbs.deleteTable");
 
         this._taskbarCallback.addButton("formula.svg", this._language.get("formula"), this.formula, this._language.get("formatting"), "agsbs.formula");
         this._taskbarCallback.addButton("inline_formula.svg", this._language.get("formulaInline"), this.inlineFormula, this._language.get("formatting"), "agsbs.inlineFormula");
@@ -460,6 +462,30 @@ export default class EditorFunctions {
         }
     }
 
+
+    //Get ./generatedTable/example.csv from the comment and delete the csv
+    public deleteCSVTable = async () => {
+        var insertSelection: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        if (insertSelection === false) {
+            vscode.window.showErrorMessage(this._language.get("noTableFound"));
+        } else {
+            var tableData = await this._tableHelper.loadSelectedTable(insertSelection);
+            var tablePath = tableData["file"];
+            await this._tableHelper.deleteCSVFile(tablePath);
+            console.log("CSV Deleted");
+        }
+    }
+    //Selects and Deletes Table in Markdown when cursor is between the comments of the Table
+    public deleteTable = async () => {
+        var insertSelection: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        if (insertSelection === false) {
+            vscode.window.showErrorMessage(this._language.get("noTableFound"));
+        } else {
+            this.deleteCSVTable();
+            this._helper.replaceSelection("", insertSelection);
+        }
+    }
+    
     /**
      * Insert a Table from a CSV-File
      */

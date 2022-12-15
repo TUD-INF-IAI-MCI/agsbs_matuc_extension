@@ -91,6 +91,7 @@ export default class En {
 		this.d['importTableCsv'] = 'Importiere Tabelle aus einer CSV-Datei';
 		this.d['editTableLayout'] = "Folgende Tabelle bearbeiten";
 		this.d['editTable'] = "Tabelle bearbeiten";
+		this.d['deleteTable'] = "Tabelle löschen";
 		this.d['noTableFound'] = "Keine Tabelle gefunden";
 		this.d['errorTableFileNonExistant'] = "Datei der Tabelle existiert nicht";
 		this.d['parsingError'] = "Fehler beim Parsen der Tabelle.";
