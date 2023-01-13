@@ -353,34 +353,51 @@ export default class EditorFunctions {
     /**
      * new function editCsv may complete change
      */
-
-    public editTableGui = async () => {
-        var editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
-        var insertSelection: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
-        if (insertSelection === false) {
-            vscode.window.showErrorMessage(this._language.get("noTableFound"));
-        } 
-        else {
-            var tableData = await this._tableHelper.loadSelectedTable(insertSelection);
-            var tablePath = tableData["file"];
-            console.log(tablePath);
-            //take the tablePath and insert it into the extension
-            var loc = vscode.Uri.file(tablePath);
-            console.log(loc);
-            vscode.commands.executeCommand("vscode.open", loc);
-            if(editCsv.isActive == false){
-                editCsv.activate().then(
-                    function(){
-                        vscode.commands.executeCommand("edit-csv.edit");
-                    }, function(){
-                        console.log("Cannot start vscode-edit-csv");
-                    }
-                );
-            } 
-
+public editTableGui = async () => {
+            const editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
+            const currentSelection: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+            const currentTextEditor = await this._helper.getCurrentTextEditor();
+            const selectedTable = await this._tableHelper.loadSelectedTable(currentSelection);
+            const tablePath = selectedTable["file"];
+            const watcher = vscode.workspace.createFileSystemWatcher(tablePath);
+            if (!currentSelection) vscode.window.showErrorMessage(this._language.get("noTableFound"));
+            else {
+                vscode.commands.executeCommand("vscode.open", vscode.Uri.file(tablePath));
+                editCsv.activate().then(() => {
+                    console.log(editCsv.isActive);
+                    vscode.commands.executeCommand("edit-csv.edit");
+                    //watch csv file changes
+                    watcher.onDidChange(async (e) => {
+                        console.log("file changed");
+                        //read csv file
+                        console.log(tablePath);
+                        var content: any = await this._helper.getContentOfFile(tablePath);
+                        content = content.replace(/\ +$/, "");
+                        content = content.replace(/\n+$/, "");
+                        var result = await Papa.parse(content);
+                        const relativeTablePath = ".\\" + path.relative(path.dirname(currentTextEditor.document.fileName), tablePath);
+                        console.log(relativeTablePath);
+                        var extraText = this._language.get("importedFrom") + " " + relativeTablePath;
+                        //generate markdown table
+                        var table = this._tableHelper.generateTable(false, result.data, "", extraText);
+                        this._helper.replaceSelection(table, currentSelection, currentTextEditor);
+                    });
+                });                
+                
+            }
+            
         }
-        
-    }
+       /*
+            while editCsv is active, watch csv file changes and update markdown table
+
+            urlData: 
+            {
+                "fileName":"generatedTable-2023-1-13_10-34-56.csv",
+                "folderPath":"c:\\Users\\rober\\Desktop\\Uni\\agsbs\\kp-repo\\bearbeitet\\k01\\Tabellen",
+                "completePath":"c:\\Users\\rober\\Desktop\\Uni\\agsbs\\kp-repo\\bearbeitet\\k01\\Tabellen\\generatedTable-2023-1-13_10-34-56.csv",
+                "relativePath":".\\Tabellen\\generatedTable-2023-1-13_10-34-56.csv"
+            }
+        */
 
 
     /**
@@ -516,6 +533,7 @@ export default class EditorFunctions {
      */
     public insertCSVTableSidebarCallback = async (params) => {
         var urlData = params.selectTable.value;
+        console.log("urlData: " + urlData);
         var url: any;
         if (urlData === "") {
             vscode.window.showErrorMessage(this._language.get("noFileSelected"));
