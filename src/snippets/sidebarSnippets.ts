@@ -1,8 +1,7 @@
 /**
  * @author  Lucas Vogel
  */
-import Language from '../languages';
-
+import Language from "../languages";
 
 /**
  * This class contains HTML Snippets of the Sidebar.
@@ -17,14 +16,13 @@ export default class SidebarSnippets {
      * @returns snippet
      */
     public get(snippetName: string) {
-        return (this.d[snippetName]);
+        return this.d[snippetName];
     }
     constructor() {
-
-        this._language = new Language;
+        this._language = new Language();
         this.d = [];
 
-        this.d['sidebarBaseHTMLScript'] = `
+        this.d["sidebarBaseHTMLScript"] = `
         var form = document.forms["inputForm"];
                 form.onsubmit = function(event) {
                     event.preventDefault();

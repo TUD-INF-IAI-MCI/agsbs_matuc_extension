@@ -2,20 +2,19 @@
  * @author  Lucas Vogel
  */
 
-import * as vscode from 'vscode';
-import Language from '../languages';
-import Helper from './helper';
+import * as vscode from "vscode";
+import Language from "../languages";
+import Helper from "./helper";
 
 /**
- * A Helper for all the project tool functions 
+ * A Helper for all the project tool functions
  */
 export default class ProjectHelper {
-
     private _language: Language;
     private _helper: Helper;
     constructor() {
-        this._language = new Language;
-        this._helper = new Helper;
+        this._language = new Language();
+        this._helper = new Helper();
     }
 
     /**
@@ -40,8 +39,8 @@ export default class ProjectHelper {
             return html; //returns empty string
         } else {
             console.log(folders);
-            folders.forEach(folder => {
-                const escapedName = folder["name"].replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;");//For better reading 
+            folders.forEach((folder) => {
+                const escapedName = folder["name"].replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;"); //For better reading
                 const thisValues = {};
                 thisValues["uri"] = folder.uri.fsPath;
                 thisValues["scheme"] = folder.uri.scheme;
@@ -50,9 +49,8 @@ export default class ProjectHelper {
                 escapedValue = escapedValue.replace("'", "\\\\`");
                 //Escape ' as \\` because there is no clean way to escape a json string :(
                 html += `<option value='${escapedValue}'>${escapedName}</option>`;
-
             });
-            return (html);
+            return html;
         }
     }
 
@@ -140,7 +138,7 @@ export default class ProjectHelper {
 
         <input type="hidden" value ='${escapedPath}' name="folder" id="folder" role="none">
         `;
-        return (form);
+        return form;
     }
 
     /**
@@ -158,6 +156,4 @@ export default class ProjectHelper {
         `;
         return form;
     }
-
 }
-

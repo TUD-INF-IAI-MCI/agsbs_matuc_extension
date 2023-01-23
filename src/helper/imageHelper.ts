@@ -2,14 +2,12 @@
  * @author  Lucas Vogel
  */
 
-import * as vscode from 'vscode';
-import * as path from 'path';
-import * as fs from 'fs';
-import Language from '../languages';
-import SettingsHelper from './settingsHelper';
-import Helper from './helper';
-
-
+import * as vscode from "vscode";
+import * as path from "path";
+import * as fs from "fs";
+import Language from "../languages";
+import SettingsHelper from "./settingsHelper";
+import Helper from "./helper";
 
 export default class ImageHelper {
     private _language: Language;
@@ -17,9 +15,9 @@ export default class ImageHelper {
     private _helper: Helper;
     private _context: vscode.ExtensionContext;
     constructor(context) {
-        this._language = new Language;
-        this._settings = new SettingsHelper;
-        this._helper = new Helper;
+        this._language = new Language();
+        this._settings = new SettingsHelper();
+        this._helper = new Helper();
         this._context = context;
     }
 
@@ -44,12 +42,12 @@ export default class ImageHelper {
      */
     public addImageDescriptionToFile(fileBasePath: string, fileName: string, content: string) {
         const thisRelPath = path.join(fileBasePath, fileName);
-        const thisPath = path.resolve(thisRelPath);//For cross Platform compatibility, makes absolute path from possibly relative one
+        const thisPath = path.resolve(thisRelPath); //For cross Platform compatibility, makes absolute path from possibly relative one
         content = "\n" + content; //Adding a Line Break at the beginning
-        const fd = fs.openSync(thisPath, 'a+'); //Open in "add"-Mode
+        const fd = fs.openSync(thisPath, "a+"); //Open in "add"-Mode
         fs.write(fd, content, (error) => {
             if (error) {
-                vscode.window.showErrorMessage(this._language.get('somethingWentWrongDuringInsertOfGraphic'));
+                vscode.window.showErrorMessage(this._language.get("somethingWentWrongDuringInsertOfGraphic"));
                 return;
             } else {
                 vscode.window.showInformationMessage(fileName + " " + this._language.get("imagesMdHasBeenWritten"));
@@ -64,10 +62,9 @@ export default class ImageHelper {
      * @returns the string of the file extension
      */
     public getFileExtension(filename: string) {
-        const parts = filename.split('.');
+        const parts = filename.split(".");
         return parts[parts.length - 1];
     }
-
 
     /**
      * Checks if the given string of a file name is a file extension of a picture
@@ -79,14 +76,14 @@ export default class ImageHelper {
         //filename without e
         const fname = filename.split(".")[0];
         // avoid that formulas eqnXXX.svg are listed
-        if (!fname.startsWith('eqn')) {
+        if (!fname.startsWith("eqn")) {
             switch (ext.toLowerCase()) {
-                case 'jpg':
-                case 'gif':
-                case 'bmp':
-                case 'png':
-                case 'jpeg':
-                case 'svg':
+                case "jpg":
+                case "gif":
+                case "bmp":
+                case "png":
+                case "jpeg":
+                case "svg":
                     //etc
                     return true;
             }
@@ -107,11 +104,17 @@ export default class ImageHelper {
             const allFilesArray = [];
             if (fs.existsSync(folderPath)) {
                 fs.readdir(folderPath, (err, files) => {
-                    files.forEach(file => {
+                    files.forEach((file) => {
                         if (this.isImage(file)) {
                             const completePath = path.join(folderPath, file);
                             const relativePath = "." + path.sep + folder + path.sep + file; //generate the relative file path, path.sep gives the OS folder seperator
-                            const newFileObject = { fileName: file, folderPath: folderPath, completePath: completePath, relativePath: relativePath, basePath: pathToFolder };
+                            const newFileObject = {
+                                fileName: file,
+                                folderPath: folderPath,
+                                completePath: completePath,
+                                relativePath: relativePath,
+                                basePath: pathToFolder
+                            };
                             allFilesArray.push(newFileObject);
                         }
                     });
@@ -123,9 +126,8 @@ export default class ImageHelper {
                     }
                     resolve(allFilesArray);
                 });
-
             } else {
-                vscode.window.showErrorMessage(this._language.get('noPictureFolderFound') + folderPath);
+                vscode.window.showErrorMessage(this._language.get("noPictureFolderFound") + folderPath);
                 //If there is no picture folder
             }
         });
@@ -137,16 +139,17 @@ export default class ImageHelper {
      * @returns an HTML-String of the file options, like <option value='FILEPATH'>FILENAME</option>...
      */
     public generateSelectImagesOptionsHTML(files: any) {
-        let returnString = '';
-        files.forEach(fileObject => {
+        let returnString = "";
+        files.forEach((fileObject) => {
             const markdownReadyRelativePath = fileObject.relativePath.replace(" ", "%20"); //Markdown cannot handle Spaces
             //var markdownReadyFileName = fileObject.fileName.replace(" ", "%20");
             fileObject.markdownReadyRelativePath = markdownReadyRelativePath;
             const onDiskPath = vscode.Uri.file(fileObject.completePath);
             // And get the special URI to use with the webview
-            fileObject.vscodePath = onDiskPath.with({ scheme: 'vscode-resource' }).path; // For Preview
+            fileObject.vscodePath = onDiskPath.with({ scheme: "vscode-resource" }).path; // For Preview
             const json = JSON.stringify(fileObject);
-            const myEscapedJSONString = json.replace(/\\n/g, "\\n")
+            const myEscapedJSONString = json
+                .replace(/\\n/g, "\\n")
                 .replace(/\\'/g, "\\'")
                 .replace(/\\"/g, '\\"')
                 .replace(/\\&/g, "\\&")
@@ -159,5 +162,4 @@ export default class ImageHelper {
         });
         return returnString;
     }
-
 }

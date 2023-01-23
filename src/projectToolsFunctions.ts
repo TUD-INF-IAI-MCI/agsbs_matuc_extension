@@ -1,16 +1,16 @@
 /**
  * @author  Lucas Vogel
  */
-import * as vscode from 'vscode';
-import Helper from './helper/helper';
-import Language from './languages';
-import Sidebar from './sidebar';
-import Taskbar from './taskbar';
-import MatucCommands from './matucCommands';
-import ProjectHelper from './helper/projectHelper';
-import ProjectToolsFunctionSnippets from './snippets/projectToolsFunctionsSnippets';
-import SettingsHelper from './helper/settingsHelper';
-import GitCommands from './gitCommands';
+import * as vscode from "vscode";
+import Helper from "./helper/helper";
+import Language from "./languages";
+import Sidebar from "./sidebar";
+import Taskbar from "./taskbar";
+import MatucCommands from "./matucCommands";
+import ProjectHelper from "./helper/projectHelper";
+import ProjectToolsFunctionSnippets from "./snippets/projectToolsFunctionsSnippets";
+import SettingsHelper from "./helper/settingsHelper";
+import GitCommands from "./gitCommands";
 
 /**
  * This Class contains all functions of the project tools bar in the Taskbar. Here all Buttons are registered.
@@ -27,22 +27,21 @@ export default class ProjectToolsFunctions {
     private _git: GitCommands;
 
     constructor(taskbarCallback, sidebarCallback) {
-        this._helper = new Helper;
-        this._language = new Language;
+        this._helper = new Helper();
+        this._language = new Language();
         this._sidebarCallback = sidebarCallback;
         this._taskbarCallback = taskbarCallback;
         this._matuc = new MatucCommands(sidebarCallback);
-        this._projectHelper = new ProjectHelper;
-        this._snippets = new ProjectToolsFunctionSnippets;
-        this._settings = new SettingsHelper;
-        this._git = new GitCommands;
+        this._projectHelper = new ProjectHelper();
+        this._snippets = new ProjectToolsFunctionSnippets();
+        this._settings = new SettingsHelper();
+        this._git = new GitCommands();
         vscode.commands.registerCommand("agsbs.showGitView", () => {
             this.cloneRepo();
         });
         vscode.commands.registerCommand("agsbs.newProject", () => {
             this.createNewProject();
         });
-
     }
 
     /**
@@ -50,23 +49,92 @@ export default class ProjectToolsFunctions {
      */
     public setup = async () => {
         const gitIsEnabled = await this._settings.get("enableGitUseage");
-        this._taskbarCallback.addProjectTool("new_project.svg", this._language.get("newProject"), this.createNewProject, this._language.get("projectTitle"), "agsbs.newProject");
-        this._taskbarCallback.addProjectTool("edit.svg", this._language.get("editProject"), this.editProjectData, this._language.get("projectTitle"), "agsbs.edit");
+        this._taskbarCallback.addProjectTool(
+            "new_project.svg",
+            this._language.get("newProject"),
+            this.createNewProject,
+            this._language.get("projectTitle"),
+            "agsbs.newProject"
+        );
+        this._taskbarCallback.addProjectTool(
+            "edit.svg",
+            this._language.get("editProject"),
+            this.editProjectData,
+            this._language.get("projectTitle"),
+            "agsbs.edit"
+        );
         if (gitIsEnabled) {
-            this._taskbarCallback.addProjectTool("clone.svg", this._language.get("cloneExistingRepo"), this.cloneRepo, this._language.get("projectTitle"), "agsbs.clone");
+            this._taskbarCallback.addProjectTool(
+                "clone.svg",
+                this._language.get("cloneExistingRepo"),
+                this.cloneRepo,
+                this._language.get("projectTitle"),
+                "agsbs.clone"
+            );
         }
-        this._taskbarCallback.addProjectTool("save.svg", this._language.get("saveChanges"), this.saveChanges, this._language.get("documentTitle"));
-        this._taskbarCallback.addProjectTool("new_file.svg", this._language.get("newFile"), this.createNewFile, this._language.get("documentTitle"), "agsbs.newFile");
-        this._taskbarCallback.addProjectTool("undo.svg", this._language.get("undo"), this.undo, this._language.get("documentTitle"));
-        this._taskbarCallback.addProjectTool("redo.svg", this._language.get("redo"), this.redo, this._language.get("documentTitle"));
-        this._taskbarCallback.addProjectTool("preview.svg", this._language.get("preview"), this.showHTMLPreview, this._language.get("documentTitle"), "agsbs.preview");
-        this._taskbarCallback.addProjectTool("generate.svg", this._language.get("generateFile"), this.generateHTML, this._language.get("documentTitle"), "agsbs.generateFile");
-        this._taskbarCallback.addProjectTool("create_all.svg", this._language.get("convertEntireProject"), this.generateHTMLForAllProjects, this._language.get("documentTitle"), "agsbs.convertEntireProject");
-        this._taskbarCallback.addProjectTool("check_all.svg", this._language.get("checkProject"), this.publish, this._language.get("publishTitle"), "agsbs.checkProject");
+        this._taskbarCallback.addProjectTool(
+            "save.svg",
+            this._language.get("saveChanges"),
+            this.saveChanges,
+            this._language.get("documentTitle")
+        );
+        this._taskbarCallback.addProjectTool(
+            "new_file.svg",
+            this._language.get("newFile"),
+            this.createNewFile,
+            this._language.get("documentTitle"),
+            "agsbs.newFile"
+        );
+        this._taskbarCallback.addProjectTool(
+            "undo.svg",
+            this._language.get("undo"),
+            this.undo,
+            this._language.get("documentTitle")
+        );
+        this._taskbarCallback.addProjectTool(
+            "redo.svg",
+            this._language.get("redo"),
+            this.redo,
+            this._language.get("documentTitle")
+        );
+        this._taskbarCallback.addProjectTool(
+            "preview.svg",
+            this._language.get("preview"),
+            this.showHTMLPreview,
+            this._language.get("documentTitle"),
+            "agsbs.preview"
+        );
+        this._taskbarCallback.addProjectTool(
+            "generate.svg",
+            this._language.get("generateFile"),
+            this.generateHTML,
+            this._language.get("documentTitle"),
+            "agsbs.generateFile"
+        );
+        this._taskbarCallback.addProjectTool(
+            "create_all.svg",
+            this._language.get("convertEntireProject"),
+            this.generateHTMLForAllProjects,
+            this._language.get("documentTitle"),
+            "agsbs.convertEntireProject"
+        );
+        this._taskbarCallback.addProjectTool(
+            "check_all.svg",
+            this._language.get("checkProject"),
+            this.publish,
+            this._language.get("publishTitle"),
+            "agsbs.checkProject"
+        );
         if (gitIsEnabled) {
-            this._taskbarCallback.addProjectTool("commit.svg", this._language.get("commitChanges"), this.commitChanges, this._language.get("publishTitle"), "agsbs.commitChanges");
+            this._taskbarCallback.addProjectTool(
+                "commit.svg",
+                this._language.get("commitChanges"),
+                this.commitChanges,
+                this._language.get("publishTitle"),
+                "agsbs.commitChanges"
+            );
         }
-    }
+    };
 
     /**
      * Lets you create a new Project
@@ -78,13 +146,20 @@ export default class ProjectToolsFunctions {
             return;
         }
         const optionsHTML = await this._projectHelper.getAllWorkspaceFoldersAsHTMLWithSpeciallyEscapedJSON();
-        let form = '';
+        let form = "";
         form += this._snippets.get("newProjectHTMLPart1");
         form += optionsHTML;
         form += this._snippets.get("newProjectHTMLPart2");
         const script = this._snippets.get("newProjectSCRIPT");
-        this._sidebarCallback.addToSidebar(form, this._language.get("newProject"), this.createNewProjectSidebarCallback, this._language.get("insert"), "", script);
-    }
+        this._sidebarCallback.addToSidebar(
+            form,
+            this._language.get("newProject"),
+            this.createNewProjectSidebarCallback,
+            this._language.get("insert"),
+            "",
+            script
+        );
+    };
 
     /**
      * Callback for creating a new project
@@ -94,7 +169,7 @@ export default class ProjectToolsFunctions {
         const path = pathDataObject.uri;
         const chapterCount = params.chapters.value;
         let appendixChapterCount;
-        if (params.appendixChapters.value === '') {
+        if (params.appendixChapters.value === "") {
             appendixChapterCount = 0;
         } else {
             appendixChapterCount = params.appendixChapters.value;
@@ -117,14 +192,27 @@ export default class ProjectToolsFunctions {
             let alternatePrefix, outputFormat, semYear, workingGroup;
             await this._matuc.newProject(appendixChapterCount, chapterCount, preface, projectLanguage, path);
             await this._matuc.initMetaData(path);
-            await this._matuc.updateMetaData(alternatePrefix, outputFormat, editor, institution, title, projectLanguage, sourceMaterial, sourceAuthor, semYear, depthOfTableOfContents, workingGroup, path);
+            await this._matuc.updateMetaData(
+                alternatePrefix,
+                outputFormat,
+                editor,
+                institution,
+                title,
+                projectLanguage,
+                sourceMaterial,
+                sourceAuthor,
+                semYear,
+                depthOfTableOfContents,
+                workingGroup,
+                path
+            );
         } catch (e) {
             vscode.window.showErrorMessage(this._language.get("somethingWentWrongDuringCreatingNewProject"));
             console.log(e);
             return;
         }
         vscode.window.showInformationMessage(this._language.get("createdProjectSuccessfully"));
-    }
+    };
 
     /**
      * Lets you edit the Metadata of the current project
@@ -143,8 +231,13 @@ export default class ProjectToolsFunctions {
             return;
         }
         const form: string = this._projectHelper.getEditProjectHTMLForm(config, folder);
-        this._sidebarCallback.addToSidebar(form, this._language.get("editProject"), this.editProjectDataSidebarCallback, this._language.get("updateEditedData"));
-    }
+        this._sidebarCallback.addToSidebar(
+            form,
+            this._language.get("editProject"),
+            this.editProjectDataSidebarCallback,
+            this._language.get("updateEditedData")
+        );
+    };
 
     /**
      * Callback for editing the Metadata of the current project.
@@ -163,15 +256,27 @@ export default class ProjectToolsFunctions {
         let thisPath: string = params.folder.value;
         thisPath = thisPath.replace("\\\\`", "'");
         try {
-            await this._matuc.updateMetaData(alternatePrefix, null, editor, institution,
-                title, projectLanguage, source, sourceAuthor, semYear, tocDepth, workingGroup, thisPath);
+            await this._matuc.updateMetaData(
+                alternatePrefix,
+                null,
+                editor,
+                institution,
+                title,
+                projectLanguage,
+                source,
+                sourceAuthor,
+                semYear,
+                tocDepth,
+                workingGroup,
+                thisPath
+            );
         } catch (e) {
             console.log(e);
             vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
             return;
         }
         vscode.window.showInformationMessage(this._language.get("updateSuccessfull"));
-    }
+    };
 
     /**
      * Saves the changes made in the current file
@@ -180,32 +285,32 @@ export default class ProjectToolsFunctions {
         const currentEditor = await this._helper.getCurrentTextEditor();
         currentEditor.document.save();
         this._helper.focusDocument(); //Puts focus back to the text editor
-    }
+    };
 
     /**
      * creates a new file in the current Project
      */
     public createNewFile = async () => {
         await this._helper.focusDocument(); //Puts focus back to the text editor
-        await vscode.commands.executeCommand('workbench.action.files.newUntitledFile');
-        await vscode.commands.executeCommand('workbench.action.files.save');
-    }
+        await vscode.commands.executeCommand("workbench.action.files.newUntitledFile");
+        await vscode.commands.executeCommand("workbench.action.files.save");
+    };
 
     /**
      * Undoes the last step.
      */
     public undo = async () => {
         await this._helper.focusDocument(); //Puts focus back to the text editor
-        await vscode.commands.executeCommand('undo');
-    }
+        await vscode.commands.executeCommand("undo");
+    };
 
     /**
      * Redoes the last step
      */
     public redo = async () => {
         await this._helper.focusDocument(); //Puts focus back to the text editor
-        await vscode.commands.executeCommand('redo');
-    }
+        await vscode.commands.executeCommand("redo");
+    };
 
     /**
      * shows a HTML Preview if available.
@@ -224,7 +329,7 @@ export default class ProjectToolsFunctions {
         //     console.log(e);
         // } // no Markdown enhanced because it ALLWAYS opens to the right. Bad :(
         vscode.commands.executeCommand("markdown.showPreview");
-    }
+    };
 
     /**
      * Generates the HTML for the current File
@@ -242,15 +347,13 @@ export default class ProjectToolsFunctions {
         //     return;
         // }
         const foundError = await this._matuc.checkAndSaveChanges();
-        if (!foundError){
+        if (!foundError) {
             this._matuc.convertMaterial(true);
             this._helper.focusDocument(); //Puts focus back to the text editor
-
-        }else{
-            console.log("error in generateHTML line 233")
+        } else {
+            console.log("error in generateHTML line 233");
         }
-
-    }
+    };
     /**
      * Callback for generating the HTML for the current File. Fallback if this is not set in the settings.
      */
@@ -259,8 +362,7 @@ export default class ProjectToolsFunctions {
         await this._matuc.checkAndSaveChanges();
         await this._matuc.convertFile(profile);
         this._helper.focusDocument(); //Puts focus back to the text editor
-    }
-
+    };
 
     /**
      * Generates HTML for all projects
@@ -278,12 +380,12 @@ export default class ProjectToolsFunctions {
             vscode.window.showErrorMessage(this._language.get("notInsideLecture"));
             return;
         }
-            await this._matuc.checkAndSaveChanges();
-            await this._matuc.convertMaterial(false);
-            this._helper.focusDocument(); //Puts focus back to the text editor
+        await this._matuc.checkAndSaveChanges();
+        await this._matuc.convertMaterial(false);
+        this._helper.focusDocument(); //Puts focus back to the text editor
 
         // }
-    }
+    };
 
     /**
      * Callback for generating the HTML for all projects, as a fallback when the setting is manually selected every time
@@ -293,8 +395,7 @@ export default class ProjectToolsFunctions {
         await this._matuc.checkAndSaveChanges();
         await this._matuc.convertEntireProject(profile);
         this._helper.focusDocument(); //Puts focus back to the text editor
-
-    }
+    };
 
     /**
      * publishes the whole Project
@@ -319,9 +420,14 @@ export default class ProjectToolsFunctions {
         <input name="autoCorrectPageNumbering" id="autoCorrectPageNumbering" type="checkbox"/>
         <label for="autoCorrectPageNumbering">${this._language.get("autocorrectPagenumberingCheckbox")}</label>
         `;
-        this._sidebarCallback.addToSidebar(form, this._language.get("pagenumbering"), this.publishSidebarCallback, this._language.get("generate"));
+        this._sidebarCallback.addToSidebar(
+            form,
+            this._language.get("pagenumbering"),
+            this.publishSidebarCallback,
+            this._language.get("generate")
+        );
         this._helper.focusDocument(); //Puts focus back to the text editor
-    }
+    };
 
     /**
      * Checks the whole project
@@ -333,7 +439,7 @@ export default class ProjectToolsFunctions {
         const currentEditor = await this._helper.getCurrentTextEditor();
         const filePath = currentEditor.document.uri.fsPath;
         this._matuc.checkEntireProject(filePath);
-    }
+    };
 
     /**
      * Adds Form to sidebar to clone a project
@@ -358,8 +464,13 @@ export default class ProjectToolsFunctions {
         <label for="mailadresse">${this._language.get("mailadresse")}</label>
         <input id="mailadresse" name="mailadresse" type="text" required="true" value="${gitUserEmail}">
         `;
-        this._sidebarCallback.addToSidebar(form, this._language.get("cloneExistingRepo"), this.cloneRepoSidebarCallback, this._language.get("clone"));
-    }
+        this._sidebarCallback.addToSidebar(
+            form,
+            this._language.get("cloneExistingRepo"),
+            this.cloneRepoSidebarCallback,
+            this._language.get("clone")
+        );
+    };
 
     /**
      * clones a project
@@ -379,7 +490,7 @@ export default class ProjectToolsFunctions {
             this._settings.update("gitUserEmail", gitUserEmail);
         }
         this._git.clone(gitLoginName, repoName);
-    }
+    };
 
     /**
      * Adds commt changes dialogue to the sidebar
@@ -393,10 +504,17 @@ export default class ProjectToolsFunctions {
         const form = `
         <label for="commitChanges">${this._language.get("commitChanges")}</label>
         <div class="spacing" role="none"></div>
-        <input id="commitChanges" name="commitChanges" type="text" required="true" placeholder="${this._language.get("commitMessage")}">
+        <input id="commitChanges" name="commitChanges" type="text" required="true" placeholder="${this._language.get(
+            "commitMessage"
+        )}">
         `;
-        this._sidebarCallback.addToSidebar(form, this._language.get("commitChanges"), this.commitChangesSidebarCallback, this._language.get("commit"));
-    }
+        this._sidebarCallback.addToSidebar(
+            form,
+            this._language.get("commitChanges"),
+            this.commitChangesSidebarCallback,
+            this._language.get("commit")
+        );
+    };
 
     /**
      * commits the changes, and pushes them.
@@ -419,6 +537,5 @@ export default class ProjectToolsFunctions {
             await this._git.commit(commitMessage, projectFolder);
         }
         await this._git.push(projectFolder);
-    }
-
+    };
 }

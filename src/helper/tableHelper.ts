@@ -2,13 +2,13 @@
  * @author  Lucas Vogel
  */
 
-import * as vscode from 'vscode';
-import * as path from 'path';
-import * as fs from 'fs';
-import Language from '../languages';
-import Helper from './helper';
-import * as Papa from 'papaparse';
-import SettingsHelper from './settingsHelper';
+import * as vscode from "vscode";
+import * as path from "path";
+import * as fs from "fs";
+import Language from "../languages";
+import Helper from "./helper";
+import * as Papa from "papaparse";
+import SettingsHelper from "./settingsHelper";
 
 /**
  * A Helper for all the table functions.
@@ -20,13 +20,12 @@ export default class TableHelper {
     public tableEndMarker: string;
     private _settings: SettingsHelper;
     constructor() {
-        this._language = new Language;
-        this._helper = new Helper;
-        this._settings = new SettingsHelper;
+        this._language = new Language();
+        this._helper = new Helper();
+        this._settings = new SettingsHelper();
         this.tableStartMarker = "TABLE START TYPE"; //Marker to identify the start of a table
         this.tableEndMarker = "TABLE END"; //Marker to identify the end of a table
     }
-
 
     /**
      * Gets the name of the default table folder
@@ -109,34 +108,46 @@ export default class TableHelper {
             data = rawdata;
             const lengths: any = this.determineRowsLength(data);
             let returnString = "";
-            if (horizontalChar !== null) { //At beginning of Table
+            if (horizontalChar !== null) {
+                //At beginning of Table
                 returnString += this._generateHorizontalSplitterMarkdown(horizontalChar, crossChar, lengths) + "\n";
             }
-            for (let i = 0; i < data.length; i++) { //iterating through the rows of the data
+            for (let i = 0; i < data.length; i++) {
+                //iterating through the rows of the data
                 const thisRow = data[i];
                 returnString += this._generateRowMarkdown(thisRow, verticalChar, lengths) + "\n"; //the first line
                 if (i === 0 && data.length > 1 && hasHeader) {
-                    returnString += this._generateHorizontalSplitterMarkdown(headerSeperatorChar, crossChar, lengths) + "\n";
+                    returnString +=
+                        this._generateHorizontalSplitterMarkdown(headerSeperatorChar, crossChar, lengths) + "\n";
                 } else {
                     if (i === 0 && data.length > 1 && hasHeader === false && tableType !== "gridTable") {
-                        returnString += this._generateHorizontalSplitterMarkdown(headerSeperatorChar, crossChar, lengths) + "\n";
+                        returnString +=
+                            this._generateHorizontalSplitterMarkdown(headerSeperatorChar, crossChar, lengths) + "\n";
                     } else {
                         if (horizontalChar !== null) {
-                            returnString += this._generateHorizontalSplitterMarkdown(horizontalChar, crossChar, lengths) + "\n";
+                            returnString +=
+                                this._generateHorizontalSplitterMarkdown(horizontalChar, crossChar, lengths) + "\n";
                         }
                     }
                 }
-
             }
-            returnString = "<!-- " + this.tableStartMarker + " " +
-                tableTypeName + " " +
-                hasHeaderString + "" +
-                extraTableStartText + " -->\n\n" +
-                returnString + "\n<!-- " +
-                tableTypeName + " " +
-                this.tableEndMarker + " -->";
+            returnString =
+                "<!-- " +
+                this.tableStartMarker +
+                " " +
+                tableTypeName +
+                " " +
+                hasHeaderString +
+                "" +
+                extraTableStartText +
+                " -->\n\n" +
+                returnString +
+                "\n<!-- " +
+                tableTypeName +
+                " " +
+                this.tableEndMarker +
+                " -->";
             return returnString;
-
         }
     }
     /**
@@ -146,16 +157,16 @@ export default class TableHelper {
      * @returns file path
      */
     public async generateCSVfromJSONandSave(data: any, header?: boolean) {
-            const result = await this.generateCSVfromJSON(data, header);
-            if (result !== undefined && result !== "") {
-                try {
-                    return await this.writeCSVFile(result);
-                } catch (e) {
-                    console.log(e);
-                    return false;
-                }
+        const result = await this.generateCSVfromJSON(data, header);
+        if (result !== undefined && result !== "") {
+            try {
+                return await this.writeCSVFile(result);
+            } catch (e) {
+                console.log(e);
                 return false;
             }
+            return false;
+        }
     }
 
     /**
@@ -166,15 +177,14 @@ export default class TableHelper {
      */
     public async generateCSVfromJSON(data: any, header?: boolean): Promise<string> {
         const delimiter = await this._settings.get("csvDelimiter");
-            if (!header) {
-                header = false;
-            }
-            const result = await Papa.unparse(data,
-                {
-                    delimiter: delimiter,
-                    header: header,
-                });
-            return result;
+        if (!header) {
+            header = false;
+        }
+        const result = await Papa.unparse(data, {
+            delimiter: delimiter,
+            header: header
+        });
+        return result;
     }
 
     /**
@@ -201,23 +211,22 @@ export default class TableHelper {
                 const thisCellContent = row[j];
                 let thisLength = lengths[j];
                 returnString += thisCellContent;
-                if ((thisLength - thisCellContent.length) === 0 && thisLength === 0) {
-                    returnString += " ";//Add one whitespace if Cell is empty
+                if (thisLength - thisCellContent.length === 0 && thisLength === 0) {
+                    returnString += " "; //Add one whitespace if Cell is empty
                 }
-                while ((thisLength - thisCellContent.length) > 0) {
-                    returnString += " ";//Fill the remaining space with whitespace
+                while (thisLength - thisCellContent.length > 0) {
+                    returnString += " "; //Fill the remaining space with whitespace
                     thisLength -= 1;
                 }
 
                 returnString += verticalChar;
             }
-            if (rowArray.length > 1 && (i !== (rowArray.length - 1))) {
+            if (rowArray.length > 1 && i !== rowArray.length - 1) {
                 returnString += "\n";
             }
         }
         return returnString;
     }
-
 
     /**
      * Generates an array of array of an array that containes line breaks, so that they are underneath each other.
@@ -253,9 +262,8 @@ export default class TableHelper {
                 }
             }
         }
-        return (returnArray);
+        return returnArray;
     }
-
 
     /**
      * generates Markdown-code of the seperator line of a table
@@ -282,11 +290,10 @@ export default class TableHelper {
                 }
 
                 returnString += crossChar;
-
             }
             return returnString;
         } else {
-            return (""); //if no horizontal split is defined
+            return ""; //if no horizontal split is defined
         }
     }
 
@@ -301,7 +308,6 @@ export default class TableHelper {
         }
         const lengthArray = [];
         for (let i = 0; i < data.length; i++) {
-
             const thisRow = data[i];
             for (let j = 0; j < thisRow.length; j++) {
                 const thisCell = thisRow[j];
@@ -315,7 +321,6 @@ export default class TableHelper {
             }
         }
         return lengthArray;
-
     }
 
     /**
@@ -334,11 +339,16 @@ export default class TableHelper {
         if (fs.existsSync(folderPath)) {
             return new Promise((resolve, reject) => {
                 fs.readdir(folderPath, (err, files) => {
-                    files.forEach(file => {
+                    files.forEach((file) => {
                         if (this.isTable(file)) {
                             const completePath = path.join(folderPath, file);
                             const relativePath = "." + path.sep + folder + path.sep + file; //generate the relative file path, path.sep gives the OS folder seperator
-                            const newFileObject = { fileName: file, folderPath: folderPath, completePath: completePath, relativePath: relativePath };
+                            const newFileObject = {
+                                fileName: file,
+                                folderPath: folderPath,
+                                completePath: completePath,
+                                relativePath: relativePath
+                            };
                             allFilesArray.push(newFileObject);
                         }
                     });
@@ -353,11 +363,10 @@ export default class TableHelper {
                 });
             });
         } else {
-            vscode.window.showErrorMessage(this._language.get('thereAreNoTableInFolder') + folderPath);
+            vscode.window.showErrorMessage(this._language.get("thereAreNoTableInFolder") + folderPath);
             //If there is no picture folder
         }
     }
-
 
     /**
      * Checks if the given string of a file name is a file extension of a table
@@ -367,7 +376,7 @@ export default class TableHelper {
     public isTable(filename: string) {
         const ext = this._getFileExtension(filename);
         switch (ext.toLowerCase()) {
-            case 'csv':
+            case "csv":
                 //etc
                 return true;
         }
@@ -380,7 +389,7 @@ export default class TableHelper {
      * @returns the string of the file extension
      */
     private _getFileExtension(filename: string) {
-        const parts = filename.split('.');
+        const parts = filename.split(".");
         return parts[parts.length - 1];
     }
 
@@ -390,11 +399,12 @@ export default class TableHelper {
      * @returns an HTML-String of the file options, like <option value='FILEPATH'>FILENAME</option>...
      */
     public generateSelectTableOptionsHTML(files: any) {
-        let returnString = '';
+        let returnString = "";
 
-        files.forEach(fileObject => {
+        files.forEach((fileObject) => {
             const json = JSON.stringify(fileObject);
-            const myEscapedJSONString = json.replace(/\\n/g, "\\n")
+            const myEscapedJSONString = json
+                .replace(/\\n/g, "\\n")
                 .replace(/\\'/g, "\\'")
                 .replace(/\\"/g, '\\"')
                 .replace(/\\&/g, "\\&")
@@ -414,7 +424,10 @@ export default class TableHelper {
      * @param selection optional. The selection to check
      * @returns false if the selection is not a table/ not in a table, returns selection of the table if it is in a table
      */
-    public async getIfSelectionIsInTableAndReturnSelection(currentTextEditor?: vscode.TextEditor, selection?: vscode.Selection) {
+    public async getIfSelectionIsInTableAndReturnSelection(
+        currentTextEditor?: vscode.TextEditor,
+        selection?: vscode.Selection
+    ) {
         const tableStartMarker = "<!-- " + this.tableStartMarker;
         const tableEndMarker = this.tableEndMarker + " -->";
         if (currentTextEditor === undefined) {
@@ -423,11 +436,20 @@ export default class TableHelper {
         if (selection === undefined) {
             selection = this._helper.getWordsSelection(currentTextEditor);
         }
-        const foundTableStartSelection: any = await this._helper.iterateUpwardsToCheckForString(tableStartMarker, tableEndMarker, currentTextEditor, selection);
+        const foundTableStartSelection: any = await this._helper.iterateUpwardsToCheckForString(
+            tableStartMarker,
+            tableEndMarker,
+            currentTextEditor,
+            selection
+        );
         if (foundTableStartSelection === false) {
             return false;
         }
-        const foundTableEnd = await this._helper.iterateDownwardsToCheckForString(tableEndMarker, currentTextEditor, foundTableStartSelection);
+        const foundTableEnd = await this._helper.iterateDownwardsToCheckForString(
+            tableEndMarker,
+            currentTextEditor,
+            foundTableStartSelection
+        );
         return foundTableEnd;
     }
 
@@ -437,16 +459,29 @@ export default class TableHelper {
      * @param fileName optional. A custom filename, with or without ".csv". If no fileName is provided, it will be generated from the current date.
      * @param fileBasePath optional. a custom file base path.
      */
-    public async writeCSVFile(content: string, fileName ? : string, fileBasePath ? : string): Promise <string> {
+    public async writeCSVFile(content: string, fileName?: string, fileBasePath?: string): Promise<string> {
         if (!fileBasePath) {
             const folderName: string = await this.getGeneratedTablesFolderName();
             const folderBasePath: string = await this._helper.getCurrentDocumentFolderPath();
             fileBasePath = path.join(folderBasePath, folderName);
         }
         if (!fileName) {
-            const date = new Date;
+            const date = new Date();
             const month = date.getMonth() + 1;
-            const newFileName = "generatedTable-" + date.getFullYear() + "-" + month + "-" + date.getDate() + "_" + date.getHours() + "-" + date.getMinutes() + "-" + date.getSeconds() + ".csv";
+            const newFileName =
+                "generatedTable-" +
+                date.getFullYear() +
+                "-" +
+                month +
+                "-" +
+                date.getDate() +
+                "_" +
+                date.getHours() +
+                "-" +
+                date.getMinutes() +
+                "-" +
+                date.getSeconds() +
+                ".csv";
             fileName = newFileName;
         }
         if (!fileName.endsWith(".csv")) {
@@ -458,23 +493,22 @@ export default class TableHelper {
         if (!pathExists) {
             await this._helper.mkDir(fileBasePath);
         }
-        const fd = fs.openSync(thisPath, 'w+'); //Open in "add"-Mode
+        const fd = fs.openSync(thisPath, "w+"); //Open in "add"-Mode
         content = content.replace(/\\/g, "\\\\");
         return new Promise((resolve, reject) => {
-          fs.write(fd, content, (error) => {
-            if (error) {
-                vscode.window.showErrorMessage(this._language.get('writingCSVTableFileError'));
-                console.error(error);
-                reject(error);
-            } else {
-                console.log(fileName + " " + this._language.get("hasBeenWritten"));
-                fs.closeSync(fd);
-                resolve(thisPath);
-            }
-          });
+            fs.write(fd, content, (error) => {
+                if (error) {
+                    vscode.window.showErrorMessage(this._language.get("writingCSVTableFileError"));
+                    console.error(error);
+                    reject(error);
+                } else {
+                    console.log(fileName + " " + this._language.get("hasBeenWritten"));
+                    fs.closeSync(fd);
+                    resolve(thisPath);
+                }
+            });
         });
     }
-
 
     /**
      * Loads the table where the selection is currently in.
@@ -483,13 +517,17 @@ export default class TableHelper {
      * @returns a Promise, that resoves to false if no table is found, otherwise a Object with the Table content.
      */
     public async loadSelectedTable(selection: vscode.Selection, currentTextEditor?: vscode.TextEditor): Promise<any> {
-        const delimiter :any = await this._settings.get("csvDelimiter");
+        const delimiter: any = await this._settings.get("csvDelimiter");
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
         }
-        const tableStartRegex = /<!--\ ?TABLE\ ?START\ ?T?Y?P?E?\ ?(GRID|PIPE|SIMPLE)\ ?(HAS\ ?HEADER|NO\ ?HEADER)[a-zA-Z\ ?]*\ *(\.\/.*|\.\\.*)\ -->/;
+        const tableStartRegex =
+            /<!--\ ?TABLE\ ?START\ ?T?Y?P?E?\ ?(GRID|PIPE|SIMPLE)\ ?(HAS\ ?HEADER|NO\ ?HEADER)[a-zA-Z\ ?]*\ *(\.\/.*|\.\\.*)\ -->/;
         let startLineText = currentTextEditor.document.lineAt(selection.start.line).text;
-        const pathSep = [["\\", "\/"], ["\/", "\\"]];  //  [[winSep, unixSep],[unixSep, winSep]]
+        const pathSep = [
+            ["\\", "/"],
+            ["/", "\\"]
+        ]; //  [[winSep, unixSep],[unixSep, winSep]]
         for (let i = 0; i < pathSep.length; ++i) {
             if (startLineText.includes(pathSep[i][0]) && path.sep === pathSep[i][1]) {
                 startLineText = startLineText.replace(pathSep[i][0], pathSep[i][1]);
@@ -497,7 +535,8 @@ export default class TableHelper {
             }
         }
         const parts = startLineText.match(tableStartRegex);
-        if (parts.length !== 4) { //If The number of matched string parts from the first line is too long or too short
+        if (parts.length !== 4) {
+            //If The number of matched string parts from the first line is too long or too short
             return "";
         } else {
             const tableType = parts[1];
@@ -517,7 +556,8 @@ export default class TableHelper {
                 vscode.window.showErrorMessage(this._language.get("parsingError"));
                 return "";
             }
-            if (!json.hasOwnProperty("data")) { //If the Result has no "data"-property
+            if (!json.hasOwnProperty("data")) {
+                //If the Result has no "data"-property
                 vscode.window.showErrorMessage(this._language.get("parsingError"));
                 return "";
             }
@@ -538,4 +578,4 @@ export default class TableHelper {
             "No such file found";
         });
     }
-    }
+}

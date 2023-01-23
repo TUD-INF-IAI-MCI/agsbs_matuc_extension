@@ -1,9 +1,7 @@
 /**
  * @author  Lucas Vogel
  */
-import Language from '../languages';
-
-
+import Language from "../languages";
 
 export default class ProjectToolsFunctionSnippets {
     private _language: Language;
@@ -15,21 +13,21 @@ export default class ProjectToolsFunctionSnippets {
      * @returns snippet
      */
     public get(snippetName: string) {
-        return (this.d[snippetName]);
+        return this.d[snippetName];
     }
 
     constructor() {
-        this._language = new Language;
+        this._language = new Language();
         this.d = [];
 
         /**************** NEW PROJECT ****************** */
-        this.d['newProjectHTMLPart1'] = `
+        this.d["newProjectHTMLPart1"] = `
         <label for="folder">${this._language.get("selectFolder")}</label><br role="none">
 
         <select name="folder" id="folder" required="true" onchange="onFileSelectorChange()">
         <option value="" disabled="true">Select Folder</option>
         `;
-        this.d['newProjectHTMLPart2'] = `
+        this.d["newProjectHTMLPart2"] = `
         </select>
         <br role="none">
         <div class="spacing" role="none"></div>
@@ -82,7 +80,7 @@ export default class ProjectToolsFunctionSnippets {
 
         `;
 
-        this.d['newProjectSCRIPT'] = `
+        this.d["newProjectSCRIPT"] = `
 
             function onFileSelectorChange(){
                 var preface = document.getElementById("preface");
@@ -137,5 +135,4 @@ export default class ProjectToolsFunctionSnippets {
                 }
             }`;
     }
-
 }

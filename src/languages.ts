@@ -1,9 +1,9 @@
 /**
  * @author  Lucas Vogel
  */
-import * as vscode from 'vscode';
-import En from './languages/en';
-import DE from './languages/de';
+import * as vscode from "vscode";
+import En from "./languages/en";
+import DE from "./languages/de";
 
 export default class Language {
     private language: string;
@@ -37,8 +37,7 @@ export default class Language {
                 this.languageClass = new En();
                 break;
         }
-    }
-
+    };
 
     /**
      * Returns the translated String of the identifier
@@ -46,6 +45,5 @@ export default class Language {
      */
     public get = (name) => {
         return this.languageClass.get(name);
-    }
-
+    };
 }

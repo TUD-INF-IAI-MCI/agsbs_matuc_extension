@@ -2,8 +2,8 @@
  * @author  Lucas Vogel
  */
 
-import * as vscode from 'vscode';
-import Helper from './helper';
+import * as vscode from "vscode";
+import Helper from "./helper";
 
 /**
  * Helper for the list-functions
@@ -11,7 +11,7 @@ import Helper from './helper';
 export default class ListHelper {
     private _helper: Helper;
     constructor() {
-        this._helper = new Helper;
+        this._helper = new Helper();
     }
 
     /**
@@ -53,7 +53,7 @@ export default class ListHelper {
         const selection = this._helper.getWordsSelection(currentTextEditor);
         const currentLineNumber = await this.getLineListNumber(selection.start.line);
         if (currentLineNumber !== 0) {
-           await this._helper.toggleCharactersAtBeginningOfLine("1. ");
+            await this._helper.toggleCharactersAtBeginningOfLine("1. ");
         }
         this._helper.toggleCharactersAtBeginningOfLine("- ");
     }
@@ -82,5 +82,4 @@ export default class ListHelper {
             //Inserts it into the document
         }
     }
-
 }

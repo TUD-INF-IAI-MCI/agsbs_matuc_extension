@@ -1,27 +1,26 @@
 /**
  * @author  Lucas Vogel
  */
-import * as vscode from 'vscode';
-import Helper from './helper/helper';
-import SettingsHelper from './helper/settingsHelper';
-import Sidebar from './sidebar';
-import Taskbar from './taskbar';
-import { EditorLayout } from './types/types';
-
+import * as vscode from "vscode";
+import Helper from "./helper/helper";
+import SettingsHelper from "./helper/settingsHelper";
+import Sidebar from "./sidebar";
+import Taskbar from "./taskbar";
+import { EditorLayout } from "./types/types";
 
 /**
  * Gets triggered when the Extension is activated
  * @param context Context of the extension, gets automatically handed over from VSCode at activation
  */
 export function activate(context: vscode.ExtensionContext) {
-    console.log('AGSBS extension is now active!');
+    console.log("AGSBS extension is now active!");
     const extensionController = new ExtensionController(context);
-    const disposable = vscode.commands.registerCommand('agsbs.open', () => {
-        vscode.window.showInformationMessage('AGSBS is active.');
+    const disposable = vscode.commands.registerCommand("agsbs.open", () => {
+        vscode.window.showInformationMessage("AGSBS is active.");
         extensionController.showSidebar();
     });
 
-    vscode.commands.registerCommand('agsbs.clone', () => {
+    vscode.commands.registerCommand("agsbs.clone", () => {
         //this.extensionController.showSidebar();
         vscode.commands.executeCommand("agsbs.showGitView");
     });
@@ -33,7 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
  * this method is called when your extension is deactivated
  */
 export function deactivate() {
-    vscode.window.showInformationMessage('AGSBS deactivated.');
+    vscode.window.showInformationMessage("AGSBS deactivated.");
 }
 
 /**
@@ -67,13 +66,16 @@ class ExtensionController {
         const sidebar = new Sidebar(context);
         const taskbar = new Taskbar(sidebar, context);
         const helper = new Helper();
-        this._settingsHelper = new SettingsHelper;
+        this._settingsHelper = new SettingsHelper();
         this._settingsHelper.setup(); //If settings are not set, this will initialize them
         // layout für den Editor in Prozent
         // orientation 1 = zeilen, das andere ist vllt. 0
         // group 0.15 verändert untere Bereich
         // summe muss 1.0 ergeben
-        this._layout = { orientation: 1, groups: [{ groups: [{ size: 0.8 }, { size: 0.2 }], size: 0.85 }, { size: 0.15 }] };
+        this._layout = {
+            orientation: 1,
+            groups: [{ groups: [{ size: 0.8 }, { size: 0.2 }], size: 0.85 }, { size: 0.15 }]
+        };
         this._defaultLayout = { orientation: 1, groups: [{}] };
         this._helper = helper;
 
@@ -105,11 +107,13 @@ class ExtensionController {
      */
     private async _update() {
         const editor = vscode.window.activeTextEditor;
-        if (!editor) {//If no Editor is open, return.
+        if (!editor) {
+            //If no Editor is open, return.
             return;
         }
         const doc = editor.document;
-        if (doc.languageId === "markdown" || doc.languageId === "multimarkdown") {//This gets executed if a Markdown File gets opened
+        if (doc.languageId === "markdown" || doc.languageId === "multimarkdown") {
+            //This gets executed if a Markdown File gets opened
             //First, reset Workspace
             if (this._sidebar.isVisible() === false || this._taskbar.isVisible() === false) {
                 await this._helper.setEditorLayout(this._layout);
@@ -133,9 +137,7 @@ class ExtensionController {
             //TODO: BUG when closing both panels, this should be reported as an Issue to VSCODE because an error is thrown in the core
             //This will crash the Extension debugging Host forever and will force you to reinstall VSCODE from scratch. Seriously.
             //Read the docs.
-
             //await this._sidebar.hide(this._sidebarPanel);
         }
     }
 }
-

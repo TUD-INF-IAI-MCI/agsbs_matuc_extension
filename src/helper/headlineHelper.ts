@@ -2,20 +2,19 @@
  * @author  Lucas Vogel
  */
 
-import * as vscode from 'vscode';
-import Language from '../languages';
-import Helper from './helper';
-import InsertHelper from './insertHelper';
-
+import * as vscode from "vscode";
+import Language from "../languages";
+import Helper from "./helper";
+import InsertHelper from "./insertHelper";
 
 export default class HeadlineHelper {
     private _language: Language;
     private _helper: Helper;
     private _insertHelper: InsertHelper;
     constructor() {
-        this._language = new Language;
-        this._helper = new Helper;
-        this._insertHelper = new InsertHelper;
+        this._language = new Language();
+        this._helper = new Helper();
+        this._insertHelper = new InsertHelper();
     }
 
     /**
@@ -27,10 +26,10 @@ export default class HeadlineHelper {
         const selection = await this._helper.getWordsSelection(currentTextEditor);
         this.setHeadlineAtLine(number, selection.start.line);
         this._helper.focusDocument(); //Puts focus back to the text editor
-    }
+    };
 
     /**
-     * sets a Headline with a given grade at a given line. 
+     * sets a Headline with a given grade at a given line.
      * @param headlineGrade number of the grade
      * @param line line it should be inserted
      * @param currentTextEditor optional. the TextEditor to work with
@@ -58,20 +57,15 @@ export default class HeadlineHelper {
             const endPosition = new vscode.Position(line, resultString.length);
             const range = new vscode.Range(startPosition, endPosition);
             const workSpaceEdit = new vscode.WorkspaceEdit();
-            workSpaceEdit.replace(
-                currentTextEditor.document.uri,
-                range,
-                newHeadlineMarkerString
-            );
+            workSpaceEdit.replace(currentTextEditor.document.uri, range, newHeadlineMarkerString);
             await vscode.workspace.applyEdit(workSpaceEdit);
-        }
-        else {
+        } else {
             this._helper.insertStringAtStartOfLine(newHeadlineMarkerString);
         }
     }
 
     /**
-     * Looks at all the lines above and returns the next headline grade as a usable string. 
+     * Looks at all the lines above and returns the next headline grade as a usable string.
      * It will return one with first grade if there is no h1 above or in the current page. Otherwise it will return the above used headline grade.
      * @param selection optional. The selection to work with.
      * @param currentTextEditor optional. The Editor to work with.
@@ -84,7 +78,8 @@ export default class HeadlineHelper {
             selection = this._helper.getWordsSelection(currentTextEditor);
         }
         const startLineNumber: number = selection.start.line;
-        for (let i = startLineNumber; i >= 0; i--) { //Go upwards from the current line
+        for (let i = startLineNumber; i >= 0; i--) {
+            //Go upwards from the current line
             const currentLineText = await currentTextEditor.document.lineAt(i).text;
             const headlineRegex = /^\#{1,6}\ /;
             const result = currentLineText.match(headlineRegex);

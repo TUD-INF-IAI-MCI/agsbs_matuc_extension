@@ -2,33 +2,29 @@
  * @author  Lucas Vogel
  */
 
-import * as vscode from 'vscode';
-import * as path from 'path';
-import * as fs from 'fs';
-import Language from '../languages';
-import * as Papa from 'papaparse';
-import * as chardet from 'chardet';
-import * as iconvLite from 'iconv-lite';
-import { EditorLayout } from '../types/types';
-import util = require('util');
+import * as vscode from "vscode";
+import * as path from "path";
+import * as fs from "fs";
+import Language from "../languages";
+import * as Papa from "papaparse";
+import * as chardet from "chardet";
+import * as iconvLite from "iconv-lite";
+import { EditorLayout } from "../types/types";
+import util = require("util");
 
-
-
-import open = require('open');
+import open = require("open");
 
 export default class Helper {
     private _language: Language;
     constructor() {
-        this._language = new Language;
-
-
+        this._language = new Language();
     }
     /**
      * Sets the Editor layout to the given specifications
      * @param layout Object of the Editor Layout
      */
     public async setEditorLayout(layout: EditorLayout) {
-            return await vscode.commands.executeCommand('vscode.setEditorLayout', layout);
+        return await vscode.commands.executeCommand("vscode.setEditorLayout", layout);
     }
 
     /**
@@ -39,7 +35,7 @@ export default class Helper {
         if (editor === undefined) {
             editor = await this.getCurrentTextEditor();
         }
-        if(editor !== null){
+        if (editor !== null) {
             await vscode.window.showTextDocument(editor.document, editor.viewColumn, false);
         } else {
             //cause if repo is cloned and no editor is open
@@ -47,10 +43,10 @@ export default class Helper {
         }
     }
 
-    public openFileInBrowser(filePath: string){
-        if(filePath.toLowerCase().endsWith(".md")){
+    public openFileInBrowser(filePath: string) {
+        if (filePath.toLowerCase().endsWith(".md")) {
             filePath = filePath.toLowerCase().replace(".md", ".html");
-        }else if (!filePath.toLowerCase().endsWith(".html")){
+        } else if (!filePath.toLowerCase().endsWith(".html")) {
             console.log("file is not a md or html file");
             return;
         }
@@ -72,20 +68,22 @@ export default class Helper {
      * @returns current Text Editor or null if it cannot be determined
      */
     public async getCurrentTextEditor() {
-
         const currentActiveTextEditor = await vscode.window.activeTextEditor;
         const textEditors = await vscode.window.visibleTextEditors;
         const openedTextEditor = textEditors[0];
 
         // check if markdown
-        if ((currentActiveTextEditor && currentActiveTextEditor.document.languageId !== "markdown") || (openedTextEditor && openedTextEditor.document.languageId !== "markdown")) {
-            vscode.window.showErrorMessage(this._language.get('ActionErrorNotMarkdown'));
+        if (
+            (currentActiveTextEditor && currentActiveTextEditor.document.languageId !== "markdown") ||
+            (openedTextEditor && openedTextEditor.document.languageId !== "markdown")
+        ) {
+            vscode.window.showErrorMessage(this._language.get("ActionErrorNotMarkdown"));
             return null;
         }
 
         //check if there is an active Text Editor
         if (!currentActiveTextEditor && textEditors.length > 1) {
-            vscode.window.showErrorMessage(this._language.get('noActiveEditor'));
+            vscode.window.showErrorMessage(this._language.get("noActiveEditor"));
             return null;
         }
 
@@ -104,23 +102,23 @@ export default class Helper {
         return textEditor.selection;
     }
     public getWordsSelection(textEditor: vscode.TextEditor) {
-
         const selection = this.getPrimarySelection(textEditor);
         let newSelection: vscode.Selection;
 
         if (selection.isEmpty) {
             const wordRange = textEditor.document.getWordRangeAtPosition(selection.active);
-            if (wordRange) { //if there is no actual selection, but a marked word
+            if (wordRange) {
+                //if there is no actual selection, but a marked word
                 newSelection = new vscode.Selection(wordRange.start, wordRange.end);
-            } else { //if there is no actual selection and also no marked word
+            } else {
+                //if there is no actual selection and also no marked word
                 newSelection = new vscode.Selection(selection.start, selection.end);
             }
-        } else { //if there is a selection
-             newSelection = new vscode.Selection(selection.start, selection.end);
-
+        } else {
+            //if there is a selection
+            newSelection = new vscode.Selection(selection.start, selection.end);
         }
         return newSelection;
-
     }
     /**
      * Look for next blank line after current cursor position
@@ -133,12 +131,12 @@ export default class Helper {
         }
         const lineCount = currentTextEditor.document.lineCount;
         const currentLine = currentTextEditor.selection.active.line;
-        for (let i = currentLine; i < lineCount;  i++){
-            if (currentTextEditor.document.lineAt(i).isEmptyOrWhitespace){
+        for (let i = currentLine; i < lineCount; i++) {
+            if (currentTextEditor.document.lineAt(i).isEmptyOrWhitespace) {
                 return i; // next blank line
             }
         }
-        return lineCount + 1 ; // use end of file / editor
+        return lineCount + 1; // use end of file / editor
     }
     /**
      * Inserts a given string at the start of a selection
@@ -146,7 +144,11 @@ export default class Helper {
      * @param currentTextEditor the current text editor
      * @param selection the current selection
      */
-    public async insertStringAtStartOfSelection(charactersToInsert: any, currentTextEditor?: vscode.TextEditor, selection?: vscode.Range) {
+    public async insertStringAtStartOfSelection(
+        charactersToInsert: any,
+        currentTextEditor?: vscode.TextEditor,
+        selection?: vscode.Range
+    ) {
         if (!currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -155,11 +157,7 @@ export default class Helper {
         }
         const workSpaceEdit = new vscode.WorkspaceEdit();
         charactersToInsert = charactersToInsert.replace("images.html", "bilder.html"); //ToDo quick and dirty
-        workSpaceEdit.insert(
-            currentTextEditor.document.uri,
-            selection.start,
-            charactersToInsert
-        );
+        workSpaceEdit.insert(currentTextEditor.document.uri, selection.start, charactersToInsert);
         await vscode.workspace.applyEdit(workSpaceEdit);
     }
 
@@ -169,7 +167,11 @@ export default class Helper {
      * @param currentTextEditor the current text editor
      * @param selection the current selection
      */
-    public async insertStringAtStartOfForEachLineOfSelection(charactersToInsert?: any, currentTextEditor?: vscode.TextEditor, selection?: vscode.Range) {
+    public async insertStringAtStartOfForEachLineOfSelection(
+        charactersToInsert?: any,
+        currentTextEditor?: vscode.TextEditor,
+        selection?: vscode.Range
+    ) {
         if (!currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -182,12 +184,16 @@ export default class Helper {
 
         const workSpaceEdit = new vscode.WorkspaceEdit();
         let line; // line of selection
-        for (line = selection.start.line; line <= selection.end.line; line++){
+        for (line = selection.start.line; line <= selection.end.line; line++) {
             charactersToInsert++;
-            if ((await this.getLineContent(line)).length <= 0) { break;}
+            if ((await this.getLineContent(line)).length <= 0) {
+                break;
+            }
             workSpaceEdit.insert(
                 currentTextEditor.document.uri,
-                new vscode.Position(line, 0), charactersToInsert +". ");
+                new vscode.Position(line, 0),
+                charactersToInsert + ". "
+            );
         }
         await vscode.workspace.applyEdit(workSpaceEdit);
     }
@@ -198,7 +204,11 @@ export default class Helper {
      * @param currentTextEditor optional. The text editor to work with
      * @param selection optional. the selection to work with
      */
-    public async insertStringAtStartOfLine(charactersToInsert: any, currentTextEditor?: vscode.TextEditor, selection?: vscode.Range) {
+    public async insertStringAtStartOfLine(
+        charactersToInsert: any,
+        currentTextEditor?: vscode.TextEditor,
+        selection?: vscode.Range
+    ) {
         if (currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -212,14 +222,10 @@ export default class Helper {
         } else {
             // insert footnote after a string
             const nextBlankLine = await this.getNextBlankLineAfterPos();
-            const newCursorPos = new vscode.Position(nextBlankLine +1, 0);
+            const newCursorPos = new vscode.Position(nextBlankLine + 1, 0);
             selection = new vscode.Selection(newCursorPos, newCursorPos);
         }
-        workSpaceEdit.insert(
-            currentTextEditor.document.uri,
-            selection.start,
-            charactersToInsert
-        );
+        workSpaceEdit.insert(currentTextEditor.document.uri, selection.start, charactersToInsert);
         await vscode.workspace.applyEdit(workSpaceEdit);
     }
 
@@ -229,7 +235,11 @@ export default class Helper {
      * @param currentTextEditor optional. The given text editor
      * @param selection optional. A custom selection
      */
-    public async insertStringAtStartOfLineOrLinebreak(charactersToInsert: any, currentTextEditor?: vscode.TextEditor, selection?: vscode.Selection) {
+    public async insertStringAtStartOfLineOrLinebreak(
+        charactersToInsert: any,
+        currentTextEditor?: vscode.TextEditor,
+        selection?: vscode.Selection
+    ) {
         if (currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -237,7 +247,6 @@ export default class Helper {
             selection = this.getWordsSelection(currentTextEditor);
         }
         const lineLength = currentTextEditor.document.lineAt(selection.end.line).range.end.character;
-
 
         if (lineLength === 0) {
             const newStartPositionAtLineStart = new vscode.Position(selection.start.line, 0);
@@ -248,11 +257,7 @@ export default class Helper {
             charactersToInsert = "\n" + charactersToInsert;
         }
         const workSpaceEdit = new vscode.WorkspaceEdit();
-        workSpaceEdit.insert(
-            currentTextEditor.document.uri,
-            selection.start,
-            charactersToInsert
-        );
+        workSpaceEdit.insert(currentTextEditor.document.uri, selection.start, charactersToInsert);
         await vscode.workspace.applyEdit(workSpaceEdit);
     }
 
@@ -263,18 +268,15 @@ export default class Helper {
      * @param startCharacters Characters that will be added at the beginning of the selection
      * @param endCharacters  Characters that will be added at the end of the selection
      */
-    public async wrapCharactersAroundSelection(currentTextEditor: vscode.TextEditor, selection: vscode.Range, startCharacters: string, endCharacters: string) {
+    public async wrapCharactersAroundSelection(
+        currentTextEditor: vscode.TextEditor,
+        selection: vscode.Range,
+        startCharacters: string,
+        endCharacters: string
+    ) {
         const workSpaceEdit = new vscode.WorkspaceEdit();
-        workSpaceEdit.insert(
-            currentTextEditor.document.uri,
-            selection.start,
-            startCharacters
-        );
-        workSpaceEdit.insert(
-            currentTextEditor.document.uri,
-            selection.end,
-            endCharacters
-        );
+        workSpaceEdit.insert(currentTextEditor.document.uri, selection.start, startCharacters);
+        workSpaceEdit.insert(currentTextEditor.document.uri, selection.end, endCharacters);
         const newLinesExtra = (startCharacters.match(/\n/g) || []).length; //Checks how many new lines there are
         const startLine = selection.start.line + newLinesExtra;
         let startCharacter = selection.start.character + startCharacters.length;
@@ -288,7 +290,10 @@ export default class Helper {
             newEndPosition = new vscode.Position(selection.end.line + newLinesExtra, selection.end.character);
         } else {
             const selectionLength = selection.end.character - selection.start.character;
-            newEndPosition = new vscode.Position(selection.start.line + newLinesExtra, startCharacter + selectionLength);
+            newEndPosition = new vscode.Position(
+                selection.start.line + newLinesExtra,
+                startCharacter + selectionLength
+            );
         }
         const newSelection = new vscode.Selection(newStartPosition, newEndPosition);
         return newSelection;
@@ -302,7 +307,12 @@ export default class Helper {
      * @param numberStartCharacters number of characters that will be sliced at the beginning
      * @param numberEndCharacters  number of characters that will be sliced at the end
      */
-    public async deleteCharactersInSelection(currentTextEditor: vscode.TextEditor, selection: vscode.Range, numberStartCharacters: number, numberEndCharacters: number) {
+    public async deleteCharactersInSelection(
+        currentTextEditor: vscode.TextEditor,
+        selection: vscode.Range,
+        numberStartCharacters: number,
+        numberEndCharacters: number
+    ) {
         const startPointStart = selection.start;
         const startPointEnd = selection.start.translate(0, numberStartCharacters);
         const start = new vscode.Range(startPointStart, startPointEnd);
@@ -311,14 +321,8 @@ export default class Helper {
         const end = new vscode.Range(endPointStart, endPointEnd);
 
         const workSpaceEdit = new vscode.WorkspaceEdit();
-        workSpaceEdit.delete(
-            currentTextEditor.document.uri,
-            start
-        );
-        workSpaceEdit.delete(
-            currentTextEditor.document.uri,
-            end
-        );
+        workSpaceEdit.delete(currentTextEditor.document.uri, start);
+        workSpaceEdit.delete(currentTextEditor.document.uri, end);
         await vscode.workspace.applyEdit(workSpaceEdit);
     }
 
@@ -329,17 +333,22 @@ export default class Helper {
      * @param startCharacters the start Characters that will be checked
      * @param endCharacters  the end Characters that will be checked
      */
-    public async checkStringForMarkersAtBeginningAndEnd(currentTextEditor: vscode.TextEditor, selection: vscode.Range, startCharacters: string, endCharacters: string) {
+    public async checkStringForMarkersAtBeginningAndEnd(
+        currentTextEditor: vscode.TextEditor,
+        selection: vscode.Range,
+        startCharacters: string,
+        endCharacters: string
+    ) {
         const selectedText = currentTextEditor.document.getText(selection);
         if (selectedText === undefined) {
             return false;
         }
-        if ((startCharacters.length + endCharacters.length) > selectedText.length) {
+        if (startCharacters.length + endCharacters.length > selectedText.length) {
             return false; //if the selected text is shorter than the Characters to check against
         }
         const textlength = selectedText.length;
         const startSubstring = selectedText.substr(0, startCharacters.length);
-        const endSubstring = selectedText.substr((textlength - endCharacters.length), textlength);
+        const endSubstring = selectedText.substr(textlength - endCharacters.length, textlength);
         if (startCharacters === startSubstring && endCharacters === endSubstring) {
             return true;
         }
@@ -351,8 +360,14 @@ export default class Helper {
      * @param line optional. Line to work with
      * @param currentTextEditor optional. Editor to work with
      */
-    public async toggleCharactersAtBeginningOfLine(characters: string, line?: number, currentTextEditor?: vscode.TextEditor) {
-        if (!characters) { return; }
+    public async toggleCharactersAtBeginningOfLine(
+        characters: string,
+        line?: number,
+        currentTextEditor?: vscode.TextEditor
+    ) {
+        if (!characters) {
+            return;
+        }
         if (!currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -368,26 +383,26 @@ export default class Helper {
         const startSubstring = lineText.substr(0, characters.length);
         if (startSubstring === characters) {
             const workSpaceEdit = new vscode.WorkspaceEdit();
-            for (line = selection.start.line; line <= selection.end.line; line++){
-                if ((await this.getLineContent(line)).length <= 0) { break;}
-                const characterSelection = new vscode.Selection(new vscode.Position(line, 0),
-                   new vscode.Position(line, characters.length));
-                await workSpaceEdit.delete(
-                    currentTextEditor.document.uri,
-                    characterSelection
+            for (line = selection.start.line; line <= selection.end.line; line++) {
+                if ((await this.getLineContent(line)).length <= 0) {
+                    break;
+                }
+                const characterSelection = new vscode.Selection(
+                    new vscode.Position(line, 0),
+                    new vscode.Position(line, characters.length)
                 );
+                await workSpaceEdit.delete(currentTextEditor.document.uri, characterSelection);
             }
 
             await vscode.workspace.applyEdit(workSpaceEdit);
         } else {
             const workSpaceEdit = new vscode.WorkspaceEdit();
             let i;
-            for (i = selection.start.line; i <= selection.end.line; i++){
-                if ((await this.getLineContent(i)).length <= 0) { break;}
-                workSpaceEdit.insert(
-                    currentTextEditor.document.uri,
-                    new vscode.Position(i,0), characters
-                );
+            for (i = selection.start.line; i <= selection.end.line; i++) {
+                if ((await this.getLineContent(i)).length <= 0) {
+                    break;
+                }
+                workSpaceEdit.insert(currentTextEditor.document.uri, new vscode.Position(i, 0), characters);
             }
             await vscode.workspace.applyEdit(workSpaceEdit);
         }
@@ -397,12 +412,18 @@ export default class Helper {
         const newSelections = [];
         for (let i = 0; i < currentTextEditor.selections.length; i++) {
             newSelections.push(
-                await this.toggleCharactersAtStartAndEnd(startCharacters, endCharacters, currentTextEditor, currentTextEditor.selections[i]));
+                await this.toggleCharactersAtStartAndEnd(
+                    startCharacters,
+                    endCharacters,
+                    currentTextEditor,
+                    currentTextEditor.selections[i]
+                )
+            );
         }
 
         //set cursor to the middle of the selection
         const cursorPosition = currentTextEditor.selection.active;
-        if(cursorPosition.character > 0) {
+        if (cursorPosition.character > 0) {
             const newCursorPosition = cursorPosition.translate(0, -1 * endCharacters.length);
             const newSelection = new vscode.Selection(newCursorPosition, newCursorPosition);
             currentTextEditor.selection = newSelection;
@@ -416,7 +437,12 @@ export default class Helper {
      * @param currentTextEditor optional. The given Text Editor
      * @param selection optional. The selection that will be edited and checked
      */
-    public async toggleCharactersAtStartAndEnd(startCharacters: string, endCharacters: string, currentTextEditor?: vscode.TextEditor, selection?: vscode.Range) {
+    public async toggleCharactersAtStartAndEnd(
+        startCharacters: string,
+        endCharacters: string,
+        currentTextEditor?: vscode.TextEditor,
+        selection?: vscode.Range
+    ) {
         if (!currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -427,58 +453,150 @@ export default class Helper {
             return false;
         }
 
-        if (await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor, selection, startCharacters, endCharacters)) {
+        if (
+            await this.checkStringForMarkersAtBeginningAndEnd(
+                currentTextEditor,
+                selection,
+                startCharacters,
+                endCharacters
+            )
+        ) {
             //If they match immediately
-            await this.deleteCharactersInSelection(currentTextEditor, selection, startCharacters.length, endCharacters.length);
+            await this.deleteCharactersInSelection(
+                currentTextEditor,
+                selection,
+                startCharacters.length,
+                endCharacters.length
+            );
             return selection;
         }
 
         //If they don't match
         let extendedSelection: vscode.Selection;
-        if (selection.start.character >= startCharacters.length) {//Extend selection to the Left if it is possible
+        if (selection.start.character >= startCharacters.length) {
+            //Extend selection to the Left if it is possible
 
-            extendedSelection = new vscode.Selection(selection.start.translate(0, -1 * startCharacters.length), selection.end);
-            if (await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor, extendedSelection, startCharacters, endCharacters)) {
+            extendedSelection = new vscode.Selection(
+                selection.start.translate(0, -1 * startCharacters.length),
+                selection.end
+            );
+            if (
+                await this.checkStringForMarkersAtBeginningAndEnd(
+                    currentTextEditor,
+                    extendedSelection,
+                    startCharacters,
+                    endCharacters
+                )
+            ) {
                 //Extended Selection, if the beginning was not selected
-                await this.deleteCharactersInSelection(currentTextEditor, extendedSelection, startCharacters.length, endCharacters.length);
+                await this.deleteCharactersInSelection(
+                    currentTextEditor,
+                    extendedSelection,
+                    startCharacters.length,
+                    endCharacters.length
+                );
                 return extendedSelection;
             }
         }
-        if (selection.start.character >= (startCharacters.length + endCharacters.length)) {//Extend selection to the Left (stadt + endcharacters) if it is possible
+        if (selection.start.character >= startCharacters.length + endCharacters.length) {
+            //Extend selection to the Left (stadt + endcharacters) if it is possible
             //reason: if there is nothing selected, and the button gets pressed, the cursor will jump at the end after the characters
-            extendedSelection = new vscode.Selection(selection.start.translate(0, (-1 * startCharacters.length + -1 * endCharacters.length)), selection.end);
-            if (await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor, extendedSelection, startCharacters, endCharacters)) {
+            extendedSelection = new vscode.Selection(
+                selection.start.translate(0, -1 * startCharacters.length + -1 * endCharacters.length),
+                selection.end
+            );
+            if (
+                await this.checkStringForMarkersAtBeginningAndEnd(
+                    currentTextEditor,
+                    extendedSelection,
+                    startCharacters,
+                    endCharacters
+                )
+            ) {
                 //Extended Selection, if the beginning was not selected
-                await this.deleteCharactersInSelection(currentTextEditor, extendedSelection, startCharacters.length, endCharacters.length);
+                await this.deleteCharactersInSelection(
+                    currentTextEditor,
+                    extendedSelection,
+                    startCharacters.length,
+                    endCharacters.length
+                );
                 return extendedSelection;
             }
         }
         const lineLength = currentTextEditor.document.lineAt(selection.end.line).range.end.character;
-        if (selection.end.character <= lineLength - endCharacters.length) {//Extend selection to the Right if it is possible
+        if (selection.end.character <= lineLength - endCharacters.length) {
+            //Extend selection to the Right if it is possible
 
             extendedSelection = new vscode.Selection(selection.start, selection.end.translate(0, endCharacters.length));
-            if (await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor, extendedSelection, startCharacters, endCharacters)) {
+            if (
+                await this.checkStringForMarkersAtBeginningAndEnd(
+                    currentTextEditor,
+                    extendedSelection,
+                    startCharacters,
+                    endCharacters
+                )
+            ) {
                 //Extended Selection, if the beginning was not selected
-                await this.deleteCharactersInSelection(currentTextEditor, extendedSelection, startCharacters.length, endCharacters.length);
+                await this.deleteCharactersInSelection(
+                    currentTextEditor,
+                    extendedSelection,
+                    startCharacters.length,
+                    endCharacters.length
+                );
                 return extendedSelection;
             }
         }
-        if (selection.start.character >= startCharacters.length && selection.end.character <= lineLength - endCharacters.length) {//Extend selection in both directions if it is possible
+        if (
+            selection.start.character >= startCharacters.length &&
+            selection.end.character <= lineLength - endCharacters.length
+        ) {
+            //Extend selection in both directions if it is possible
 
-            extendedSelection = new vscode.Selection(selection.start.translate(0, -1 * startCharacters.length), selection.end.translate(0, endCharacters.length));
-            if (await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor, extendedSelection, startCharacters, endCharacters)) {
+            extendedSelection = new vscode.Selection(
+                selection.start.translate(0, -1 * startCharacters.length),
+                selection.end.translate(0, endCharacters.length)
+            );
+            if (
+                await this.checkStringForMarkersAtBeginningAndEnd(
+                    currentTextEditor,
+                    extendedSelection,
+                    startCharacters,
+                    endCharacters
+                )
+            ) {
                 //Extended Selection, if the beginning was not selected
-                await this.deleteCharactersInSelection(currentTextEditor, extendedSelection, startCharacters.length, endCharacters.length);
+                await this.deleteCharactersInSelection(
+                    currentTextEditor,
+                    extendedSelection,
+                    startCharacters.length,
+                    endCharacters.length
+                );
                 return extendedSelection;
             }
         }
-        if (selection.start.character >= startCharacters.length && selection.end.character <= lineLength - endCharacters.length) {//Extend selection to the full length of the line
+        if (
+            selection.start.character >= startCharacters.length &&
+            selection.end.character <= lineLength - endCharacters.length
+        ) {
+            //Extend selection to the full length of the line
             const newStartPositionAtLineStart = new vscode.Position(selection.start.line, 0);
             const newStartPositionAtLineEnd = new vscode.Position(selection.end.line, lineLength);
             extendedSelection = new vscode.Selection(newStartPositionAtLineStart, newStartPositionAtLineEnd);
-            if (await this.checkStringForMarkersAtBeginningAndEnd(currentTextEditor, extendedSelection, startCharacters, endCharacters)) {
+            if (
+                await this.checkStringForMarkersAtBeginningAndEnd(
+                    currentTextEditor,
+                    extendedSelection,
+                    startCharacters,
+                    endCharacters
+                )
+            ) {
                 //Extended Selection, if the beginning was not selected
-                await this.deleteCharactersInSelection(currentTextEditor, extendedSelection, startCharacters.length, endCharacters.length);
+                await this.deleteCharactersInSelection(
+                    currentTextEditor,
+                    extendedSelection,
+                    startCharacters.length,
+                    endCharacters.length
+                );
                 return extendedSelection;
             }
         }
@@ -507,8 +625,7 @@ export default class Helper {
     public getWebviewResourceURI(name, folder, context): vscode.Uri {
         const onDiskPath = vscode.Uri.file(path.join(context.extensionPath, folder, name));
         // And get the special URI to use with the webview
-        const resource = onDiskPath.with({ scheme: 'vscode-resource' });
-
+        const resource = onDiskPath.with({ scheme: "vscode-resource" });
 
         return resource;
     }
@@ -517,8 +634,9 @@ export default class Helper {
      * @returns a UUID.
      */
     public generateUuid() {
-        return 'xxxx-xxxx-xxx-yxxx-xxxxx'.replace(/[xy]/g, function (c) {
-            const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return "xxxx-xxxx-xxx-yxxx-xxxxx".replace(/[xy]/g, function (c) {
+            const r = (Math.random() * 16) | 0,
+                v = c === "x" ? r : (r & 0x3) | 0x8;
             return v.toString(16);
         });
     }
@@ -550,16 +668,17 @@ export default class Helper {
         }
     }
 
-
-
     /**
      * Checks if a selection starts with a given string
      * @param testText text to check if the selection begins with
      * @param currentTextEditor optional. The given text editor
      * @param selection optional. A custom selection
      */
-    public async checkIfSelectionStartsWith(testText: string, currentTextEditor?: vscode.TextEditor, selection?: vscode.Selection) {
-
+    public async checkIfSelectionStartsWith(
+        testText: string,
+        currentTextEditor?: vscode.TextEditor,
+        selection?: vscode.Selection
+    ) {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -571,9 +690,9 @@ export default class Helper {
         }
         const selectedText = currentTextEditor.document.getText(selection);
         if (selectedText.startsWith(testText)) {
-            return (true);
+            return true;
         } else {
-            return (false);
+            return false;
         }
     }
 
@@ -583,8 +702,11 @@ export default class Helper {
      * @param currentTextEditor optional. The given text editor
      * @param selection optional. A custom selection
      */
-    public async checkIfSelectionEndsWith(testText: string, currentTextEditor?: vscode.TextEditor, selection?: vscode.Selection) {
-
+    public async checkIfSelectionEndsWith(
+        testText: string,
+        currentTextEditor?: vscode.TextEditor,
+        selection?: vscode.Selection
+    ) {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -612,7 +734,12 @@ export default class Helper {
      * @param currentTextEditor optional. The given text editor
      * @param selection optional. A custom selection
      */
-    public async iterateUpwardsToCheckForString(testString: string, antiString: string, currentTextEditor?: vscode.TextEditor, selection?: vscode.Selection) {
+    public async iterateUpwardsToCheckForString(
+        testString: string,
+        antiString: string,
+        currentTextEditor?: vscode.TextEditor,
+        selection?: vscode.Selection
+    ) {
         if (!currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -621,14 +748,25 @@ export default class Helper {
         }
         let selectionStartLine = selection.start.line;
         let selectionStartsWith = await this.checkIfSelectionStartsWith(testString, currentTextEditor, selection);
-        let selectionStartsWithAntiString = await this.checkIfSelectionStartsWith(antiString, currentTextEditor, selection); //Check if the current line starts with the antistring
+        let selectionStartsWithAntiString = await this.checkIfSelectionStartsWith(
+            antiString,
+            currentTextEditor,
+            selection
+        ); //Check if the current line starts with the antistring
         if (selectionStartsWithAntiString) {
             return false;
         }
         let newEndPositionStart = new vscode.Position(selection.start.line, 0);
-        let newEndPositionEnd = new vscode.Position(selection.start.line, currentTextEditor.document.lineAt(selection.start.line).range.end.character);
+        let newEndPositionEnd = new vscode.Position(
+            selection.start.line,
+            currentTextEditor.document.lineAt(selection.start.line).range.end.character
+        );
         let newEndSelectionAtFirstLine = new vscode.Selection(newEndPositionStart, newEndPositionEnd);
-        selectionStartsWithAntiString = await this.checkIfSelectionEndsWith(antiString, currentTextEditor, newEndSelectionAtFirstLine); //Check if the current line ENDS with the antistring
+        selectionStartsWithAntiString = await this.checkIfSelectionEndsWith(
+            antiString,
+            currentTextEditor,
+            newEndSelectionAtFirstLine
+        ); //Check if the current line ENDS with the antistring
         if (selectionStartsWithAntiString) {
             return false;
         }
@@ -640,14 +778,25 @@ export default class Helper {
             const newSelection = new vscode.Selection(newStartPosition, selection.end);
             selectionStartLine = selection.start.line;
             selectionStartsWith = await this.checkIfSelectionStartsWith(testString, currentTextEditor, newSelection);
-            selectionStartsWithAntiString = await this.checkIfSelectionStartsWith(antiString, currentTextEditor, newSelection); //Checks if this line starts with the antistring
+            selectionStartsWithAntiString = await this.checkIfSelectionStartsWith(
+                antiString,
+                currentTextEditor,
+                newSelection
+            ); //Checks if this line starts with the antistring
             if (selectionStartsWithAntiString) {
                 return false;
             }
             newEndPositionStart = new vscode.Position(newSelection.start.line, 0);
-            newEndPositionEnd = new vscode.Position(newSelection.start.line, currentTextEditor.document.lineAt(newSelection.start.line).range.end.character);
+            newEndPositionEnd = new vscode.Position(
+                newSelection.start.line,
+                currentTextEditor.document.lineAt(newSelection.start.line).range.end.character
+            );
             newEndSelectionAtFirstLine = new vscode.Selection(newEndPositionStart, newEndPositionEnd);
-            selectionStartsWithAntiString = await this.checkIfSelectionEndsWith(antiString, currentTextEditor, newEndSelectionAtFirstLine); //Check if this line ends with the antistring
+            selectionStartsWithAntiString = await this.checkIfSelectionEndsWith(
+                antiString,
+                currentTextEditor,
+                newEndSelectionAtFirstLine
+            ); //Check if this line ends with the antistring
             if (selectionStartsWithAntiString) {
                 return false;
             }
@@ -665,7 +814,11 @@ export default class Helper {
      * @param selection optional. A custom selection
      * @returns false if nothing is found, otherwise a new selection ending with the line
      */
-    public async iterateDownwardsToCheckForString(testString: string, currentTextEditor?: vscode.TextEditor, selection?: vscode.Selection) {
+    public async iterateDownwardsToCheckForString(
+        testString: string,
+        currentTextEditor?: vscode.TextEditor,
+        selection?: vscode.Selection
+    ) {
         if (!currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -699,7 +852,7 @@ export default class Helper {
     public mkDir(path: string) {
         fs.mkdir(path, (err) => {
             if (err) {
-                vscode.window.showErrorMessage(this._language.get('createFolderError'));
+                vscode.window.showErrorMessage(this._language.get("createFolderError"));
                 console.log(err);
             }
             return path;
@@ -711,7 +864,7 @@ export default class Helper {
      * @returns promise that resolves to true if path exist, otherwise false.
      */
     public folderExists(path: string) {
-            return fs.existsSync(path);
+        return fs.existsSync(path);
     }
 
     /**
@@ -731,7 +884,7 @@ export default class Helper {
     public parseCSVtoJSON(csvData: string, delimiter: string): string | false {
         try {
             const result = Papa.parse(csvData, {
-                delimiter: delimiter,
+                delimiter: delimiter
             });
 
             return result;
@@ -747,7 +900,11 @@ export default class Helper {
      * @param selection otional. The selection used
      * @param currentTextEditor optional. The editor used
      */
-    public async replaceSelection(replacetext: string, selection?: vscode.Selection, currentTextEditor?: vscode.TextEditor) {
+    public async replaceSelection(
+        replacetext: string,
+        selection?: vscode.Selection,
+        currentTextEditor?: vscode.TextEditor
+    ) {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -755,11 +912,7 @@ export default class Helper {
             selection = this.getWordsSelection(currentTextEditor);
         }
         const workSpaceEdit = new vscode.WorkspaceEdit();
-        workSpaceEdit.replace(
-            currentTextEditor.document.uri,
-            selection,
-            replacetext
-        );
+        workSpaceEdit.replace(currentTextEditor.document.uri, selection, replacetext);
         await vscode.workspace.applyEdit(workSpaceEdit);
     }
 
@@ -790,7 +943,7 @@ export default class Helper {
      * @returns Folder/ Directory or error
      */
     public async getFolderFromFilePath(filepath: string) {
-        return filepath = await path.dirname(filepath);
+        return (filepath = await path.dirname(filepath));
     }
 
     /**
@@ -799,21 +952,24 @@ export default class Helper {
      */
     public async addWorkspaceFolder(path: string) {
         const uri = vscode.Uri.file(path);
-        await vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, null, { uri: uri });
+        await vscode.workspace.updateWorkspaceFolders(
+            vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0,
+            null,
+            { uri: uri }
+        );
     }
 
-    public normalizePath(path2normalize: string){
+    public normalizePath(path2normalize: string) {
         return path.normalize(path2normalize);
     }
 
     // TODO: replace any with a proper type
     public FormatMatucErrorMessage(matucError: any) {
-        let errorMessage = this._language.get('matucErrorDetails');
-        errorMessage = errorMessage.replace("$message$", matucError['message']);
-        errorMessage = errorMessage.replace("$path$", path.basename(matucError['path']));
-        errorMessage = errorMessage.replace("$line$", matucError['line']);
-        errorMessage = errorMessage.replace("$position$", matucError['position']
-        );
+        let errorMessage = this._language.get("matucErrorDetails");
+        errorMessage = errorMessage.replace("$message$", matucError["message"]);
+        errorMessage = errorMessage.replace("$path$", path.basename(matucError["path"]));
+        errorMessage = errorMessage.replace("$line$", matucError["line"]);
+        errorMessage = errorMessage.replace("$position$", matucError["position"]);
         return errorMessage;
     }
 
@@ -823,32 +979,33 @@ export default class Helper {
      */
     // TODO: replace any with a proper type
     public async ShowMkErrorMessage(mkResult: any) {
-        Object.keys(mkResult).forEach(key => {
-            const location = key.split(path.sep).reverse()[0];  // file name or directory name
-            let errorMessage = "";  // text of the errorMessageq
+        Object.keys(mkResult).forEach((key) => {
+            const location = key.split(path.sep).reverse()[0]; // file name or directory name
+            let errorMessage = ""; // text of the errorMessageq
             const mkMessageContent = mkResult[key][0];
-            if(typeof(mkMessageContent) === 'string'){  // mkResult can be a string:
+            if (typeof mkMessageContent === "string") {
+                // mkResult can be a string:
                 errorMessage = `error in ${location} more details ${mkMessageContent}`;
             } else {
                 // mk is an object and looks like the following example
                 //  {line number: " Detailed description of error"}
                 // Messagebox has a button that makes the cursor jump to the issue
-                Object.keys(mkMessageContent).forEach(key2 => {
+                Object.keys(mkMessageContent).forEach((key2) => {
                     // TODO: replace string
                     errorMessage = `Fehler in ${location}: ${key2} : ${mkMessageContent[key2]}`;
                     const lineNum = key2.split(",")[0];
                     vscode.window
-                    // TODO: replace string
-                    .showInformationMessage(errorMessage,'Springe zum Fehler' )
-                    .then(selection => {
-                    if (selection) {
-                        const editor = vscode.window.activeTextEditor;
-                        const range = editor.document.lineAt(parseInt(lineNum)-1).range;
-                        editor.selection =  new vscode.Selection(range.start, range.end);
-                        editor.revealRange(range);               
-                    }
+                        // TODO: replace string
+                        .showInformationMessage(errorMessage, "Springe zum Fehler")
+                        .then((selection) => {
+                            if (selection) {
+                                const editor = vscode.window.activeTextEditor;
+                                const range = editor.document.lineAt(parseInt(lineNum) - 1).range;
+                                editor.selection = new vscode.Selection(range.start, range.end);
+                                editor.revealRange(range);
+                            }
+                        });
                 });
-            });
             }
         });
     }

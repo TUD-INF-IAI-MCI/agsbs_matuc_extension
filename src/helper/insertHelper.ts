@@ -2,8 +2,8 @@
  * @author  Lucas Vogel
  */
 
-import * as vscode from 'vscode';
-import Helper from './helper';
+import * as vscode from "vscode";
+import Helper from "./helper";
 
 /**
  * Helper for the insert-functions.
@@ -11,14 +11,14 @@ import Helper from './helper';
 export default class InsertHelper {
     private _helper: Helper;
     constructor() {
-        this._helper = new Helper;
+        this._helper = new Helper();
     }
 
     /**
      * Returns the page identifier
      */
     public getNewPageIdentifier() {
-        return ("|| - Seite ");
+        return "|| - Seite ";
     }
 
     /**
@@ -38,9 +38,11 @@ export default class InsertHelper {
             const newpageString = this.getNewPageIdentifier();
             const newSelection = await this.iterateDownwardsToCheckForStringStart(newpageString);
             if (newSelection !== false) {
-                if (selection.end.line > 0) { //if there is room above the line
+                if (selection.end.line > 0) {
+                    //if there is room above the line
                     const previousLineNumber = newSelection.end.line - 1;
-                    const previousLineLength = currentTextEditor.document.lineAt(previousLineNumber).range.end.character;
+                    const previousLineLength =
+                        currentTextEditor.document.lineAt(previousLineNumber).range.end.character;
                     const newEndPoint = new vscode.Position(previousLineNumber, previousLineLength);
                     resolve(newEndPoint);
                 } else {
@@ -50,7 +52,7 @@ export default class InsertHelper {
                 resolve(false);
             }
         });
-    }
+    };
 
     /**
      * Iterates downwards starting at the current selection and checks if a line starts with a given string
@@ -58,7 +60,11 @@ export default class InsertHelper {
      * @param currentTextEditor optional. The Editor to work with
      * @param selection optional. The Selection to work with
      */
-    public async iterateDownwardsToCheckForStringStart(testString: string, currentTextEditor?: vscode.TextEditor, selection?: vscode.Selection) {
+    public async iterateDownwardsToCheckForStringStart(
+        testString: string,
+        currentTextEditor?: vscode.TextEditor,
+        selection?: vscode.Selection
+    ) {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
         }
@@ -66,7 +72,11 @@ export default class InsertHelper {
             selection = this._helper.getWordsSelection(currentTextEditor);
         }
         let selectionStartLine = selection.end.line;
-        let selectionStartsWith = await this._helper.checkIfSelectionStartsWith(testString, currentTextEditor, selection);
+        let selectionStartsWith = await this._helper.checkIfSelectionStartsWith(
+            testString,
+            currentTextEditor,
+            selection
+        );
         if (selectionStartsWith) {
             return selection;
         }
@@ -77,7 +87,11 @@ export default class InsertHelper {
             const newEndPosition = new vscode.Position(i, lineLength);
             const newSelection = new vscode.Selection(newStartPosition, newEndPosition);
             selectionStartLine = selection.start.line;
-            selectionStartsWith = await this._helper.checkIfSelectionStartsWith(testString, currentTextEditor, newSelection);
+            selectionStartsWith = await this._helper.checkIfSelectionStartsWith(
+                testString,
+                currentTextEditor,
+                newSelection
+            );
             if (selectionStartsWith) {
                 return newSelection;
             }
@@ -102,4 +116,3 @@ export default class InsertHelper {
         return false;
     }
 }
-

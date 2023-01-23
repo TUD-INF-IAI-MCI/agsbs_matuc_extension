@@ -2,11 +2,11 @@
  * @author  Lucas Vogel
  */
 
-import * as vscode from 'vscode';
-import Helper from './helper';
-import Language from '../languages';
-import * as os from 'os';
-import * as path from 'path';
+import * as vscode from "vscode";
+import Helper from "./helper";
+import Language from "../languages";
+import * as os from "os";
+import * as path from "path";
 
 /**
  * A Helper to get and set the Settings of this Extension.
@@ -18,9 +18,8 @@ export default class SettingsHelper {
     private _language: Language;
 
     constructor() {
-        this._helper = new Helper;
-        this._language = new Language;
-
+        this._helper = new Helper();
+        this._language = new Language();
     }
 
     /**
@@ -40,8 +39,8 @@ export default class SettingsHelper {
      * @returns value of the Setting.
      */
     public async get(settingIdentifier: string): Promise<string> {
-        const result = await vscode.workspace.getConfiguration('agsbs').get(settingIdentifier) as string;
-        return (result);
+        const result = (await vscode.workspace.getConfiguration("agsbs").get(settingIdentifier)) as string;
+        return result;
     }
 
     /**
@@ -51,7 +50,7 @@ export default class SettingsHelper {
      * @param value new value of the Setting
      */
     public async update(settingsIdentifier: string, value: any) {
-        const agsbs = await vscode.workspace.getConfiguration('agsbs');
+        const agsbs = await vscode.workspace.getConfiguration("agsbs");
         agsbs.update(settingsIdentifier, value, true);
     }
 
@@ -69,7 +68,7 @@ export default class SettingsHelper {
         const homeDocumentsEnglishExists = await this._helper.folderExists(homeDocumentsEnglish);
         if (homeDocumentsEnglishExists) {
             agsbsFolderPath = homeDocumentsEnglish + path.sep + agsbsFolderName;
-            if (await this._helper.folderExists(agsbsFolderPath) === false) {
+            if ((await this._helper.folderExists(agsbsFolderPath)) === false) {
                 this._helper.mkDir(agsbsFolderPath);
             }
             this.update(gitLocalPathIdentifier, agsbsFolderPath);
@@ -79,7 +78,7 @@ export default class SettingsHelper {
         const homeDocumentsGermanFolderExists = await this._helper.folderExists(homeDocumentsGermanFolder);
         if (homeDocumentsGermanFolderExists) {
             agsbsFolderPath = homeDocumentsGermanFolder + path.sep + agsbsFolderName;
-            if (await this._helper.folderExists(agsbsFolderPath) === false) {
+            if ((await this._helper.folderExists(agsbsFolderPath)) === false) {
                 this._helper.mkDir(agsbsFolderPath);
             }
             this.update(gitLocalPathIdentifier, agsbsFolderPath);
@@ -89,7 +88,7 @@ export default class SettingsHelper {
         const homeDocumentsLanguageFolderExists = await this._helper.folderExists(homeDocumentsLanguageFolder);
         if (homeDocumentsLanguageFolderExists) {
             agsbsFolderPath = homeDocumentsLanguageFolder + path.sep + agsbsFolderName;
-            if (await this._helper.folderExists(agsbsFolderPath) === false) {
+            if ((await this._helper.folderExists(agsbsFolderPath)) === false) {
                 this._helper.mkDir(agsbsFolderPath);
             }
             this.update(gitLocalPathIdentifier, agsbsFolderPath);
@@ -98,13 +97,10 @@ export default class SettingsHelper {
         const homeFolder = homedir + path.sep;
 
         agsbsFolderPath = homeFolder + path.sep + agsbsFolderName;
-        if (await this._helper.folderExists(agsbsFolderPath) === false) {
+        if ((await this._helper.folderExists(agsbsFolderPath)) === false) {
             this._helper.mkDir(agsbsFolderPath);
         }
         this.update(gitLocalPathIdentifier, agsbsFolderPath);
         return;
-
-
     }
-
 }

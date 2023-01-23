@@ -1,10 +1,10 @@
 /**
  * @author  Lucas Vogel
  */
-import * as vscode from 'vscode';
-import Helper from './helper/helper';
-import EditorFunctions from './editorFunctions';
-import ProjectToolsFunctions from './projectToolsFunctions';
+import * as vscode from "vscode";
+import Helper from "./helper/helper";
+import EditorFunctions from "./editorFunctions";
+import ProjectToolsFunctions from "./projectToolsFunctions";
 
 /**
  * Main class of the taskbar
@@ -22,7 +22,7 @@ export default class Taskbar {
         this._context = context;
         this._taskbarIsVisible = false;
         this._sidebarCallback = sidebarCallback;
-        this._helper = new Helper;
+        this._helper = new Helper();
         this._editorFunctions = new EditorFunctions(this, this._sidebarCallback, context);
         this._projectToolsFunctions = new ProjectToolsFunctions(this, this._sidebarCallback);
         this._panel = null;
@@ -54,38 +54,38 @@ export default class Taskbar {
      */
     private _messageFromWebviewHandler = (message) => {
         this._callbacks[message.text]();
-    }
+    };
 
     /**
      * Opens a Taskbar Webview
      * @return A WebviewPanel from Type vscode.WebviewPanel
      */
     public show() {
-            this._taskbarIsVisible = true;
-            const panel = vscode.window.createWebviewPanel(
-                'agsbstaskbar', // Identifies the type of the webview. Used internally
-                "AGSBS Toolbar", // Title of the panel displayed to the user
-                //vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-                {
-                    viewColumn: vscode.ViewColumn.Three,
-                    preserveFocus: true
-                },
-                {
-                    enableScripts: true
-                } // Webview options
-            );
-            this._panel = panel;
-            panel.webview.html = this._getBaseHTML();
-            panel.onDidDispose(() => {
-                this._taskbarIsVisible = false; //When panel is closed
-                this._panel = null;
-            }, null);
-            panel.webview.onDidReceiveMessage(message => {
-                this._messageFromWebviewHandler(message);
-            }, undefined);
-            this._editorFunctions.setup();
-            this._projectToolsFunctions.setup();
-            return panel; //return panel;
+        this._taskbarIsVisible = true;
+        const panel = vscode.window.createWebviewPanel(
+            "agsbstaskbar", // Identifies the type of the webview. Used internally
+            "AGSBS Toolbar", // Title of the panel displayed to the user
+            //vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+            {
+                viewColumn: vscode.ViewColumn.Three,
+                preserveFocus: true
+            },
+            {
+                enableScripts: true
+            } // Webview options
+        );
+        this._panel = panel;
+        panel.webview.html = this._getBaseHTML();
+        panel.onDidDispose(() => {
+            this._taskbarIsVisible = false; //When panel is closed
+            this._panel = null;
+        }, null);
+        panel.webview.onDidReceiveMessage((message) => {
+            this._messageFromWebviewHandler(message);
+        }, undefined);
+        this._editorFunctions.setup();
+        this._projectToolsFunctions.setup();
+        return panel; //return panel;
     }
 
     /**
@@ -93,9 +93,9 @@ export default class Taskbar {
      * @param panel The WebviewPanel that should be closed, from fype vscode.WebviewPanel
      */
     public async hide(panel: vscode.WebviewPanel) {
-            await panel.dispose();
-            this._taskbarIsVisible = false;
-            this._panel = null;
+        await panel.dispose();
+        this._taskbarIsVisible = false;
+        this._panel = null;
     }
 
     /** Adds a Button to the Taskbar
@@ -106,7 +106,6 @@ export default class Taskbar {
      * @param commandIdentifier optional. The identifier used in the package.json command and key binding.
      */
     public addButton = (iconName: string, name: string, callback: any, section: string, commandIdentifier?: string) => {
-
         const id = this._helper.generateUuid();
         let newSection = "";
         if (section !== undefined) {
@@ -137,12 +136,8 @@ export default class Taskbar {
                 //because there is no check if a command is already registered, this is the workarround
                 console.log("No need to re-register editor command.");
             }
-
         }
-
-
-
-    }
+    };
 
     /** Adds a Button to the Taskbar Project Tools
      * @param iconName the Name of the Icon in the Icon Folder, with file extension (so for example "icon.svg")
@@ -150,7 +145,13 @@ export default class Taskbar {
      * @param section optional section the button is displayed in
      * @param commandIdentifier optional. The identifier used in the package.json command and key binding.
      */
-    public addProjectTool = (iconName: string, name: string, callback: any, section: string, commandIdentifier?: string) => {
+    public addProjectTool = (
+        iconName: string,
+        name: string,
+        callback: any,
+        section: string,
+        commandIdentifier?: string
+    ) => {
         const id = this._helper.generateUuid();
         let newSection = "";
         if (section !== undefined) {
@@ -181,8 +182,7 @@ export default class Taskbar {
                 console.log("No need to re-register project tool command.");
             }
         }
-
-    }
+    };
 
     /** This adds HTML to the taskbars Webview, at the given point.
      * This point is predefined in the _getBaseHTML-Function and _generateSectionHTML, for example SECTION-*, HEAD_END, BODY_START or BODY_END
@@ -195,7 +195,7 @@ export default class Taskbar {
         html = html + marker;
         const newHTML = oldHTML.replace(marker, html);
         this._panel.webview.html = newHTML;
-    }
+    };
 
     /** Generate a HTML snippet to insert into the Webview for a given Name
      * @param name Name of the section
@@ -203,7 +203,7 @@ export default class Taskbar {
      */
     private _generateSectionHTML = (name: string) => {
         return `<fieldset name="${name}"><legend>${name}</legend><!--SECTION-${name}--></fieldset>`;
-    }
+    };
 
     /** Checks if a section is in the Webview HTML
      * @param section name of the sectiton
@@ -223,7 +223,6 @@ export default class Taskbar {
      * Returns the base Frame HTML for the Webview
      */
     private _getBaseHTML(): string {
-
         // var fontAwesomeFont = this._helper.getWebviewResourceURI("fontawesome-webfont.woff2","style/fonts",this._context);
         // var fontAwesome = this._helper.getWebviewResourceURI("fontawesome.css","style",this._context);
         //If font Awesome is needed, it can be imported here.
