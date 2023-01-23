@@ -23,7 +23,7 @@ export default class ProjectHelper {
      * @returns object with all folders
      */
     public async getAllWorkspaceFolders() {
-        var folders = await vscode.workspace.workspaceFolders;
+        const folders = await vscode.workspace.workspaceFolders;
         return folders;
     }
 
@@ -33,20 +33,20 @@ export default class ProjectHelper {
      * @returns HTML-String of <option> Elements of all Workspace Folders
      */
     public async getAllWorkspaceFoldersAsHTMLWithSpeciallyEscapedJSON() {
-        var folders = await vscode.workspace.workspaceFolders;
-        var html = "";
+        const folders = await vscode.workspace.workspaceFolders;
+        let html = "";
         if (folders === null || folders === undefined || folders.length === 0) {
             console.log("error no folders open");
             return html; //returns empty string
         } else {
             console.log(folders);
             folders.forEach(folder => {
-                var escapedName = folder["name"].replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;");//For better reading 
-                var thisValues = {};
+                const escapedName = folder["name"].replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;");//For better reading 
+                const thisValues = {};
                 thisValues["uri"] = folder.uri.fsPath;
                 thisValues["scheme"] = folder.uri.scheme;
                 thisValues["index"] = folder.index;
-                var escapedValue = JSON.stringify(thisValues);
+                let escapedValue = JSON.stringify(thisValues);
                 escapedValue = escapedValue.replace("'", "\\\\`");
                 //Escape ' as \\` because there is no clean way to escape a json string :(
                 html += `<option value='${escapedValue}'>${escapedName}</option>`;
@@ -62,9 +62,9 @@ export default class ProjectHelper {
      * @returns JSON-Object
      */
     public convertSpeciallyEscapedJSONToObject(json: string) {
-        var unescapedString = json.replace("\\\\`", "'");
+        const unescapedString = json.replace("\\\\`", "'");
         try {
-            var result = JSON.parse(unescapedString);
+            const result = JSON.parse(unescapedString);
             return result;
         } catch (e) {
             console.log(e);
@@ -80,21 +80,21 @@ export default class ProjectHelper {
      * @returns the HTML-Form
      */
     public getEditProjectHTMLForm(config: any, folder: string) {
-        var appendixPrefix = config.AppendixPrefix === 1 ? true : false;
-        var author = config.Editor === "Unknown" ? "" : config.Editor;
-        var sourceAuthor = config.SourceAuthor === "Unknown" ? "" : config.SourceAuthor;
-        var institution = config.Institution === "Unknown" ? "" : config.Institution;
-        var title = config.LectureTitle === "Unknown" ? "" : config.LectureTitle;
-        var language = config.Language === "Unknown" ? "" : config.Language;
-        var languageEN = language === "en" ? "selected='true'" : "";
-        var languageDE = language === "de" ? "selected='true'" : "";
-        var languageFR = language === "fr" ? "selected='true'" : "";
-        var tocDepth = config.TocDepth;
-        var source = config.Source === "Unknown" ? "" : config.Source;
-        var semesterOfEdit = config.SemesterOfEdit === "Unknown" ? "" : config.SemesterOfEdit;
-        var workingGroup = config.WorkingGroup === "Unknown" ? "" : config.WorkingGroup;
-        var escapedPath = folder.replace("'", "\\\\`");
-        var form: string = `
+        const appendixPrefix = config.AppendixPrefix === 1 ? true : false;
+        const author = config.Editor === "Unknown" ? "" : config.Editor;
+        const sourceAuthor = config.SourceAuthor === "Unknown" ? "" : config.SourceAuthor;
+        const institution = config.Institution === "Unknown" ? "" : config.Institution;
+        const title = config.LectureTitle === "Unknown" ? "" : config.LectureTitle;
+        const language = config.Language === "Unknown" ? "" : config.Language;
+        const languageEN = language === "en" ? "selected='true'" : "";
+        const languageDE = language === "de" ? "selected='true'" : "";
+        const languageFR = language === "fr" ? "selected='true'" : "";
+        const tocDepth = config.TocDepth;
+        const source = config.Source === "Unknown" ? "" : config.Source;
+        const semesterOfEdit = config.SemesterOfEdit === "Unknown" ? "" : config.SemesterOfEdit;
+        const workingGroup = config.WorkingGroup === "Unknown" ? "" : config.WorkingGroup;
+        const escapedPath = folder.replace("'", "\\\\`");
+        const form = `
         <input type="checkbox" name="preface" id="preface" checked="${appendixPrefix}">
         <label for="preface">${this._language.get("preface")}</label><br role="none">
 
@@ -148,7 +148,7 @@ export default class ProjectHelper {
      * @returns Form HTML
      */
     public getConversionProfileHTML() {
-        var form = `
+        const form = `
             <div class="spacing" role="none"></div>
             <label for="conversionProfile">${this._language.get("conversionProfile")}</label><br role="none">
             <select name="conversionProfile" id="conversionProfile" required="true">

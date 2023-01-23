@@ -572,7 +572,7 @@ export default class EditorFunctionSnippets {
             async function loadIntoForm(json){
                 warn("loading into form");
                 var headerCheckbox =  document.getElementById(tableHeadCheckboxText);
-                if(json.hasHeader === true){
+                if(json.hasHeader){
                    headerCheckbox.checked = true;
                 } else {
                     headerCheckbox.checked = false;

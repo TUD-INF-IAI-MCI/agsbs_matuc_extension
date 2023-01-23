@@ -28,8 +28,8 @@ export default class ImageHelper {
      * @returns String of the picture folder
      */
     public async getPictureFolderName() {
-        var folderName: any = await this._settings.get("pictureFolderName");
-        var folderString: string = folderName;
+        const folderName: any = await this._settings.get("pictureFolderName");
+        let folderString: string = folderName;
         if (folderString === "") {
             folderString = "pictures";
         }
@@ -43,10 +43,10 @@ export default class ImageHelper {
      * @param content content to add
      */
     public addImageDescriptionToFile(fileBasePath: string, fileName: string, content: string) {
-        var thisRelPath = path.join(fileBasePath, fileName);
-        var thisPath = path.resolve(thisRelPath);//For cross Platform compatibility, makes absolute path from possibly relative one
+        const thisRelPath = path.join(fileBasePath, fileName);
+        const thisPath = path.resolve(thisRelPath);//For cross Platform compatibility, makes absolute path from possibly relative one
         content = "\n" + content; //Adding a Line Break at the beginning
-        var fd = fs.openSync(thisPath, 'a+'); //Open in "add"-Mode
+        const fd = fs.openSync(thisPath, 'a+'); //Open in "add"-Mode
         fs.write(fd, content, (error) => {
             if (error) {
                 vscode.window.showErrorMessage(this._language.get('somethingWentWrongDuringInsertOfGraphic'));
@@ -64,7 +64,7 @@ export default class ImageHelper {
      * @returns the string of the file extension
      */
     public getFileExtension(filename: string) {
-        var parts = filename.split('.');
+        const parts = filename.split('.');
         return parts[parts.length - 1];
     }
 
@@ -75,9 +75,9 @@ export default class ImageHelper {
      * @returns true if the file is an image, otherwise false
      */
     public isImage(filename: string) {
-        var ext = this.getFileExtension(filename);
+        const ext = this.getFileExtension(filename);
         //filename without e
-        var fname = filename.split(".")[0];
+        const fname = filename.split(".")[0];
         // avoid that formulas eqnXXX.svg are listed
         if (!fname.startsWith('eqn')) {
             switch (ext.toLowerCase()) {
@@ -103,15 +103,15 @@ export default class ImageHelper {
      */
     public async getAllPicturesInFolder(pathToFolder: any, folder: string) {
         return new Promise(async (resolve, reject) => {
-            var folderPath = path.join(pathToFolder.toString(), folder);
-            var allFilesArray = [];
+            const folderPath = path.join(pathToFolder.toString(), folder);
+            const allFilesArray = [];
             if (fs.existsSync(folderPath)) {
                 fs.readdir(folderPath, (err, files) => {
                     files.forEach(file => {
-                        if (this.isImage(file) === true) {
-                            var completePath = path.join(folderPath, file);
-                            var relativePath = "." + path.sep + folder + path.sep + file; //generate the relative file path, path.sep gives the OS folder seperator
-                            var newFileObject = { fileName: file, folderPath: folderPath, completePath: completePath, relativePath: relativePath, basePath: pathToFolder };
+                        if (this.isImage(file)) {
+                            const completePath = path.join(folderPath, file);
+                            const relativePath = "." + path.sep + folder + path.sep + file; //generate the relative file path, path.sep gives the OS folder seperator
+                            const newFileObject = { fileName: file, folderPath: folderPath, completePath: completePath, relativePath: relativePath, basePath: pathToFolder };
                             allFilesArray.push(newFileObject);
                         }
                     });
@@ -137,16 +137,16 @@ export default class ImageHelper {
      * @returns an HTML-String of the file options, like <option value='FILEPATH'>FILENAME</option>...
      */
     public generateSelectImagesOptionsHTML(files: any) {
-        var returnString: string = '';
+        let returnString = '';
         files.forEach(fileObject => {
-            var markdownReadyRelativePath = fileObject.relativePath.replace(" ", "%20"); //Markdown cannot handle Spaces
+            const markdownReadyRelativePath = fileObject.relativePath.replace(" ", "%20"); //Markdown cannot handle Spaces
             //var markdownReadyFileName = fileObject.fileName.replace(" ", "%20");
             fileObject.markdownReadyRelativePath = markdownReadyRelativePath;
             const onDiskPath = vscode.Uri.file(fileObject.completePath);
             // And get the special URI to use with the webview
             fileObject.vscodePath = onDiskPath.with({ scheme: 'vscode-resource' }).path; // For Preview
-            var json = JSON.stringify(fileObject);
-            var myEscapedJSONString = json.replace(/\\n/g, "\\n")
+            const json = JSON.stringify(fileObject);
+            const myEscapedJSONString = json.replace(/\\n/g, "\\n")
                 .replace(/\\'/g, "\\'")
                 .replace(/\\"/g, '\\"')
                 .replace(/\\&/g, "\\&")

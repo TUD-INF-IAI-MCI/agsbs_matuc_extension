@@ -130,7 +130,7 @@ export default class ProjectToolsFunctionSnippets {
             function tableOfContentsCheckboxChange () {
                 var tableOfContentsCheckbox = document.getElementById("tableOfContents");
                 var tocDepth = document.getElementById("tocDepth");
-                if(tableOfContentsCheckbox.checked === true){
+                if(tableOfContentsCheckbox.checked){
                     tocDepth.disabled = false;
                 } else {
                     tocDepth.disabled = true;

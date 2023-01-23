@@ -11,7 +11,7 @@ import MatucCommands from './matucCommands';
  * The main class of the sidebar.
  */
 export default class Sidebar {
-    private _sidebarIsVisible: Boolean;
+    private _sidebarIsVisible: boolean;
     private _language: Language;
     private _context: vscode.ExtensionContext;
     private _helper: Helper;
@@ -31,7 +31,7 @@ export default class Sidebar {
         this._language = new Language;
         this._wasOpenendBefore = false;
 
-        let disposable = vscode.commands.registerCommand("agsbs.focusSidebar", () => {
+        const disposable = vscode.commands.registerCommand("agsbs.focusSidebar", () => {
             this.focus();
         });
     }
@@ -56,10 +56,10 @@ export default class Sidebar {
      * Opens a Sidebar Webview
      * @return A promise that resolves to a WebviewPanel from Type vscode.WebviewPanel
      */
-    public async show() {
+    public async show(): Promise<vscode.WebviewPanel> {
         return new Promise(async (resolve, reject) => {
             this._sidebarIsVisible = true;
-            var panel = vscode.window.createWebviewPanel(
+            const panel = vscode.window.createWebviewPanel(
                 'agsbssidebar', // Identifies the type of the webview. Used internally
                 "AGSBS Sidebar", // Title of the panel displayed to the user
                 //vscode.ViewColumn.X, // Editor column to show the new webview panel in.
@@ -134,12 +134,12 @@ export default class Sidebar {
         if (headline !== undefined && headline !== "") {
             this._addToHTML("HEADLINE", `<h2>${headline}</h2>`);
         }
-        var closeButtonRessource = this._helper.getWebviewResourceIconURI(this._panel, "close.svg", this._context);
+        const closeButtonRessource = this._helper.getWebviewResourceIconURI(this._panel, "close.svg", this._context);
         this._addToHTML("CANCEL", `<br><button id='cancel' value="cancel" onclick='sendMessageCancel()' title='cancel'><img src='${closeButtonRessource}'></button>`);
         if (buttonText !== undefined) {
             this._addToHTML("BUTTON", `<input type="submit" value="${buttonText}">`);
         } else {
-            var standardButtonText = this._language.get("ok");
+            const standardButtonText = this._language.get("ok");
             this._addToHTML("BUTTON", `<input type="submit" value="${standardButtonText}">`);
         }
         if (css !== undefined) {
@@ -158,10 +158,10 @@ export default class Sidebar {
      * @param html html to insert
      */
     private _addToHTML = (section: string, html: string) => {
-        var marker = "<!--" + section + "-->";
-        var oldHTML = this._panel.webview.html;
+        const marker = "<!--" + section + "-->";
+        const oldHTML = this._panel.webview.html;
         html = html + marker;
-        var newHTML = oldHTML.replace(marker, html);
+        const newHTML = oldHTML.replace(marker, html);
         this._panel.webview.html = newHTML;
     }
 
@@ -169,8 +169,8 @@ export default class Sidebar {
      * @returns base HTML
      */
     private _getBaseHTML = () => {
-        var style = this._helper.getWebviewResourceURI("sidebar.css", "style", this._context);
-        var script = this._snippets.get("sidebarBaseHTMLScript");
+        const style = this._helper.getWebviewResourceURI("sidebar.css", "style", this._context);
+        const script = this._snippets.get("sidebarBaseHTMLScript");
         return `<!DOCTYPE html>
         <html>
             <head>
@@ -208,10 +208,10 @@ export default class Sidebar {
      * Adds a welcome message if the extension is opened for the first time
      */
     private _addWelcomeMessage = async () => {
-        var matucIsInstalled = await this._matuc.matucIsInstalled();
-        var welcomeText = this._language.get("sidebarWelcome");
-        var form = "<h2>" + welcomeText + "</h2>";
-        var versionNumberText = this._language.get("versionNumber");
+        const matucIsInstalled = await this._matuc.matucIsInstalled();
+        const welcomeText = this._language.get("sidebarWelcome");
+        let form = "<h2>" + welcomeText + "</h2>";
+        const versionNumberText = this._language.get("versionNumber");
         form += "<br /> " + versionNumberText.replace("$versionNumber$", vscode.extensions.getExtension('TUD-AGSBS.agsbsextension').packageJSON.version);
         form = this._addMultipleText(["textWhatToDo", "sendingError"], form);
         if (matucIsInstalled === false) {

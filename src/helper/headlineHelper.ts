@@ -23,8 +23,8 @@ export default class HeadlineHelper {
      * @param number headline grade
      */
     public setSpecificHeadline = async (number: number) => {
-        var currentTextEditor = await this._helper.getCurrentTextEditor();
-        var selection = await this._helper.getWordsSelection(currentTextEditor);
+        const currentTextEditor = await this._helper.getCurrentTextEditor();
+        const selection = await this._helper.getWordsSelection(currentTextEditor);
         this.setHeadlineAtLine(number, selection.start.line);
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
@@ -48,15 +48,15 @@ export default class HeadlineHelper {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
         }
-        var thisLine = await currentTextEditor.document.lineAt(line).text;
-        var headlineRegex = /^\#{1,6}\ /; //?|\#{1,6}$
-        var result = thisLine.match(headlineRegex);
-        var newHeadlineMarkerString: string = new Array(headlineGrade + 1).join("#") + " ";
+        const thisLine = await currentTextEditor.document.lineAt(line).text;
+        const headlineRegex = /^\#{1,6}\ /; //?|\#{1,6}$
+        const result = thisLine.match(headlineRegex);
+        const newHeadlineMarkerString: string = new Array(headlineGrade + 1).join("#") + " ";
         if (result !== null && result !== undefined) {
-            var resultString: string = result[0];
-            var startPosition = new vscode.Position(line, 0);
-            var endPosition = new vscode.Position(line, resultString.length);
-            var range = new vscode.Range(startPosition, endPosition);
+            const resultString: string = result[0];
+            const startPosition = new vscode.Position(line, 0);
+            const endPosition = new vscode.Position(line, resultString.length);
+            const range = new vscode.Range(startPosition, endPosition);
             const workSpaceEdit = new vscode.WorkspaceEdit();
             workSpaceEdit.replace(
                 currentTextEditor.document.uri,
@@ -83,14 +83,14 @@ export default class HeadlineHelper {
         if (selection === undefined) {
             selection = this._helper.getWordsSelection(currentTextEditor);
         }
-        var startLineNumber: number = selection.start.line;
-        for (var i = startLineNumber; i >= 0; i--) { //Go upwards from the current line
-            var currentLineText = await currentTextEditor.document.lineAt(i).text;
-            var headlineRegex = /^\#{1,6}\ /;
-            var result = currentLineText.match(headlineRegex);
+        const startLineNumber: number = selection.start.line;
+        for (let i = startLineNumber; i >= 0; i--) { //Go upwards from the current line
+            const currentLineText = await currentTextEditor.document.lineAt(i).text;
+            const headlineRegex = /^\#{1,6}\ /;
+            const result = currentLineText.match(headlineRegex);
             if (result !== null && result !== undefined && result.length > 0) {
-                var resultText = result[0];
-                var headlineGrade: number = (resultText.match(/\#/g) || []).length;
+                const resultText = result[0];
+                const headlineGrade: number = (resultText.match(/\#/g) || []).length;
 
                 if (headlineGrade === 1) {
                     return "## ";
@@ -98,7 +98,7 @@ export default class HeadlineHelper {
                     return resultText;
                 }
             }
-            var newPageIdentifier = this._insertHelper.getNewPageIdentifier();
+            const newPageIdentifier = this._insertHelper.getNewPageIdentifier();
             if (currentLineText.startsWith(newPageIdentifier)) {
                 return "## ";
             }

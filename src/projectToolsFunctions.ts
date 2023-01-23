@@ -11,8 +11,6 @@ import ProjectHelper from './helper/projectHelper';
 import ProjectToolsFunctionSnippets from './snippets/projectToolsFunctionsSnippets';
 import SettingsHelper from './helper/settingsHelper';
 import GitCommands from './gitCommands';
-import { resolve } from 'url';
-import { start } from 'repl';
 
 /**
  * This Class contains all functions of the project tools bar in the Taskbar. Here all Buttons are registered.
@@ -28,7 +26,7 @@ export default class ProjectToolsFunctions {
     private _settings: SettingsHelper;
     private _git: GitCommands;
 
-    constructor(taskbarCallback, sidebarCallback, context) {
+    constructor(taskbarCallback, sidebarCallback) {
         this._helper = new Helper;
         this._language = new Language;
         this._sidebarCallback = sidebarCallback;
@@ -38,10 +36,10 @@ export default class ProjectToolsFunctions {
         this._snippets = new ProjectToolsFunctionSnippets;
         this._settings = new SettingsHelper;
         this._git = new GitCommands;
-        let disposable = vscode.commands.registerCommand("agsbs.showGitView", () => {
+        vscode.commands.registerCommand("agsbs.showGitView", () => {
             this.cloneRepo();
         });
-        let newPro = vscode.commands.registerCommand("agsbs.newProject", () => {
+        vscode.commands.registerCommand("agsbs.newProject", () => {
             this.createNewProject();
         });
 
@@ -51,10 +49,10 @@ export default class ProjectToolsFunctions {
      * Registering all Buttons.
      */
     public setup = async () => {
-        var gitIsEnabled = await this._settings.get("enableGitUseage");
+        const gitIsEnabled = await this._settings.get("enableGitUseage");
         this._taskbarCallback.addProjectTool("new_project.svg", this._language.get("newProject"), this.createNewProject, this._language.get("projectTitle"), "agsbs.newProject");
         this._taskbarCallback.addProjectTool("edit.svg", this._language.get("editProject"), this.editProjectData, this._language.get("projectTitle"), "agsbs.edit");
-        if (gitIsEnabled === true) {
+        if (gitIsEnabled) {
             this._taskbarCallback.addProjectTool("clone.svg", this._language.get("cloneExistingRepo"), this.cloneRepo, this._language.get("projectTitle"), "agsbs.clone");
         }
         this._taskbarCallback.addProjectTool("save.svg", this._language.get("saveChanges"), this.saveChanges, this._language.get("documentTitle"));
@@ -65,7 +63,7 @@ export default class ProjectToolsFunctions {
         this._taskbarCallback.addProjectTool("generate.svg", this._language.get("generateFile"), this.generateHTML, this._language.get("documentTitle"), "agsbs.generateFile");
         this._taskbarCallback.addProjectTool("create_all.svg", this._language.get("convertEntireProject"), this.generateHTMLForAllProjects, this._language.get("documentTitle"), "agsbs.convertEntireProject");
         this._taskbarCallback.addProjectTool("check_all.svg", this._language.get("checkProject"), this.publish, this._language.get("publishTitle"), "agsbs.checkProject");
-        if (gitIsEnabled === true) {
+        if (gitIsEnabled) {
             this._taskbarCallback.addProjectTool("commit.svg", this._language.get("commitChanges"), this.commitChanges, this._language.get("publishTitle"), "agsbs.commitChanges");
         }
     }
@@ -74,17 +72,17 @@ export default class ProjectToolsFunctions {
      * Lets you create a new Project
      */
     public createNewProject = async () => {
-        var matucIsInstalled = await this._matuc.matucIsInstalled();
+        const matucIsInstalled = await this._matuc.matucIsInstalled();
         if (matucIsInstalled === false) {
             vscode.window.showErrorMessage(this._language.get("matucNotInstalled"));
             return;
         }
-        var optionsHTML = await this._projectHelper.getAllWorkspaceFoldersAsHTMLWithSpeciallyEscapedJSON();
-        var form = '';
+        const optionsHTML = await this._projectHelper.getAllWorkspaceFoldersAsHTMLWithSpeciallyEscapedJSON();
+        let form = '';
         form += this._snippets.get("newProjectHTMLPart1");
         form += optionsHTML;
         form += this._snippets.get("newProjectHTMLPart2");
-        var script = this._snippets.get("newProjectSCRIPT");
+        const script = this._snippets.get("newProjectSCRIPT");
         this._sidebarCallback.addToSidebar(form, this._language.get("newProject"), this.createNewProjectSidebarCallback, this._language.get("insert"), "", script);
     }
 
@@ -92,28 +90,29 @@ export default class ProjectToolsFunctions {
      * Callback for creating a new project
      */
     public createNewProjectSidebarCallback = async (params) => {
-        var path, chapterCount, appendixChapterCount, preface, projectLanguage, tableOfContents, title, editor, institution, sourceMaterial, sourceAuthor, depthOfTableOfContents;
-        var pathDataObject = this._projectHelper.convertSpeciallyEscapedJSONToObject(params.folder.value);
-        path = pathDataObject.uri;
-        chapterCount = params.chapters.value;
+        const pathDataObject = this._projectHelper.convertSpeciallyEscapedJSONToObject(params.folder.value);
+        const path = pathDataObject.uri;
+        const chapterCount = params.chapters.value;
+        let appendixChapterCount;
         if (params.appendixChapters.value === '') {
             appendixChapterCount = 0;
         } else {
             appendixChapterCount = params.appendixChapters.value;
         }
-        preface = params.preface.checked;
-        projectLanguage = params.language.value;
-        tableOfContents = params.tableOfContents.checked;
+        const preface = params.preface.checked;
+        const projectLanguage = params.language.value;
+        const tableOfContents = params.tableOfContents.checked;
+        let depthOfTableOfContents;
         if (tableOfContents) {
             depthOfTableOfContents = params.tocDepth.value;
         } else {
             depthOfTableOfContents = 0;
         }
-        title = params.title.value;
-        editor = params.author.value;
-        institution = params.institution.value;
-        sourceMaterial = params.materialSource.value;
-        sourceAuthor = params.sourceAuthor.value;
+        const title = params.title.value;
+        const editor = params.author.value;
+        const institution = params.institution.value;
+        const sourceMaterial = params.materialSource.value;
+        const sourceAuthor = params.sourceAuthor.value;
         try {
             let alternatePrefix, outputFormat, semYear, workingGroup;
             await this._matuc.newProject(appendixChapterCount, chapterCount, preface, projectLanguage, path);
@@ -131,19 +130,19 @@ export default class ProjectToolsFunctions {
      * Lets you edit the Metadata of the current project
      */
     public editProjectData = async () => {
-        var matucIsInstalled = await this._matuc.matucIsInstalled();
+        const matucIsInstalled = await this._matuc.matucIsInstalled();
         if (matucIsInstalled === false) {
             vscode.window.showErrorMessage(this._language.get("matucNotInstalled"));
             return;
         }
-        var currentEditor: vscode.TextEditor = await this._helper.getCurrentTextEditor();
-        var folder: string = await this._helper.getFolderFromFilePath(currentEditor.document.uri.fsPath);
-        var config: any = await this._matuc.showConfig(folder);
+        const currentEditor: vscode.TextEditor = await this._helper.getCurrentTextEditor();
+        const folder: string = await this._helper.getFolderFromFilePath(currentEditor.document.uri.fsPath);
+        const config: any = await this._matuc.showConfig(folder);
         if (config === false) {
             vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
             return;
         }
-        var form: string = this._projectHelper.getEditProjectHTMLForm(config, folder);
+        const form: string = this._projectHelper.getEditProjectHTMLForm(config, folder);
         this._sidebarCallback.addToSidebar(form, this._language.get("editProject"), this.editProjectDataSidebarCallback, this._language.get("updateEditedData"));
     }
 
@@ -161,7 +160,7 @@ export default class ProjectToolsFunctions {
         const semYear = params.semYear.value;
         const tocDepth = params.tocDepth.value;
         const workingGroup = params.workingGroup.value;
-        var thisPath: string = params.folder.value;
+        let thisPath: string = params.folder.value;
         thisPath = thisPath.replace("\\\\`", "'");
         try {
             await this._matuc.updateMetaData(alternatePrefix, null, editor, institution,
@@ -178,7 +177,7 @@ export default class ProjectToolsFunctions {
      * Saves the changes made in the current file
      */
     public saveChanges = async () => {
-        var currentEditor = await this._helper.getCurrentTextEditor();
+        const currentEditor = await this._helper.getCurrentTextEditor();
         currentEditor.document.save();
         this._helper.focusDocument(); //Puts focus back to the text editor
     }
@@ -212,7 +211,7 @@ export default class ProjectToolsFunctions {
      * shows a HTML Preview if available.
      */
     public showHTMLPreview = async () => {
-        var matucIsInstalled = await this._matuc.matucIsInstalled();
+        const matucIsInstalled = await this._matuc.matucIsInstalled();
         if (matucIsInstalled === false) {
             vscode.window.showErrorMessage(this._language.get("matucNotInstalled"));
             return;
@@ -231,7 +230,7 @@ export default class ProjectToolsFunctions {
      * Generates the HTML for the current File
      */
     public generateHTML = async () => {
-        var matucIsInstalled = await this._matuc.matucIsInstalled();
+        const matucIsInstalled = await this._matuc.matucIsInstalled();
         if (matucIsInstalled === false) {
             vscode.window.showErrorMessage(this._language.get("matucNotInstalled"));
             return;
@@ -242,7 +241,7 @@ export default class ProjectToolsFunctions {
         //     vscode.window.showErrorMessage(this._language.get("notInsideLecture"));
         //     return;
         // }
-        let foundError = await this._matuc.checkAndSaveChanges();
+        const foundError = await this._matuc.checkAndSaveChanges();
         if (!foundError){
             this._matuc.convertMaterial(true);
             this._helper.focusDocument(); //Puts focus back to the text editor
@@ -256,7 +255,7 @@ export default class ProjectToolsFunctions {
      * Callback for generating the HTML for the current File. Fallback if this is not set in the settings.
      */
     public generateHTMLSidebarCallback = async (params) => {
-        var profile = params.conversionProfile.value;
+        const profile = params.conversionProfile.value;
         await this._matuc.checkAndSaveChanges();
         await this._matuc.convertFile(profile);
         this._helper.focusDocument(); //Puts focus back to the text editor
@@ -267,14 +266,14 @@ export default class ProjectToolsFunctions {
      * Generates HTML for all projects
      */
     public generateHTMLForAllProjects = async () => {
-        var matucIsInstalled = await this._matuc.matucIsInstalled();
+        const matucIsInstalled = await this._matuc.matucIsInstalled();
         if (matucIsInstalled === false) {
             vscode.window.showErrorMessage(this._language.get("matucNotInstalled"));
             return;
         }
-        var currentEditor = await this._helper.getCurrentTextEditor();
-        var filePath = currentEditor.document.uri.fsPath;
-        var isInLecture = await this._matuc.checkIfFileIsWithinLecture(filePath);
+        const currentEditor = await this._helper.getCurrentTextEditor();
+        const filePath = currentEditor.document.uri.fsPath;
+        const isInLecture = await this._matuc.checkIfFileIsWithinLecture(filePath);
         if (isInLecture === false) {
             vscode.window.showErrorMessage(this._language.get("notInsideLecture"));
             return;
@@ -290,7 +289,7 @@ export default class ProjectToolsFunctions {
      * Callback for generating the HTML for all projects, as a fallback when the setting is manually selected every time
      */
     public generateHTMLForAllProjectsSidebarCallback = async (params) => {
-        var profile = params.conversionProfile.value;
+        const profile = params.conversionProfile.value;
         await this._matuc.checkAndSaveChanges();
         await this._matuc.convertEntireProject(profile);
         this._helper.focusDocument(); //Puts focus back to the text editor
@@ -301,19 +300,19 @@ export default class ProjectToolsFunctions {
      * publishes the whole Project
      */
     public publish = async () => {
-        var matucIsInstalled = await this._matuc.matucIsInstalled();
+        const matucIsInstalled = await this._matuc.matucIsInstalled();
         if (matucIsInstalled === false) {
             vscode.window.showErrorMessage(this._language.get("matucNotInstalled"));
             return;
         }
-        var currentEditor = await this._helper.getCurrentTextEditor();
-        var filePath = currentEditor.document.uri.fsPath;
-        var isInLecture = await this._matuc.checkIfFileIsWithinLecture(filePath);
+        const currentEditor = await this._helper.getCurrentTextEditor();
+        const filePath = currentEditor.document.uri.fsPath;
+        const isInLecture = await this._matuc.checkIfFileIsWithinLecture(filePath);
         if (isInLecture === false) {
             vscode.window.showErrorMessage(this._language.get("notInsideLecture"));
             return;
         }
-        var form = `
+        const form = `
         ${this._language.get("doYouWantToAutocorrect")}<br role="none">
         <div class="spacing" role="none"></div>
         <div class="spacing" role="none"></div>
@@ -328,11 +327,11 @@ export default class ProjectToolsFunctions {
      * Checks the whole project
      */
     public publishSidebarCallback = async (params) => {
-        if (params.autoCorrectPageNumbering.checked === true) {
+        if (params.autoCorrectPageNumbering.checked) {
             await this._matuc.fixpnumInPlace();
         }
-        var currentEditor = await this._helper.getCurrentTextEditor();
-        var filePath = currentEditor.document.uri.fsPath;
+        const currentEditor = await this._helper.getCurrentTextEditor();
+        const filePath = currentEditor.document.uri.fsPath;
         this._matuc.checkEntireProject(filePath);
     }
 
@@ -340,15 +339,15 @@ export default class ProjectToolsFunctions {
      * Adds Form to sidebar to clone a project
      */
     public cloneRepo = async () => {
-        var gitIsEnabled = await this._settings.get("enableGitUseage");
-        if (gitIsEnabled === false) {
+        const gitIsEnabled = await this._settings.get("enableGitUseage");
+        if (!gitIsEnabled) {
             vscode.window.showErrorMessage(this._language.get("gitIsNotEnabled"));
             return;
         }
-        var gitLoginName = await this._settings.get("gitLoginName");
-        var gitUserName = await this._settings.get("gitUserName");
-        var gitUserEmail = await this._settings.get("gitUserEmail");
-        var form = `
+        const gitLoginName = await this._settings.get("gitLoginName");
+        const gitUserName = await this._settings.get("gitUserName");
+        const gitUserEmail = await this._settings.get("gitUserEmail");
+        const form = `
         <label for="gitUser">${this._language.get("gitUser")}</label>
         <input id="gitLoginName" name="gitLoginName" type="text" required="true" value="${gitLoginName}">
         <div class="spacing" role="none"></div>
@@ -366,12 +365,12 @@ export default class ProjectToolsFunctions {
      * clones a project
      */
     public cloneRepoSidebarCallback = async (params) => {
-        var gitLoginName = params.gitLoginName.value;
-        var repoName = params.repoName.value;
-        var gitUserName = params.gitUserName.value;
-        var gitUserEmail = params.mailadresse.value;
-        var setGitUsername = await this._settings.get("gitUserName");
-        var setGitMail = await this._settings.get("gitUserEmail");
+        const gitLoginName = params.gitLoginName.value;
+        const repoName = params.repoName.value;
+        const gitUserName = params.gitUserName.value;
+        const gitUserEmail = params.mailadresse.value;
+        const setGitUsername = await this._settings.get("gitUserName");
+        const setGitMail = await this._settings.get("gitUserEmail");
         if (gitUserName !== setGitUsername) {
             this._settings.update("gitUserName", gitUserName);
         }
@@ -386,12 +385,12 @@ export default class ProjectToolsFunctions {
      * Adds commt changes dialogue to the sidebar
      */
     public commitChanges = async () => {
-        var gitIsEnabled = await this._settings.get("enableGitUseage");
-        if (gitIsEnabled === false) {
+        const gitIsEnabled = await this._settings.get("enableGitUseage");
+        if (!gitIsEnabled) {
             vscode.window.showErrorMessage(this._language.get("gitIsNotEnabled"));
             return;
         }
-        var form = `
+        const form = `
         <label for="commitChanges">${this._language.get("commitChanges")}</label>
         <div class="spacing" role="none"></div>
         <input id="commitChanges" name="commitChanges" type="text" required="true" placeholder="${this._language.get("commitMessage")}">
@@ -403,17 +402,17 @@ export default class ProjectToolsFunctions {
      * commits the changes, and pushes them.
      */
     public commitChangesSidebarCallback = async (params) => {
-        var commitMessage = params.commitChanges.value;
-        var currentTexteditor = await this._helper.getCurrentTextEditor();
-        var projectFolder = await this._helper.getFolderFromFilePath(currentTexteditor.document.uri.fsPath);
+        const commitMessage = params.commitChanges.value;
+        const currentTexteditor = await this._helper.getCurrentTextEditor();
+        const projectFolder = await this._helper.getFolderFromFilePath(currentTexteditor.document.uri.fsPath);
         await this._git.addAll(projectFolder);
-        var error: any = await this._git.commit(commitMessage, projectFolder);
+        const error: any = await this._git.commit(commitMessage, projectFolder);
         if (error.out.includes("Please tell me who you are")) {
             vscode.window.showErrorMessage(this._language.get("noUserDataIsSet"));
-            var userName: any = await this._settings.get("gitUserName");
-            var emailAddress: any = await this._settings.get("gitUserEmail");
+            const userName: any = await this._settings.get("gitUserName");
+            const emailAddress: any = await this._settings.get("gitUserEmail");
             await this._git.setConfig(userName, emailAddress, projectFolder);
-            var msg = this._language.get("SetUserDataInConfig");
+            let msg = this._language.get("SetUserDataInConfig");
             msg = msg.replace("$userName$", userName);
             msg = msg.replace("$emailAddress$", emailAddress);
             vscode.window.showInformationMessage(msg);

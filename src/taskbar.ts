@@ -3,7 +3,6 @@
  */
 import * as vscode from 'vscode';
 import Helper from './helper/helper';
-
 import EditorFunctions from './editorFunctions';
 import ProjectToolsFunctions from './projectToolsFunctions';
 
@@ -11,7 +10,7 @@ import ProjectToolsFunctions from './projectToolsFunctions';
  * Main class of the taskbar
  */
 export default class Taskbar {
-    private _taskbarIsVisible: Boolean;
+    private _taskbarIsVisible: boolean;
     private _panel: vscode.WebviewPanel;
     private _sidebarCallback: any;
     private _helper: Helper;
@@ -19,18 +18,17 @@ export default class Taskbar {
     private _editorFunctions: EditorFunctions;
     private _callbacks: any;
     private _projectToolsFunctions: ProjectToolsFunctions;
-    private _functionsAreAlreadyRegisterd: boolean;
     constructor(sidebarCallback, context) {
         this._context = context;
         this._taskbarIsVisible = false;
         this._sidebarCallback = sidebarCallback;
         this._helper = new Helper;
         this._editorFunctions = new EditorFunctions(this, this._sidebarCallback, context);
-        this._projectToolsFunctions = new ProjectToolsFunctions(this, this._sidebarCallback, context);
+        this._projectToolsFunctions = new ProjectToolsFunctions(this, this._sidebarCallback);
         this._panel = null;
         this._callbacks = [];
 
-        let disposable = vscode.commands.registerCommand("agsbs.focusTaskbar", () => {
+        vscode.commands.registerCommand("agsbs.focusTaskbar", () => {
             this.focus();
         });
     }
@@ -62,10 +60,9 @@ export default class Taskbar {
      * Opens a Taskbar Webview
      * @return A WebviewPanel from Type vscode.WebviewPanel
      */
-    public async show() {
-        return new Promise(async (resolve, reject) => {
+    public show() {
             this._taskbarIsVisible = true;
-            var panel = vscode.window.createWebviewPanel(
+            const panel = vscode.window.createWebviewPanel(
                 'agsbstaskbar', // Identifies the type of the webview. Used internally
                 "AGSBS Toolbar", // Title of the panel displayed to the user
                 //vscode.ViewColumn.One, // Editor column to show the new webview panel in.
@@ -88,8 +85,7 @@ export default class Taskbar {
             }, undefined);
             this._editorFunctions.setup();
             this._projectToolsFunctions.setup();
-            resolve(panel);//return panel;
-        });
+            return panel; //return panel;
     }
 
     /**
@@ -97,12 +93,9 @@ export default class Taskbar {
      * @param panel The WebviewPanel that should be closed, from fype vscode.WebviewPanel
      */
     public async hide(panel: vscode.WebviewPanel) {
-        return new Promise(async (resolve, reject) => {
             await panel.dispose();
             this._taskbarIsVisible = false;
             this._panel = null;
-            resolve(true);
-        });
     }
 
     /** Adds a Button to the Taskbar
@@ -114,19 +107,19 @@ export default class Taskbar {
      */
     public addButton = (iconName: string, name: string, callback: any, section: string, commandIdentifier?: string) => {
 
-        var id = this._helper.generateUuid();
-        var newSection = "";
+        const id = this._helper.generateUuid();
+        let newSection = "";
         if (section !== undefined) {
             newSection = section;
         }
         if (this._sectionIsInWebview(newSection) === false) {
-            var newSectionHTML = this._generateSectionHTML(section);
+            const newSectionHTML = this._generateSectionHTML(section);
             this._addToHTML("TOOLS_END", newSectionHTML);
         }
-        var icon = this._helper.getWebviewResourceIconURI(this._panel, iconName, this._context);
+        const icon = this._helper.getWebviewResourceIconURI(this._panel, iconName, this._context);
         //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
         //ToDo Button
-        var html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')"><img src="${icon}"></button>`;
+        const html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')"><img src="${icon}"></button>`;
 
         this._callbacks[id] = callback;
         newSection = "SECTION-" + newSection;
@@ -136,7 +129,7 @@ export default class Taskbar {
                 commandIdentifier = "agsbs." + commandIdentifier;
             }
             try {
-                let disposable = vscode.commands.registerCommand(commandIdentifier, () => {
+                const disposable = vscode.commands.registerCommand(commandIdentifier, () => {
                     callback();
                 });
             } catch (e) {
@@ -158,18 +151,18 @@ export default class Taskbar {
      * @param commandIdentifier optional. The identifier used in the package.json command and key binding.
      */
     public addProjectTool = (iconName: string, name: string, callback: any, section: string, commandIdentifier?: string) => {
-        var id = this._helper.generateUuid();
-        var newSection = "";
+        const id = this._helper.generateUuid();
+        let newSection = "";
         if (section !== undefined) {
             newSection = section;
         }
         if (this._sectionIsInWebview(newSection) === false) {
-            var newSectionHTML = this._generateSectionHTML(section);
+            const newSectionHTML = this._generateSectionHTML(section);
             this._addToHTML("PROJECTTOOLS_END", newSectionHTML);
         }
-        var icon = this._helper.getWebviewResourceIconURI(this._panel, iconName, this._context);
+        const icon = this._helper.getWebviewResourceIconURI(this._panel, iconName, this._context);
         //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
-        var html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')"><img src="${icon}"></button>`;
+        const html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')"><img src="${icon}"></button>`;
         //var html="";
         this._callbacks[id] = callback;
         newSection = "SECTION-" + newSection;
@@ -179,7 +172,7 @@ export default class Taskbar {
                 commandIdentifier = "agsbs." + commandIdentifier;
             }
             try {
-                let disposable = vscode.commands.registerCommand(commandIdentifier, () => {
+                const disposable = vscode.commands.registerCommand(commandIdentifier, () => {
                     callback();
                 });
             } catch (e) {
@@ -197,10 +190,10 @@ export default class Taskbar {
      * @param html html to insert
      */
     private _addToHTML = (section: string, html: string) => {
-        var marker = "<!--" + section + "-->";
-        var oldHTML = this._panel.webview.html;
+        const marker = "<!--" + section + "-->";
+        const oldHTML = this._panel.webview.html;
         html = html + marker;
-        var newHTML = oldHTML.replace(marker, html);
+        const newHTML = oldHTML.replace(marker, html);
         this._panel.webview.html = newHTML;
     }
 
@@ -217,8 +210,8 @@ export default class Taskbar {
      * @returns Boolean, true if the section is already in the WebView
      */
     private _sectionIsInWebview(section: string) {
-        var webViewHTML = this._panel.webview.html;
-        var sectionIndicator = "<!--SECTION-" + section + "-->";
+        const webViewHTML = this._panel.webview.html;
+        const sectionIndicator = "<!--SECTION-" + section + "-->";
         if (webViewHTML.includes(sectionIndicator)) {
             return true;
         } else {
@@ -235,8 +228,8 @@ export default class Taskbar {
         // var fontAwesome = this._helper.getWebviewResourceURI("fontawesome.css","style",this._context);
         //If font Awesome is needed, it can be imported here.
 
-        var style = this._helper.getWebviewResourceURI("taskbar.css", "style", this._context);
-        var html = `<!DOCTYPE html>
+        const style = this._helper.getWebviewResourceURI("taskbar.css", "style", this._context);
+        const html = `<!DOCTYPE html>
          <html lang="en">
          <head>
              <meta charset="UTF-8">
