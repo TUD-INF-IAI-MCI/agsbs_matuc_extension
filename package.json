@@ -430,6 +430,7 @@
     "devDependencies": {
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.10.51",
+        "prettier": "^2.8.3",
         "tslint": "^5.18.0",
         "typescript": "^3.3.0",
         "vscode": "^1.1.36",
@@ -437,12 +438,13 @@
         "webpack-cli": "^3.3.11"
     },
     "dependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.48.2",
         "chardet": "0.7.0",
         "iconv-lite": "0.4.24",
         "npm": "^9.1.2",
+        "open": "8.2.0",
         "os-locale": "^3.1.0",
         "papaparse": ">=5.2.0",
-        "path": "^0.12.7",
-        "open": "8.2.0"
+        "path": "^0.12.7"
     }
 }

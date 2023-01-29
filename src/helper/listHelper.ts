@@ -2,8 +2,8 @@
  * @author  Lucas Vogel
  */
 
-import * as vscode from 'vscode';
-import Helper from './helper';
+import * as vscode from "vscode";
+import Helper from "./helper";
 
 /**
  * Helper for the list-functions
@@ -11,7 +11,7 @@ import Helper from './helper';
 export default class ListHelper {
     private _helper: Helper;
     constructor() {
-        this._helper = new Helper;
+        this._helper = new Helper();
     }
 
     /**
@@ -20,17 +20,17 @@ export default class ListHelper {
      * @returns 0 if nothing is found, or the number of the line
      */
     public async getLineListNumber(line: number) {
-        var lineContent = await this._helper.getLineContent(line);
+        const lineContent = await this._helper.getLineContent(line);
         if (lineContent === null) {
             return 0;
         }
-        var numberRegex = /^[\ \t]*([0-9]+)./;
-        var matchParts = lineContent.match(numberRegex);
+        const numberRegex = /^[\ \t]*([0-9]+)./;
+        const matchParts = lineContent.match(numberRegex);
         if (matchParts === null || matchParts === undefined || matchParts.length < 2) {
             return 0;
         }
-        var number = Number(matchParts[1]);
-        if (number === NaN || number === null || number === undefined) {
+        const number = Number(matchParts[1]);
+        if (Number.isNaN(number) || number === null || number === undefined) {
             return 0;
         } else {
             return number;
@@ -38,9 +38,9 @@ export default class ListHelper {
     }
 
     public async getListBullet(line: number) {
-        var bulletRegex = /^[*-]/; // looks for * and -
-        var lineContent = await this._helper.getLineContent(line);
-        var result = lineContent.match(bulletRegex);
+        const bulletRegex = /^[*-]/; // looks for * and -
+        const lineContent = await this._helper.getLineContent(line);
+        const result = lineContent.match(bulletRegex);
         if (result) {
             return result[0];
         } else {
@@ -49,11 +49,11 @@ export default class ListHelper {
     }
 
     public async unorderedList() {
-        var currentTextEditor = await this._helper.getCurrentTextEditor();
-        var selection = this._helper.getWordsSelection(currentTextEditor);
-        var currentLineNumber = await this.getLineListNumber(selection.start.line);
+        const currentTextEditor = await this._helper.getCurrentTextEditor();
+        const selection = this._helper.getWordsSelection(currentTextEditor);
+        const currentLineNumber = await this.getLineListNumber(selection.start.line);
         if (currentLineNumber !== 0) {
-           await this._helper.toggleCharactersAtBeginningOfLine("1. ");
+            await this._helper.toggleCharactersAtBeginningOfLine("1. ");
         }
         this._helper.toggleCharactersAtBeginningOfLine("- ");
     }
@@ -65,16 +65,15 @@ export default class ListHelper {
      */
     public async orderedList(line?: number) {
         if (line === undefined) {
-            var currentTextEditor = await this._helper.getCurrentTextEditor();
-            var selection = this._helper.getWordsSelection(currentTextEditor);
+            const currentTextEditor = await this._helper.getCurrentTextEditor();
+            const selection = this._helper.getWordsSelection(currentTextEditor);
             line = selection.start.line;
         }
-        var nextNumberString = "";
-        var currentLineNumber = await this.getLineListNumber(line);
+        const currentLineNumber = await this.getLineListNumber(line);
         if (currentLineNumber !== 0) {
             this._helper.toggleCharactersAtBeginningOfLine("1. ");
         } else {
-            var lastNumber: number = await this.getLineListNumber(line - 1);
+            const lastNumber: number = await this.getLineListNumber(line - 1);
             // case if unnumbered list is formatted to numbered one
             if (lastNumber === 0) {
                 await this._helper.toggleCharactersAtBeginningOfLine(await this.getListBullet(line));
@@ -83,5 +82,4 @@ export default class ListHelper {
             //Inserts it into the document
         }
     }
-
 }

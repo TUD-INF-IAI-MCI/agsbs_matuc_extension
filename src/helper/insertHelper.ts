@@ -2,8 +2,8 @@
  * @author  Lucas Vogel
  */
 
-import * as vscode from 'vscode';
-import Helper from './helper';
+import * as vscode from "vscode";
+import Helper from "./helper";
 
 /**
  * Helper for the insert-functions.
@@ -11,14 +11,14 @@ import Helper from './helper';
 export default class InsertHelper {
     private _helper: Helper;
     constructor() {
-        this._helper = new Helper;
+        this._helper = new Helper();
     }
 
     /**
      * Returns the page identifier
      */
     public getNewPageIdentifier() {
-        return ("|| - Seite ");
+        return "|| - Seite ";
     }
 
     /**
@@ -35,13 +35,15 @@ export default class InsertHelper {
             if (selection === undefined) {
                 selection = this._helper.getWordsSelection(currentTextEditor);
             }
-            var newpageString = this.getNewPageIdentifier();
-            var newSelection = await this.iterateDownwardsToCheckForStringStart(newpageString);
+            const newpageString = this.getNewPageIdentifier();
+            const newSelection = await this.iterateDownwardsToCheckForStringStart(newpageString);
             if (newSelection !== false) {
-                if (selection.end.line > 0) { //if there is room above the line
-                    var previousLineNumber = newSelection.end.line - 1;
-                    var previousLineLength = currentTextEditor.document.lineAt(previousLineNumber).range.end.character;
-                    var newEndPoint = new vscode.Position(previousLineNumber, previousLineLength);
+                if (selection.end.line > 0) {
+                    //if there is room above the line
+                    const previousLineNumber = newSelection.end.line - 1;
+                    const previousLineLength =
+                        currentTextEditor.document.lineAt(previousLineNumber).range.end.character;
+                    const newEndPoint = new vscode.Position(previousLineNumber, previousLineLength);
                     resolve(newEndPoint);
                 } else {
                     resolve(false);
@@ -50,7 +52,7 @@ export default class InsertHelper {
                 resolve(false);
             }
         });
-    }
+    };
 
     /**
      * Iterates downwards starting at the current selection and checks if a line starts with a given string
@@ -58,27 +60,39 @@ export default class InsertHelper {
      * @param currentTextEditor optional. The Editor to work with
      * @param selection optional. The Selection to work with
      */
-    public async iterateDownwardsToCheckForStringStart(testString: string, currentTextEditor?: vscode.TextEditor, selection?: vscode.Selection) {
+    public async iterateDownwardsToCheckForStringStart(
+        testString: string,
+        currentTextEditor?: vscode.TextEditor,
+        selection?: vscode.Selection
+    ) {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
         }
         if (selection === undefined) {
             selection = this._helper.getWordsSelection(currentTextEditor);
         }
-        var selectionStartLine = selection.end.line;
-        var selectionStartsWith = await this._helper.checkIfSelectionStartsWith(testString, currentTextEditor, selection);
-        if (selectionStartsWith === true) {
+        let selectionStartLine = selection.end.line;
+        let selectionStartsWith = await this._helper.checkIfSelectionStartsWith(
+            testString,
+            currentTextEditor,
+            selection
+        );
+        if (selectionStartsWith) {
             return selection;
         }
-        var documentEndLine = currentTextEditor.document.lineCount;
-        for (var i = selectionStartLine; i < documentEndLine; i++) {
-            var lineLength = currentTextEditor.document.lineAt(i).range.end.character;
-            var newStartPosition = new vscode.Position(i, 0);
-            var newEndPosition = new vscode.Position(i, lineLength);
-            var newSelection = new vscode.Selection(newStartPosition, newEndPosition);
+        const documentEndLine = currentTextEditor.document.lineCount;
+        for (let i = selectionStartLine; i < documentEndLine; i++) {
+            const lineLength = currentTextEditor.document.lineAt(i).range.end.character;
+            const newStartPosition = new vscode.Position(i, 0);
+            const newEndPosition = new vscode.Position(i, lineLength);
+            const newSelection = new vscode.Selection(newStartPosition, newEndPosition);
             selectionStartLine = selection.start.line;
-            selectionStartsWith = await this._helper.checkIfSelectionStartsWith(testString, currentTextEditor, newSelection);
-            if (selectionStartsWith === true) {
+            selectionStartsWith = await this._helper.checkIfSelectionStartsWith(
+                testString,
+                currentTextEditor,
+                newSelection
+            );
+            if (selectionStartsWith) {
                 return newSelection;
             }
         }
@@ -95,11 +109,10 @@ export default class InsertHelper {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
         }
-        var documentText: string = currentTextEditor.document.getText();
+        const documentText: string = currentTextEditor.document.getText();
         if (documentText.includes(testString)) {
             return true;
         }
         return false;
     }
 }
-
