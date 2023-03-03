@@ -159,14 +159,6 @@ export default class EditorFunctions {
             this._language.get("editTable"),
             this.editTable,
             this._language.get("table"),
-            "agsbs.editTable"
-        );
-        // edit csv call
-        this._taskbarCallback.addButton(
-            "h.svg",
-            this._language.get("editTable"),
-            this.editTableGui,
-            this._language.get("table"),
             "agsbs.editTableGui"
         );
         this._taskbarCallback.addButton(
