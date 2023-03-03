@@ -7,13 +7,14 @@ import SettingsHelper from "./helper/settingsHelper";
 import Sidebar from "./sidebar";
 import Taskbar from "./taskbar";
 import { EditorLayout } from "./types/types";
+import { ConfigurationTarget, workspace } from 'vscode';
 
 /**
  * Gets triggered when the Extension is activated
  * @param context Context of the extension, gets automatically handed over from VSCode at activation
  */
 export function activate(context: vscode.ExtensionContext) {
-    console.log("AGSBS extension is now active!");
+    console.log("AGSBS extension is now active!");   
     const extensionController = new ExtensionController(context);
     const disposable = vscode.commands.registerCommand("agsbs.open", () => {
         vscode.window.showInformationMessage("AGSBS is active.");
@@ -113,6 +114,9 @@ class ExtensionController {
         }
         const doc = editor.document;
         if (doc.languageId === "markdown" || doc.languageId === "multimarkdown") {
+            //Set centered layout auto resize to false
+            const config = vscode.workspace.getConfiguration("workbench");
+            config.update("editor.centeredLayoutAutoResize", false, ConfigurationTarget.Global);
             //This gets executed if a Markdown File gets opened
             //First, reset Workspace
             if (this._sidebar.isVisible() === false || this._taskbar.isVisible() === false) {
