@@ -159,7 +159,7 @@ export default class EditorFunctions {
             this._language.get("editTable"),
             this.editTable,
             this._language.get("table"),
-            "agsbs.editTableGui"
+            "agsbs.editTable"
         );
         this._taskbarCallback.addButton(
             "deleteTable.svg",
@@ -517,139 +517,41 @@ export default class EditorFunctions {
     /**
      * Editing an existing Table
      */
-    public editTableGui = async () => {
-        const currentSelection: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+    public editTable = async () => {
+        const currentSelection: false | vscode.Selection =
+            await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
         const currentTextEditor = await this._helper.getCurrentTextEditor();
-        if (!currentSelection) vscode.window.showErrorMessage(this._language.get("noTableFound"));
-        else {
+        if (!currentSelection) {
+            vscode.window.showErrorMessage(this._language.get("noTableFound"));
+            return;
+        } else {
             const selectedTable = await this._tableHelper.loadSelectedTable(currentSelection);
             await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(selectedTable["file"]));
             const editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
             editCsv.activate().then(async () => {
-                const x = await vscode.commands.executeCommand("edit-csv.edit");
-                //watch csv file changes
+                await vscode.commands.executeCommand("edit-csv.edit");
+                // watch csv file changes
                 const watcher = vscode.workspace.createFileSystemWatcher(selectedTable["file"]);
                 watcher.onDidChange(async () => {
-                    let content: any = await this._helper.getContentOfFile(selectedTable["file"]);
+                    let content: string = await this._helper.getContentOfFile(selectedTable["file"]);
                     content = content.replace(/\ +$/, "").replace(/\n+$/, "");
                     const result = await Papa.parse(content);
                     const relativeTablePath =
                         ".\\" + path.relative(path.dirname(currentTextEditor.document.fileName), selectedTable["file"]);
                     const extraText = this._language.get("importedFrom") + " " + relativeTablePath;
-                    //generate markdown table
+                    // generate markdown table and replace the old one
                     const table = this._tableHelper.generateTable(false, result.data, "", extraText);
                     this._helper.replaceSelection(table, currentSelection, currentTextEditor);
+                    watcher.dispose();
                 });
             });
         }
     };
 
-    /**
-     * Editing a existing Table
-     */
-
-    public editTable = async () => {
-        const insertPosition: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
-        if (!insertPosition) {
-            vscode.window.showErrorMessage(this._language.get("noTableFound"));
-            return;
-        } else {
-            const tableData = await this._tableHelper.loadSelectedTable(insertPosition);
-            let form = this._snippets.get("editTableHTML");
-            form =
-                form + `<input type="hidden" value="${tableData["file"]}" name="hiddenFileName" id="hiddenFileName">`; //TODO possible escape file string
-            let script = this._snippets.get("editTableSCRIPT");
-            script += this._snippets.get("editTableScriptPart1");
-            let jsonToInsert = JSON.stringify(tableData["data"]);
-            jsonToInsert = jsonToInsert
-                .replace(/\\n/g, "___LINE_BREAK___")
-                //.replace(/\\{4}([[]()])/g, "$1")
-                .replace(/\\\\\\\\/g, "___BACK_SLASH___")
-                .replace(/\\\\/g, "") // remove existing
-                .replace(/\\([tr])/g, "___SLASH__$1")
-                //.replace(/\\{8}/g, "HIER ABER")
-                .replace(/\\/g, "\\\\")
-                .replace(/\\"/g, '\\\\"')
-                .replace(/\\'/g, "\\\\'")
-                .replace(/\\&/g, "\\\\&")
-                .replace(/\\r/g, "\\\\r")
-                .replace(/\\t/g, "\\\\t")
-                .replace(/\\b/g, "\\\\b")
-                //.replace(/\\\\/g, "\\\\b")
-                //.replace(/\\{3}([tr])/g, "\\\\$1")
-
-                .replace(/\\f/g, "|\f");
-            jsonToInsert = jsonToInsert.replace(/___LINE_BREAK___/g, "\\\\n");
-            jsonToInsert = jsonToInsert.replace(/___BACK_SLASH___/g, "\\\\\\\\").replace(/___SLASH__([tr])/g, "\\\\$1");
-            console.log("#####\nJsonToInsert " + jsonToInsert);
-            script += jsonToInsert;
-            script += this._snippets.get("editTableScriptPart2");
-            const style = this._snippets.get("editTableSTYLE");
-            this._sidebarCallback.addToSidebar(
-                form,
-                this._language.get("insertTable"),
-                this.editTableSidebarCallback,
-                this._language.get("insert"),
-                style,
-                script
-            );
-        }
-    };
-
-    /**
-     * Callback of the Sidebar for editing a table
-     */
-    public editTableSidebarCallback = async (params: any) => {
-        const hasHeader = params.tableHeadCheckbox.checked;
-        const tableType = params.tableType.value;
-        const rawdata = params.tableJSON.value;
-        let data: any;
-        try {
-            data = JSON.parse(rawdata);
-        } catch (e) {
-            console.log(e);
-            return;
-        }
-        const tableData: any = await this._tableHelper.generateCSVfromJSON(rawdata);
-        const fileName: string = params.hiddenFileName.value.replace(/^.*[\\\/]/, "");
-        const folderName: string = params.hiddenFileName.value.substr(
-            0,
-            params.hiddenFileName.value.lastIndexOf("/") - 1
-        );
-        const defaultGeneratedFolderName: string = await this._tableHelper.getTableFolderName();
-        let savedTable: any;
-        if (folderName === defaultGeneratedFolderName) {
-            savedTable = await this._tableHelper.writeCSVFile(tableData, fileName);
-        } else {
-            savedTable = await this._tableHelper.writeCSVFile(tableData);
-            //if table exists in other folder, generate new Name, because the file could potentially already exists
-            // with that name so no other file will be overridden by accident
-        }
-        vscode.window.showInformationMessage(this._language.get("filehasBeenWritten") + params.hiddenFileName.value);
-        let extraText = "";
-        if (savedTable) {
-            const relSavedTablePathParts = savedTable.split(path.sep);
-            const relSavedTablePath =
-                "." +
-                path.sep +
-                relSavedTablePathParts[relSavedTablePathParts.length - 2] +
-                path.sep +
-                relSavedTablePathParts[relSavedTablePathParts.length - 1];
-            extraText = "exported to " + relSavedTablePath;
-        }
-        const table = this._tableHelper.generateTable(hasHeader, data, tableType, extraText);
-        const insertSelection: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
-        if (!insertSelection) {
-            vscode.window.showErrorMessage(this._language.get("originalTableNotFound"));
-            this._helper.insertStringAtStartOfLineOrLinebreak(table);
-        } else {
-            this._helper.replaceSelection(table, insertSelection);
-        }
-    };
-
     //Get ./generatedTable/example.csv from the comment and delete the csv
     public deleteCSVTable = async () => {
-        const insertSelection: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        const insertSelection: vscode.Selection | false =
+            await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
         if (!insertSelection) {
             vscode.window.showErrorMessage(this._language.get("noTableFound"));
         } else {
@@ -661,7 +563,8 @@ export default class EditorFunctions {
     };
     //Selects and Deletes Table in Markdown when cursor is between the comments of the Table
     public deleteTable = async () => {
-        const insertSelection: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        const insertSelection: vscode.Selection | false =
+            await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
         if (!insertSelection) {
             vscode.window.showErrorMessage(this._language.get("noTableFound"));
         } else {
@@ -696,7 +599,6 @@ export default class EditorFunctions {
      */
     public insertCSVTableSidebarCallback = async (params) => {
         const urlData = params.selectTable.value;
-        console.log("urlData: " + urlData);
 
         let url: any;
         if (urlData === "") {
@@ -732,17 +634,45 @@ export default class EditorFunctions {
      * Insert Table Button Function
      */
     public insertTable = async () => {
-        const form = this._snippets.get("insertTableHTML");
-        const script = this._snippets.get("insertTableSCRIPT");
-        const style = this._snippets.get("insertTableSTYLE");
-        this._sidebarCallback.addToSidebar(
-            form,
-            this._language.get("insertTable"),
-            this.insertTableSidebarCallback,
-            this._language.get("insert"),
-            style,
-            script
-        );
+        const currentTextEditor = await this._helper.getCurrentTextEditor();
+        const currentSelection = currentTextEditor.selection;
+
+        if (!currentSelection) {
+            vscode.window.showErrorMessage(this._language.get("noCursorFound"));
+            return;
+        }
+
+        //create empty .csv file in /generatedTables
+        const file = await this._tableHelper.writeCSVFile(" ");
+        console.log("written file path: ", file);
+        await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(file));
+
+        //open edit csv extension
+        const editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
+        editCsv.activate().then(async () => {
+            await vscode.commands.executeCommand("edit-csv.edit");
+
+            //watch file changes
+            const watcher = vscode.workspace.createFileSystemWatcher(file);
+            watcher.onDidChange(async () => {
+                let content: any = await this._helper.getContentOfFile(file);
+                content = content.replace(/\ +$/, "").replace(/\n+$/, "");
+                const result = await Papa.parse(content);
+                const relativeTablePath =
+                    ".\\" + path.relative(path.dirname(currentTextEditor.document.fileName), file);
+                const extraText = this._language.get("importedFrom") + " " + relativeTablePath;
+                //generate markdown table
+                const table = this._tableHelper.generateTable(false, result.data, "", extraText);
+                this._helper.replaceSelection(table, currentSelection, currentTextEditor);
+                //close edit csv extension and csv file
+                await vscode.commands.executeCommand("edit-csv.goto-source");
+                await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
+                //close opened csv file window
+                // await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
+                await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
+                watcher.dispose();
+            });
+        });
     };
 
     /**
