@@ -374,11 +374,11 @@ export default class MatucCommands {
                 title: this._language.get("generateMaterial"),
                 cancellable: true
             },
-            (progress, token) => {
-                return this.executeConversion(progress, token, parameter);
+            async (progress, token) => {
+                await this.executeConversion(progress, token, parameter);
+                this.loadGeneratedHtml(filePath);
             }
         );
-        this.loadGeneratedHtml(filePath);
     }
 
     public executeConversion(
@@ -426,14 +426,13 @@ export default class MatucCommands {
     }
 
     // add quotes to path if necessary and loads generate Html afterthat
-    loadGeneratedHtml(filePath) {
+    public loadGeneratedHtml(filePath) {
         let cmd = "";
         if (process.platform === "win32") {
             cmd = `\"${filePath.replace("md", "html")}\"`;
         } else if (process.platform === "darwin") {
             cmd = `open ./\"${filePath.replace("md", "html")}\"`;
         }
-        console.log("load generate html " + cmd);
         exec(cmd, (error, stdout, stderr) => {
             if (error) {
                 console.error(`load generate html`);
