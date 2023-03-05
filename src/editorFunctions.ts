@@ -643,8 +643,7 @@ export default class EditorFunctions {
         }
 
         //create empty .csv file in /generatedTables
-        const file = await this._tableHelper.writeCSVFile(" ");
-        console.log("written file path: ", file);
+        const file = await this._tableHelper.writeCSVFile(",\n,");
         await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(file));
 
         //open edit csv extension
