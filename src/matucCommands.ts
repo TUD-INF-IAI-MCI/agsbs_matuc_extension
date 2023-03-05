@@ -374,11 +374,11 @@ export default class MatucCommands {
                 title: this._language.get("generateMaterial"),
                 cancellable: true
             },
-            (progress, token) => {
-                return this.executeConversion(progress, token, parameter);
+            async (progress, token) => {
+                await this.executeConversion(progress, token, parameter);
+                this.loadGeneratedHtml(filePath);
             }
         );
-        this.loadGeneratedHtml(filePath);
     }
 
     public executeConversion(
@@ -425,50 +425,8 @@ export default class MatucCommands {
         });
     }
 
-    /**
-     * Converts a File
-     * @param profile the given profile, "visually" for the visually impaied or "blind" for the blind
-     * @param currentTextEditor optional. The current Text editor to work with.
-     */
-    public async convertFile(profile: string, currentTextEditor?: vscode.TextEditor) {
-        if (currentTextEditor === undefined) {
-            currentTextEditor = await this._helper.getCurrentTextEditor();
-        }
-        const filePath = currentTextEditor.document.uri.fsPath;
-        if (await currentTextEditor.document.isDirty) {
-            await currentTextEditor.document.save();
-        }
-        const cmd = `matuc_js conv "${filePath}"`;
-        console.log("matuc conv command " + cmd);
-        exec(cmd, { env: this.getOsLocale() }, (error, stdout, stderr) => {
-            if (error) {
-                const fragment = JSON.parse(stdout);
-                let message = "";
-                if (fragment.error.hasOwnProperty("message")) {
-                    message += fragment.error.message;
-                }
-                if (fragment.error.hasOwnProperty("line")) {
-                    message += "\n\n\n" + this._language.get("checkLine") + fragment.error.line;
-                }
-                if (fragment.error.hasOwnProperty("path")) {
-                    message += "\n\n" + this._language.get("checkFile") + " " + fragment.error.path;
-                }
-                //this._helper.ShowMkErrorMessage(fragment.result);
-                vscode.window.showErrorMessage(this._language.get("error") + message);
-
-                console.error(`exec error: ${error}`);
-                console.log(`stderr: ${stderr}`);
-                console.log(`stdout: ${stdout}`);
-                return;
-            }
-            console.log(`stdout: ${stdout}`);
-
-            //load generate HTML-file
-            this.loadGeneratedHtml(filePath);
-        });
-    }
     // add quotes to path if necessary and loads generate Html afterthat
-    loadGeneratedHtml(filePath) {
+    public loadGeneratedHtml(filePath) {
         let cmd = "";
         if (process.platform === "win32") {
             cmd = `\"${filePath.replace("md", "html")}\"`;
