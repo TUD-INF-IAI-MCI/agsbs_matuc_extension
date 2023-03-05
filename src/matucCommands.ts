@@ -418,7 +418,7 @@ export default class MatucCommands {
             });
             matucProcess.on("close", (code) => {
                 if (code === 0) {
-                    showNotification(this._language.get("generatingSuccess"));
+                    showNotification({ message: this._language.get("generatingSuccess") });
                     resolve();
                 }
             });
