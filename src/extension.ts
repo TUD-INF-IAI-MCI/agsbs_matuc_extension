@@ -17,13 +17,16 @@ export function activate(context: vscode.ExtensionContext) {
     const extensionController = new ExtensionController(context);
     const disposable = vscode.commands.registerCommand("agsbs.open", () => {
         vscode.window.showInformationMessage("AGSBS is active.");
-        extensionController.showSidebar();
+        if (!this._sidebar.isVisible()) {
+            this._sidebarPanel = this._sidebar.show();
+        }
     });
 
     vscode.commands.registerCommand("agsbs.clone", () => {
         //this.extensionController.showSidebar();
         vscode.commands.executeCommand("agsbs.showGitView");
     });
+
     context.subscriptions.push(extensionController);
     context.subscriptions.push(disposable);
 }
@@ -38,13 +41,12 @@ export function deactivate() {
 /**
  * Orchestrates Updates and all open Panels
  */
-class ExtensionController {
-    private _layout: EditorLayout;
-    private _defaultLayout: EditorLayout;
+export class ExtensionController {
+    public _layout: EditorLayout;
     private _helper: Helper;
 
     private _taskbar: Taskbar;
-    private _taskbarPanel: any;
+    private _taskbarPanel: vscode.WebviewPanel;
 
     private _sidebar: Sidebar;
     private _sidebarPanel: vscode.WebviewPanel;
@@ -56,11 +58,6 @@ class ExtensionController {
     disposable = vscode.commands.registerCommand("agsbs.focusDocument", () => {
         this._helper.focusDocument();
     });
-
-    public getSidebarPanel(params) {
-        console.log("RETURN PANEL" + params);
-        return this._sidebarPanel;
-    }
 
     constructor(context: vscode.ExtensionContext) {
         const sidebar = new Sidebar(context);
@@ -76,9 +73,8 @@ class ExtensionController {
             orientation: 1,
             groups: [{ groups: [{ size: 0.8 }, { size: 0.2 }], size: 0.85 }, { size: 0.15 }]
         };
-        this._defaultLayout = { orientation: 1, groups: [{}] };
-        this._helper = helper;
 
+        this._helper = helper;
         this._taskbar = taskbar;
         this._sidebar = sidebar;
 
@@ -94,44 +90,26 @@ class ExtensionController {
     }
 
     /**
-     * Shows Side bar
-     */
-    public async showSidebar() {
-        if (this._sidebar.isVisible() === false) {
-            this._sidebarPanel = await this._sidebar.show();
-        }
-    }
-
-    /**
      * Gets triggered when the Layout of the Editor changes.
      */
     private async _update() {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
-            //If no Editor is open, return.
             return;
         }
-        const doc = editor.document;
-        if (doc.languageId === "markdown" || doc.languageId === "multimarkdown") {
-            //This gets executed if a Markdown File gets opened
-            //First, reset Workspace
-            if (this._sidebar.isVisible() === false || this._taskbar.isVisible() === false) {
+        if (editor.document.languageId === "markdown" || editor.document.languageId === "multimarkdown") {
+            if (!this._sidebar.isVisible() || !this._taskbar.isVisible()) {
+                this._sidebarPanel = await this._sidebar.show();
+                this._taskbarPanel = await this._taskbar.show();
                 await this._helper.setEditorLayout(this._layout);
             }
-            if (this._sidebar.isVisible() === false && this._taskbar.isVisible()) {
+            if (!this._sidebar.isVisible() && this._taskbar.isVisible()) {
                 //If Sidebar is closed but Taskbar is open, close Taskbar to reset
                 await this._taskbar.hide(this._taskbarPanel);
             }
-            if (this._sidebar.isVisible() && this._taskbar.isVisible() === false) {
+            if (this._sidebar.isVisible() && !this._taskbar.isVisible()) {
                 //If Sidebar is open but Taskbar is closed, close Sidebar to reset
                 await this._sidebar.hide(this._sidebarPanel);
-            }
-
-            if (this._sidebar.isVisible() === false) {
-                this._sidebarPanel = await this._sidebar.show();
-            }
-            if (this._taskbar.isVisible() === false) {
-                this._taskbarPanel = await this._taskbar.show();
             }
         } else {
             //TODO: BUG when closing both panels, this should be reported as an Issue to VSCODE because an error is thrown in the core
