@@ -354,15 +354,6 @@ export default class ProjectToolsFunctions {
             console.log("error in generateHTML line 233");
         }
     };
-    /**
-     * Callback for generating the HTML for the current File. Fallback if this is not set in the settings.
-     */
-    public generateHTMLSidebarCallback = async (params) => {
-        const profile = params.conversionProfile.value;
-        await this._matuc.checkAndSaveChanges();
-        await this._matuc.convertFile(profile);
-        this._helper.focusDocument(); //Puts focus back to the text editor
-    };
 
     /**
      * Generates HTML for all projects
