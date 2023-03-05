@@ -9,6 +9,7 @@ import Language from "../languages";
 import Helper from "./helper";
 import * as Papa from "papaparse";
 import SettingsHelper from "./settingsHelper";
+import { TableSelection } from "../types/types";
 
 /**
  * A Helper for all the table functions.
@@ -427,7 +428,7 @@ export default class TableHelper {
     public async getIfSelectionIsInTableAndReturnSelection(
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Selection
-    ) {
+    ): Promise<false | vscode.Selection> {
         const tableStartMarker = "<!-- " + this.tableStartMarker;
         const tableEndMarker = this.tableEndMarker + " -->";
         if (currentTextEditor === undefined) {
@@ -436,7 +437,7 @@ export default class TableHelper {
         if (selection === undefined) {
             selection = this._helper.getWordsSelection(currentTextEditor);
         }
-        const foundTableStartSelection: any = await this._helper.iterateUpwardsToCheckForString(
+        const foundTableStartSelection: boolean | vscode.Selection = await this._helper.iterateUpwardsToCheckForString(
             tableStartMarker,
             tableEndMarker,
             currentTextEditor,
@@ -516,7 +517,10 @@ export default class TableHelper {
      * @param currentTextEditor optional. The TextEditor to work with.
      * @returns a Promise, that resoves to false if no table is found, otherwise a Object with the Table content.
      */
-    public async loadSelectedTable(selection: vscode.Selection, currentTextEditor?: vscode.TextEditor): Promise<any> {
+    public async loadSelectedTable(
+        selection: vscode.Selection,
+        currentTextEditor?: vscode.TextEditor
+    ): Promise<TableSelection | string> {
         const delimiter: any = await this._settings.get("csvDelimiter");
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
@@ -561,14 +565,14 @@ export default class TableHelper {
                 vscode.window.showErrorMessage(this._language.get("parsingError"));
                 return "";
             }
-            const returnObject = {};
-            const returnDataObject = {};
-            returnDataObject["hasHeader"] = tableHeader;
-            returnDataObject["tableType"] = tableType;
-            returnDataObject["data"] = json["data"];
-            returnObject["data"] = returnDataObject;
-            returnObject["file"] = pathToFile;
-            return returnObject;
+            return {
+                data: {
+                    hasHeader: tableHeader,
+                    tableType: tableType,
+                    data: json["data"]
+                },
+                file: pathToFile
+            };
         }
     }
 
