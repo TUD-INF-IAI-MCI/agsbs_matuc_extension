@@ -16,6 +16,7 @@ import ListHelper from "./helper/listHelper";
 import InsertHelper from "./helper/insertHelper";
 import HeadlineHelper from "./helper/headlineHelper";
 import SettingsHelper from "./helper/settingsHelper";
+import { showNotification } from "./helper/notificationHelper";
 
 /**
  * The Main Class to add Buttons and their functionality of the Editor Tools Bar.
@@ -259,7 +260,7 @@ export default class EditorFunctions {
         const result = await this._headlineHelper.getNextHeadlineString();
 
         const headlineGrade: number = (result.match(/\#/g) || []).length;
-        vscode.window.showInformationMessage(this._language.get("headlineInsertedWithGrade") + headlineGrade);
+        showNotification({ message: this._language.get("headlineInsertedWithGrade") + headlineGrade });
         this._headlineHelper.setSpecificHeadline(headlineGrade);
     };
 
@@ -312,7 +313,7 @@ export default class EditorFunctions {
         const currentTextEditor = await this._helper.getCurrentTextEditor();
         if (currentTextEditor.document.isDirty) {
             await currentTextEditor.document.save();
-            vscode.window.showInformationMessage(this._language.get("documentHasBeenSaved"));
+            showNotification({ message: this._language.get("documentHasBeenSaved") });
         }
         const matucIsInstalled = await this._matucCommands.matucIsInstalled();
         if (!matucIsInstalled) {
@@ -628,7 +629,7 @@ export default class EditorFunctions {
             //if table exists in other folder, generate new Name, because the file could potentially already exists
             // with that name so no other file will be overridden by accident
         }
-        vscode.window.showInformationMessage(this._language.get("filehasBeenWritten") + params.hiddenFileName.value);
+        showNotification({ message: this._language.get("filehasBeenWritten") + params.hiddenFileName.value });
         let extraText = "";
         if (savedTable) {
             const relSavedTablePathParts = savedTable.split(path.sep);

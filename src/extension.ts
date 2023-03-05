@@ -7,6 +7,7 @@ import SettingsHelper from "./helper/settingsHelper";
 import Sidebar from "./sidebar";
 import Taskbar from "./taskbar";
 import { EditorLayout } from "./types/types";
+import { showNotification } from "./helper/notificationHelper";
 
 /**
  * Gets triggered when the Extension is activated
@@ -16,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
     console.log("AGSBS extension is now active!");
     const extensionController = new ExtensionController(context);
     const disposable = vscode.commands.registerCommand("agsbs.open", () => {
-        vscode.window.showInformationMessage("AGSBS is active.");
+        showNotification({ message: "AGSBS is active." });
         extensionController.showSidebar();
     });
 
@@ -32,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
  * this method is called when your extension is deactivated
  */
 export function deactivate() {
-    vscode.window.showInformationMessage("AGSBS deactivated.");
+    showNotification({ message: "AGSBS deactivated." });
 }
 
 /**

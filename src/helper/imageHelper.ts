@@ -8,7 +8,7 @@ import * as fs from "fs";
 import Language from "../languages";
 import SettingsHelper from "./settingsHelper";
 import Helper from "./helper";
-
+import { showNotification } from "./notificationHelper";
 export default class ImageHelper {
     private _language: Language;
     private _settings: SettingsHelper;
@@ -50,7 +50,7 @@ export default class ImageHelper {
                 vscode.window.showErrorMessage(this._language.get("somethingWentWrongDuringInsertOfGraphic"));
                 return;
             } else {
-                vscode.window.showInformationMessage(fileName + " " + this._language.get("imagesMdHasBeenWritten"));
+                showNotification({ message: fileName + " " + this._language.get("imagesMdHasBeenWritten") });
                 fs.closeSync(fd);
             }
         });
