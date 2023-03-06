@@ -5,6 +5,7 @@
 import * as vscode from "vscode";
 import Language from "../languages";
 import Helper from "./helper";
+import { ProjectConfig } from "../types/types";
 
 /**
  * A Helper for all the project tool functions
@@ -77,7 +78,8 @@ export default class ProjectHelper {
      * @param folder a passthrough of the folder to edit the metadata of. This is made to make it easier to work in the Sidebar Callback. The Information is passed as a hidden input field.
      * @returns the HTML-Form
      */
-    public getEditProjectHTMLForm(config: any, folder: string): string {
+
+    public getEditProjectHTMLForm(config: ProjectConfig, folder: string): string {
         const appendixPrefix = config.AppendixPrefix === 1 ? true : false;
         const author = config.Editor === "Unknown" ? "" : config.Editor;
         const sourceAuthor = config.SourceAuthor === "Unknown" ? "" : config.SourceAuthor;

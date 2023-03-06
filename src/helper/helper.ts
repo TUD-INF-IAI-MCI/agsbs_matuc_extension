@@ -145,7 +145,7 @@ export default class Helper {
      * @param selection the current selection
      */
     public async insertStringAtStartOfSelection(
-        charactersToInsert: any,
+        charactersToInsert: string,
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Range
     ): Promise<void> {
@@ -964,8 +964,7 @@ export default class Helper {
         return path.normalize(path2normalize);
     }
 
-    // TODO: replace any with a proper type
-    public FormatMatucErrorMessage(matucError: any) {
+    public FormatMatucErrorMessage(matucError: string) {
         let errorMessage = this._language.get("matucErrorDetails");
         errorMessage = errorMessage.replace("$message$", matucError["message"]);
         errorMessage = errorMessage.replace("$path$", path.basename(matucError["path"]));
@@ -978,8 +977,7 @@ export default class Helper {
      * Show error message with the error info, line number and name of file
      * @param mkResult
      */
-    // TODO: replace any with a proper type
-    public async ShowMkErrorMessage(mkResult: any) {
+    public async ShowMkErrorMessage(mkResult: string) {
         Object.keys(mkResult).forEach((key) => {
             const location = key.split(path.sep).reverse()[0]; // file name or directory name
             let errorMessage = ""; // text of the errorMessageq

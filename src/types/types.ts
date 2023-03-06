@@ -17,3 +17,16 @@ export interface File {
     completePath: string;
     relativePath: string;
 }
+
+export interface ProjectConfig {
+    AppendixPrefix: number;
+    Editor: string;
+    SourceAuthor: string;
+    Institution: string;
+    LectureTitle: string;
+    Language: string;
+    TocDepth: number;
+    Source: string;
+    SemesterOfEdit: string;
+    WorkingGroup: string;
+}

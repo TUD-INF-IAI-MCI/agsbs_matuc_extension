@@ -2,7 +2,6 @@
  * @author  Lucas Vogel
  */
 
-import * as vscode from "vscode";
 import Helper from "./helper";
 
 /**

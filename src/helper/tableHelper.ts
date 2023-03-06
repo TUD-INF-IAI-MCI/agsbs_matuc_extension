@@ -161,14 +161,13 @@ export default class TableHelper {
      * @param header optional. Boolean if the table has a header
      * @returns file path
      */
-    public async generateCSVfromJSONandSave(data: string, header?: boolean): Promise<string | boolean> {
+    public async generateCSVfromJSONandSave(data: string, header?: boolean): Promise<string> {
         const result = await this.generateCSVfromJSON(data, header);
         if (result !== undefined && result !== "") {
             try {
                 return await this.writeCSVFile(result);
             } catch (e) {
                 console.log(e);
-                return false;
             }
         }
     }

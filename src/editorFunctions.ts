@@ -17,7 +17,6 @@ import InsertHelper from "./helper/insertHelper";
 import HeadlineHelper from "./helper/headlineHelper";
 import SettingsHelper from "./helper/settingsHelper";
 import { showNotification } from "./helper/notificationHelper";
-
 /**
  * The Main Class to add Buttons and their functionality of the Editor Tools Bar.
  */
@@ -369,7 +368,7 @@ export default class EditorFunctions {
         this._sidebarCallback.addToSidebar({
             html,
             headline: this._language.get("insertTextbox"),
-            callback: this.insertAnnotationSidebarCallback,
+            callback: this.insertAnnotationsidebar,
             buttonText: this._language.get("insert"),
             script
         });
@@ -378,7 +377,7 @@ export default class EditorFunctions {
     /**
      * Adds an specified annotation to the text.
      */
-    public insertAnnotationSidebarCallback = async (params: {
+    public insertAnnotationsidebar = async (params: {
         annotationType: { value: string };
         color: { value: string };
         titleOfBox: { value: string };
@@ -433,7 +432,7 @@ export default class EditorFunctions {
         this._sidebarCallback.addToSidebar({
             html,
             headline: this._language.get("insertFootnote"),
-            callback: this.insertFootnoteSidebarCallback,
+            callback: this.insertFootnotesidebar,
             buttonText: this._language.get("insertFootnote")
         });
     };
@@ -441,7 +440,7 @@ export default class EditorFunctions {
     /**
      * Adds a specified footnote to the text.
      */
-    public insertFootnoteSidebarCallback = async (params: {
+    public insertFootnotesidebar = async (params: {
         footLabel: { value: string };
         footText: { value: string };
     }): Promise<void | boolean> => {
@@ -605,25 +604,30 @@ export default class EditorFunctions {
     /**
      * Callback of the Sidebar for editing a table
      */
-    public editTableSidebarCallback = async (params: any) => {
+    public editTableSidebarCallback = async (params: {
+        tableHeadCheckbox: { checked: boolean };
+        tableType: { value: string };
+        tableJSON: { value: string };
+        hiddenFileName: { value: string };
+    }) => {
         const hasHeader = params.tableHeadCheckbox.checked;
         const tableType = params.tableType.value;
         const rawdata = params.tableJSON.value;
-        let data: any;
+        let data;
         try {
             data = JSON.parse(rawdata);
         } catch (e) {
             console.log(e);
             return;
         }
-        const tableData: any = await this._tableHelper.generateCSVfromJSON(rawdata);
+        const tableData = await this._tableHelper.generateCSVfromJSON(rawdata);
         const fileName: string = params.hiddenFileName.value.replace(/^.*[\\\/]/, "");
         const folderName: string = params.hiddenFileName.value.substr(
             0,
             params.hiddenFileName.value.lastIndexOf("/") - 1
         );
         const defaultGeneratedFolderName: string = await this._tableHelper.getTableFolderName();
-        let savedTable: any;
+        let savedTable;
         if (folderName === defaultGeneratedFolderName) {
             savedTable = await this._tableHelper.writeCSVFile(tableData, fileName);
         } else {
@@ -644,7 +648,7 @@ export default class EditorFunctions {
             extraText = "exported to " + relSavedTablePath;
         }
         const table = this._tableHelper.generateTable(hasHeader, data, tableType, extraText);
-        const insertSelection: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        const insertSelection = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
         if (!insertSelection) {
             vscode.window.showErrorMessage(this._language.get("originalTableNotFound"));
             this._helper.insertStringAtStartOfLineOrLinebreak(table);
@@ -683,7 +687,7 @@ export default class EditorFunctions {
         this._sidebarCallback.addToSidebar({
             html,
             headline: this._language.get("importTableCsv"),
-            callback: this.insertCSVTableSidebarCallback,
+            callback: this.insertCSVTablesidebar,
             buttonText: this._language.get("insert")
         });
     };
@@ -691,7 +695,7 @@ export default class EditorFunctions {
     /**
      * Callback for insert a table from a CSV-File
      */
-    public insertCSVTableSidebarCallback = async (params) => {
+    public insertCSVTablesidebar = async (params) => {
         const urlData = params.selectTable.value;
         let url;
         if (urlData === "") {
@@ -733,7 +737,7 @@ export default class EditorFunctions {
         this._sidebarCallback.addToSidebar({
             html,
             headline: this._language.get("insertTable"),
-            callback: this.insertTableSidebarCallback,
+            callback: this.insertTablesidebar,
             buttonText: this._language.get("insert"),
             css,
             script
@@ -741,9 +745,9 @@ export default class EditorFunctions {
     };
 
     /**
-     * Insert Table SidebarCallback Function
+     * Insert Table sidebar Function
      */
-    public insertTableSidebarCallback = async (params) => {
+    public insertTablesidebar = async (params) => {
         const hasHeader = params.tableHeadCheckbox.checked;
         const tableType = params.tableType.value;
         const rawdata = params.tableJSON.value;
@@ -754,7 +758,7 @@ export default class EditorFunctions {
             console.log(e);
             return;
         }
-        const savedTable: any = await this._tableHelper.generateCSVfromJSONandSave(rawdata);
+        const savedTable = await this._tableHelper.generateCSVfromJSONandSave(rawdata);
         let extraText = "";
         if (savedTable) {
             const relSavedTablePathParts = savedTable.split(path.sep);
@@ -767,7 +771,7 @@ export default class EditorFunctions {
             extraText = "exported to " + relSavedTablePath;
         }
         const table = this._tableHelper.generateTable(hasHeader, data, tableType, extraText);
-        const insertPosition: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        const insertPosition = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
         if (!insertPosition) {
             this._helper.insertStringAtStartOfLineOrLinebreak(table);
         } else {
@@ -800,7 +804,7 @@ export default class EditorFunctions {
         this._sidebarCallback.addToSidebar({
             html,
             headline: this._language.get("insertGraphic"),
-            callback: this.insertImageSidebarCallback,
+            callback: this.insertImagesidebar,
             buttonText: this._language.get("insert"),
             script
         });
@@ -810,7 +814,7 @@ export default class EditorFunctions {
      * The Callback for inserting an image from the sidebar, inserts the image
      * @param params parameters given by the callback about the html-elements of the html-form
      */
-    public insertImageSidebarCallback = async (params) => {
+    public insertImagesidebar = async (params) => {
         let altText = "";
         let pictureTitle = "";
         const pictureSelector = JSON.parse(params.selectPicture.value);
@@ -861,7 +865,7 @@ export default class EditorFunctions {
         this._sidebarCallback.addToSidebar({
             html,
             headline: this._language.get("insertLink"),
-            callback: this.insertLinkSidebarCallback,
+            callback: this.insertLinksidebar,
             buttonText: this._language.get("insertLinkSubmit"),
             script
         });
@@ -870,7 +874,7 @@ export default class EditorFunctions {
     /**
      * gets called when the 'insert Link'-Button is pressed
      */
-    public insertLinkSidebarCallback = async (params) => {
+    public insertLinksidebar = async (params) => {
         let stringToInsert: string;
         if (params.linkTitle.value !== "") {
             stringToInsert = `[${params.linkText.value}](${params.url.value} "${params.linkTitle.value}") `;

@@ -8,10 +8,8 @@ import Helper from "./helper/helper";
 import Language from "./languages";
 import SettingsHelper from "./helper/settingsHelper";
 import * as path from "path";
-import { getMaxListeners, removeAllListeners } from "cluster";
-import { ClientRequest } from "http";
-const exec = require("child_process").exec;
-const spawn = require("child_process").spawn;
+import { exec } from "child_process";
+import { spawn } from "child_process";
 import { showNotification } from "./helper/notificationHelper";
 
 export default class GitCommands {
@@ -31,8 +29,8 @@ export default class GitCommands {
      * @param repoName Name of the repo
      */
     public async clone(user, repoName) {
-        const gitLocalPath: any = await this._settings.get("gitLocalPath");
-        let gitServerPath: any = await this._settings.get("gitServerPath");
+        const gitLocalPath = await this._settings.get("gitLocalPath");
+        let gitServerPath = await this._settings.get("gitServerPath");
         const usesHttpsOrSshForGit = await this._settings.get("usesHttpsOrSshForGit");
         if (gitServerPath.endsWith("/")) {
             gitServerPath = gitServerPath.substring(0, gitServerPath.length - 1);
@@ -109,9 +107,11 @@ export default class GitCommands {
                     reject();
                 }
             });
-            gitCloneProcess.stdout.on("data", (data) => {});
+            gitCloneProcess.stdout.on("data", () => {
+                /**/
+            });
 
-            token.onCancellationRequested((_) => gitCloneProcess.kill());
+            token.onCancellationRequested(() => gitCloneProcess.kill());
         });
     }
 
@@ -122,7 +122,7 @@ export default class GitCommands {
      * @param path
      */
     public async track(path) {
-        exec("git branch -u origin/master", { cwd: path }, (error, stdout, stderr) => {
+        exec("git branch -u origin/master", { cwd: path }, (error) => {
             if (error) {
                 console.error(`exec git track error: ${error}`);
                 return;
@@ -166,13 +166,12 @@ export default class GitCommands {
      * @param {string} message The commit message.
      * @param {string} path The path of the local git repository.
      */
-    public async commit(message, path) {
-        const promThis = this;
-        return new Promise(function (resolve, reject) {
+    public async commit(message, path): Promise<{ out: string; err?: string }> {
+        return new Promise(function (resolve) {
             exec(`git commit -am "${message}"`, { cwd: path }, (error, stdout, stderr) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
-                    vscode.window.showErrorMessage(promThis._language.get("commitChangesErrorDetail"));
+                    vscode.window.showErrorMessage(this._language.get("commitChangesErrorDetail"));
                     resolve({ out: error.message });
                 }
                 resolve({ out: stdout, err: stderr });
@@ -197,12 +196,12 @@ export default class GitCommands {
     }
 
     public async setConfig(userName: string, eMail: string, path) {
-        const gitConfig: any = await this.getConfig(path);
+        const gitConfig = await this.getConfig(path);
         if (!gitConfig.includes("user.email") || !gitConfig.includes("user.name")) {
             let command = `git config --local user.email \"${eMail}\" && `;
             command += `git config --local user.name  \"${userName}\"`;
             return new Promise(function (resolve, reject) {
-                exec(command, { cwd: path }, (error, stdout, stderr) => {
+                exec(command, { cwd: path }, (error, stdout) => {
                     if (error) {
                         console.log("Error setting git config -l --local \n \t" + error);
                         reject(error);
@@ -213,9 +212,9 @@ export default class GitCommands {
         }
     }
 
-    public async getConfig(path) {
+    public async getConfig(path): Promise<string> {
         return new Promise(function (resolve, reject) {
-            exec("git config -l --local", { cwd: path }, (error, stdout, stderr) => {
+            exec("git config -l --local", { cwd: path }, (error, stdout) => {
                 if (error) {
                     console.log("Error during git config -l --local \n \t" + error);
                     reject(error);

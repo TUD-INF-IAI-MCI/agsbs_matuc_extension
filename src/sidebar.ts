@@ -108,13 +108,11 @@ export default class Sidebar {
      * @param panel The WebviewPanel that should be closed, from fype vscode.WebviewPanel
      * @returns a promise that resolves to true if its finished.
      */
-    public async hide(panel: vscode.WebviewPanel) {
-        return new Promise(async (resolve, reject) => {
-            await panel.dispose();
-            this._sidebarIsVisible = false;
-            this._panel = null;
-            resolve(true);
-        });
+    public async hide(panel: vscode.WebviewPanel): Promise<boolean> {
+        await panel.dispose();
+        this._sidebarIsVisible = false;
+        this._panel = null;
+        return true;
     }
 
     /**

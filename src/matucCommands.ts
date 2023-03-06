@@ -11,6 +11,7 @@ import Sidebar from "./sidebar";
 import osLocale = require("os-locale");
 import path = require("path");
 import { showNotification } from "./helper/notificationHelper";
+import { ProjectConfig } from "./types/types";
 
 /**
  * This Class contains all Functions regarding matuc
@@ -20,10 +21,10 @@ export default class MatucCommands {
     private _helper: Helper;
     private _sidebarCallback: Sidebar;
 
-    constructor(sidebarCallback) {
+    constructor(sidebar) {
         this._language = new Language();
         this._helper = new Helper();
-        this._sidebarCallback = sidebarCallback;
+        this._sidebarCallback = sidebar;
     }
 
     /**
@@ -46,9 +47,9 @@ export default class MatucCommands {
     public async getMatucVersion() {
         let cmd = "";
         cmd += `matuc_js version`;
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
             try {
-                exec(cmd, (error, stdout, stderr) => {
+                exec(cmd, (error, stdout) => {
                     if (error) {
                         resolve(false);
                     }
@@ -101,7 +102,7 @@ export default class MatucCommands {
         cmd += `${relPathToImg}`;
         console.log(cmd);
         return new Promise(function (resolve, reject) {
-            exec(cmd, { cwd: currentPath }, (error, stdout, stderr) => {
+            exec(cmd, { cwd: currentPath }, (error, stdout) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
                     const fragment = JSON.parse(stdout);
@@ -130,7 +131,7 @@ export default class MatucCommands {
         const cmd = `matuc_js addpnum -f "${thisPath}" ${line}`;
         return new Promise(function (resolve, reject) {
             try {
-                exec(cmd, (error, stdout, stderr) => {
+                exec(cmd, (error, stdout) => {
                     if (error) {
                         console.error(`exec error: ${error}`);
                         try {
@@ -244,7 +245,7 @@ export default class MatucCommands {
         const filepath = currentTextEditor.document.uri.fsPath;
         const cmd = `matuc_js mk \"${filepath}\"`;
         currentTextEditor.document.save();
-        exec(cmd, (error, stdout, stderr) => {
+        exec(cmd, (error, stdout) => {
             if (error) {
                 console.log(cmd);
                 console.error(`exec error: ${error}`);
@@ -268,7 +269,7 @@ export default class MatucCommands {
         console.log("cmd checkIfFileIsWithinLecture : " + cmd);
         let isWithinLecture;
         return new Promise(function (resolve, reject) {
-            exec(cmd, (error, stdout, stderr) => {
+            exec(cmd, (error, stdout) => {
                 if (error) {
                     vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
                     reject(error);
@@ -283,7 +284,7 @@ export default class MatucCommands {
      * Loads and show config, .lecture_meta_data.dcxml, of project.
      * @param filePath
      */
-    public async showConfig(filePath: string) {
+    public async showConfig(filePath: string): Promise<ProjectConfig> {
         let cmd;
         if (process.platform === "win32") {
             cmd = `matuc_js conf show`;
@@ -293,15 +294,14 @@ export default class MatucCommands {
         }
         if (process.platform === "linux") {
             vscode.window.showErrorMessage(this._language.get("linuxNotSupportedYet"));
-            return false;
+            vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
         }
         return new Promise(function (resolve, reject) {
             console.log("Execute");
-            exec(cmd, { cwd: filePath }, (error, stdout, stderr) => {
+            exec(cmd, { cwd: filePath }, (error, stdout) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
                     vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
-                    resolve(false);
                 }
                 const currentConfig = JSON.parse(stdout);
                 // check why Aktuelle Einstellungen is default also for english data
@@ -439,7 +439,7 @@ export default class MatucCommands {
                     resolve();
                 }
             });
-            token.onCancellationRequested((_) => matucProcess.kill());
+            token.onCancellationRequested(() => matucProcess.kill());
         });
     }
 
@@ -451,7 +451,7 @@ export default class MatucCommands {
         } else if (process.platform === "darwin") {
             cmd = `open ./\"${filePath.replace("md", "html")}\"`;
         }
-        exec(cmd, (error, stdout, stderr) => {
+        exec(cmd, (error) => {
             if (error) {
                 console.error(`load generate html`);
                 console.error(`exec error: ${error}`);
@@ -475,7 +475,7 @@ export default class MatucCommands {
             await currentTextEditor.document.save();
         }
         const cmd = `matuc_js mk \"${filePath}\" `;
-        await exec(cmd, (error, stdout, stderr) => {
+        await exec(cmd, (error, stdout) => {
             if (error) {
                 console.error(`exec error: ${error}`);
                 noErrorFound = false;

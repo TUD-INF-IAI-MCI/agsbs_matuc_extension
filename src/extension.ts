@@ -17,10 +17,10 @@ export function activate(context: vscode.ExtensionContext) {
     console.log("AGSBS extension is now active!");
     const extensionController = new ExtensionController(context);
     const disposable = vscode.commands.registerCommand("agsbs.open", () => {
-    vscode.window.showInformationMessage("AGSBS is active.");
-    if (!this._sidebar.isVisible()) {
-        this._sidebarPanel = this._sidebar.show();
-    }
+        vscode.window.showInformationMessage("AGSBS is active.");
+        if (!this._sidebarCallback.isVisible()) {
+            this._sidebarPanel = this._sidebarCallback.show();
+        }
     });
 
     vscode.commands.registerCommand("agsbs.clone", () => {
@@ -45,10 +45,10 @@ export class ExtensionController {
     public _layout: EditorLayout;
     private _helper: Helper;
 
-    private _taskbar: Taskbar;
+    private _taskbarCallback: Taskbar;
     private _taskbarPanel: vscode.WebviewPanel;
 
-    private _sidebar: Sidebar;
+    private _sidebarCallback: Sidebar;
     private _sidebarPanel: vscode.WebviewPanel;
 
     private _settingsHelper: SettingsHelper;
@@ -75,8 +75,8 @@ export class ExtensionController {
         };
 
         this._helper = helper;
-        this._taskbar = taskbar;
-        this._sidebar = sidebar;
+        this._taskbarCallback = taskbar;
+        this._sidebarCallback = sidebar;
 
         const subscriptions: vscode.Disposable[] = []; //Create Disposable for Event subscriptions
         vscode.window.onDidChangeActiveTextEditor(this._update, this, subscriptions);
@@ -98,24 +98,24 @@ export class ExtensionController {
             return;
         }
         if (editor.document.languageId === "markdown" || editor.document.languageId === "multimarkdown") {
-            if (!this._sidebar.isVisible() || !this._taskbar.isVisible()) {
-                this._sidebarPanel = await this._sidebar.show();
-                this._taskbarPanel = await this._taskbar.show();
+            if (!this._sidebarCallback.isVisible() || !this._taskbarCallback.isVisible()) {
+                this._sidebarPanel = await this._sidebarCallback.show();
+                this._taskbarPanel = await this._taskbarCallback.show();
                 await this._helper.setEditorLayout(this._layout);
             }
-            if (!this._sidebar.isVisible() && this._taskbar.isVisible()) {
+            if (!this._sidebarCallback.isVisible() && this._taskbarCallback.isVisible()) {
                 //If Sidebar is closed but Taskbar is open, close Taskbar to reset
-                await this._taskbar.hide(this._taskbarPanel);
+                await this._taskbarCallback.hide(this._taskbarPanel);
             }
-            if (this._sidebar.isVisible() && !this._taskbar.isVisible()) {
+            if (this._sidebarCallback.isVisible() && !this._taskbarCallback.isVisible()) {
                 //If Sidebar is open but Taskbar is closed, close Sidebar to reset
-                await this._sidebar.hide(this._sidebarPanel);
+                await this._sidebarCallback.hide(this._sidebarPanel);
             }
         } else {
             //TODO: BUG when closing both panels, this should be reported as an Issue to VSCODE because an error is thrown in the core
             //This will crash the Extension debugging Host forever and will force you to reinstall VSCODE from scratch. Seriously.
             //Read the docs.
-            //await this._sidebar.hide(this._sidebarPanel);
+            //await this._sidebarCallback.hide(this._sidebarPanel);
         }
     }
 }

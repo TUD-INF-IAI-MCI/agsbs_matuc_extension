@@ -27,12 +27,12 @@ export default class ProjectToolsFunctions {
     private _settings: SettingsHelper;
     private _git: GitCommands;
 
-    constructor(taskbarCallback, sidebarCallback) {
+    constructor(taskbar, sidebar) {
         this._helper = new Helper();
         this._language = new Language();
-        this._sidebarCallback = sidebarCallback;
-        this._taskbarCallback = taskbarCallback;
-        this._matuc = new MatucCommands(sidebarCallback);
+        this._sidebarCallback = sidebar;
+        this._taskbarCallback = taskbar;
+        this._matuc = new MatucCommands(sidebar);
         this._projectHelper = new ProjectHelper();
         this._snippets = new ProjectToolsFunctionSnippets();
         this._settings = new SettingsHelper();
@@ -153,7 +153,7 @@ export default class ProjectToolsFunctions {
         this._sidebarCallback.addToSidebar({
             html,
             headline: this._language.get("newProject"),
-            callback: this.createNewProjectSidebarCallback,
+            callback: this.createNewProjectsidebar,
             buttonText: this._language.get("insert"),
             script
         });
@@ -162,7 +162,7 @@ export default class ProjectToolsFunctions {
     /**
      * Callback for creating a new project
      */
-    public createNewProjectSidebarCallback = async (params) => {
+    public createNewProjectsidebar = async (params) => {
         const pathDataObject = this._projectHelper.convertSpeciallyEscapedJSONToObject(params.folder.value);
         const folderPath = pathDataObject.uri;
         const countOfChapters = params.chapters.value;
@@ -229,15 +229,11 @@ export default class ProjectToolsFunctions {
         const currentEditor: vscode.TextEditor = await this._helper.getCurrentTextEditor();
         const folder: string = await this._helper.getFolderFromFilePath(currentEditor.document.uri.fsPath);
         const config = await this._matuc.showConfig(folder);
-        if (config === false) {
-            vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
-            return;
-        }
         const html = this._projectHelper.getEditProjectHTMLForm(config, folder);
         this._sidebarCallback.addToSidebar({
             html,
             headline: this._language.get("editProject"),
-            callback: this.editProjectDataSidebarCallback,
+            callback: this.editProjectDatasidebar,
             buttonText: this._language.get("updateEditedData")
         });
     };
@@ -245,7 +241,7 @@ export default class ProjectToolsFunctions {
     /**
      * Callback for editing the Metadata of the current project.
      */
-    public editProjectDataSidebarCallback = async (params) => {
+    public editProjectDatasidebar = async (params) => {
         try {
             await this._matuc.updateMetaData({
                 alternatePrefix: params.preface.checked,
@@ -383,32 +379,31 @@ export default class ProjectToolsFunctions {
             vscode.window.showErrorMessage(this._language.get("notInsideLecture"));
             return;
         }
-        const form = `
+        const html = `
         ${this._language.get("doYouWantToAutocorrect")}<br role="none">
         <div class="spacing" role="none"></div>
         <div class="spacing" role="none"></div>
         <input name="autoCorrectPageNumbering" id="autoCorrectPageNumbering" type="checkbox"/>
         <label for="autoCorrectPageNumbering">${this._language.get("autocorrectPagenumberingCheckbox")}</label>
         `;
-        this._sidebarCallback.addToSidebar(
-            form,
-            this._language.get("pagenumbering"),
-            this.publishSidebarCallback,
-            this._language.get("generate")
-        );
+        this._sidebarCallback.addToSidebar({
+            html,
+            headline: this._language.get("pagenumbering"),
+            callback: this.publishsidebar,
+            buttonText: this._language.get("generate")
+        });
         this._helper.focusDocument(); //Puts focus back to the text editor
     };
 
     /**
      * Checks the whole project
      */
-    public publishSidebarCallback = async (params) => {
+    public publishsidebar = async (params) => {
         if (params.autoCorrectPageNumbering.checked) {
             await this._matuc.fixpnumInPlace();
         }
         const currentEditor = await this._helper.getCurrentTextEditor();
-        const filePath = currentEditor.document.uri.fsPath;
-        this._matuc.checkEntireProject(filePath);
+        this._matuc.checkEntireProject(currentEditor);
     };
 
     /**
@@ -423,7 +418,7 @@ export default class ProjectToolsFunctions {
         const gitLoginName = await this._settings.get("gitLoginName");
         const gitUserName = await this._settings.get("gitUserName");
         const gitUserEmail = await this._settings.get("gitUserEmail");
-        const form = `
+        const html = `
         <label for="gitUser">${this._language.get("gitUser")}</label>
         <input id="gitLoginName" name="gitLoginName" type="text" required="true" value="${gitLoginName}">
         <div class="spacing" role="none"></div>
@@ -434,18 +429,18 @@ export default class ProjectToolsFunctions {
         <label for="mailadresse">${this._language.get("mailadresse")}</label>
         <input id="mailadresse" name="mailadresse" type="text" required="true" value="${gitUserEmail}">
         `;
-        this._sidebarCallback.addToSidebar(
-            form,
-            this._language.get("cloneExistingRepo"),
-            this.cloneRepoSidebarCallback,
-            this._language.get("clone")
-        );
+        this._sidebarCallback.addToSidebar({
+            html,
+            headline: this._language.get("cloneExistingRepo"),
+            callback: this.cloneReposidebar,
+            buttonText: this._language.get("clone")
+        });
     };
 
     /**
      * clones a project
      */
-    public cloneRepoSidebarCallback = async (params) => {
+    public cloneReposidebar = async (params) => {
         const gitLoginName = params.gitLoginName.value;
         const repoName = params.repoName.value;
         const gitUserName = params.gitUserName.value;
@@ -471,34 +466,34 @@ export default class ProjectToolsFunctions {
             vscode.window.showErrorMessage(this._language.get("gitIsNotEnabled"));
             return;
         }
-        const form = `
+        const html = `
         <label for="commitChanges">${this._language.get("commitChanges")}</label>
         <div class="spacing" role="none"></div>
         <input id="commitChanges" name="commitChanges" type="text" required="true" placeholder="${this._language.get(
             "commitMessage"
         )}">
         `;
-        this._sidebarCallback.addToSidebar(
-            form,
-            this._language.get("commitChanges"),
-            this.commitChangesSidebarCallback,
-            this._language.get("commit")
-        );
+        this._sidebarCallback.addToSidebar({
+            html,
+            headline: this._language.get("commitChanges"),
+            callback: this.commitChangessidebar,
+            buttonText: this._language.get("commit")
+        });
     };
 
     /**
      * commits the changes, and pushes them.
      */
-    public commitChangesSidebarCallback = async (params) => {
+    public commitChangessidebar = async (params) => {
         const commitMessage = params.commitChanges.value;
         const currentTexteditor = await this._helper.getCurrentTextEditor();
         const projectFolder = await this._helper.getFolderFromFilePath(currentTexteditor.document.uri.fsPath);
         await this._git.addAll(projectFolder);
-        const error: any = await this._git.commit(commitMessage, projectFolder);
+        const error = await this._git.commit(commitMessage, projectFolder);
         if (error.out.includes("Please tell me who you are")) {
             vscode.window.showErrorMessage(this._language.get("noUserDataIsSet"));
-            const userName: any = await this._settings.get("gitUserName");
-            const emailAddress: any = await this._settings.get("gitUserEmail");
+            const userName = await this._settings.get("gitUserName");
+            const emailAddress = await this._settings.get("gitUserEmail");
             await this._git.setConfig(userName, emailAddress, projectFolder);
             let msg = this._language.get("SetUserDataInConfig");
             msg = msg.replace("$userName$", userName);
