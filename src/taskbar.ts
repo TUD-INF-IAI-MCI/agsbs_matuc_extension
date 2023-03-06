@@ -115,7 +115,7 @@ export default class Taskbar {
             const newSectionHTML = this._generateSectionHTML(section);
             this._addToHTML("TOOLS_END", newSectionHTML);
         }
-        const icon = this._helper.getWebviewResourceIconURI(this._panel, iconName, this._context);
+        const icon = this._helper.getWebviewResourceIconURI(iconName, this._context);
         //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
         //ToDo Button
         const html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')"><img src="${icon}"></button>`;
@@ -161,7 +161,7 @@ export default class Taskbar {
             const newSectionHTML = this._generateSectionHTML(section);
             this._addToHTML("PROJECTTOOLS_END", newSectionHTML);
         }
-        const icon = this._helper.getWebviewResourceIconURI(this._panel, iconName, this._context);
+        const icon = this._helper.getWebviewResourceIconURI(iconName, this._context);
         //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
         const html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')"><img src="${icon}"></button>`;
         //var html="";

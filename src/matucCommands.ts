@@ -118,7 +118,7 @@ export default class MatucCommands {
      * @param selection optional. the selection, only the start-line of the selection will be handled
      * @param currentTextEditor optional. The TextEditor to work with.
      */
-    public async addPageNumber(selection?: vscode.Selection, currentTextEditor?: vscode.TextEditor) {
+    public async addPageNumber(selection?: vscode.Selection, currentTextEditor?: vscode.TextEditor): Promise<string> {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
         }
@@ -137,18 +137,18 @@ export default class MatucCommands {
                             const fragment = JSON.parse(stdout);
                             reject(fragment.error + "\n" + fragment.usage);
                         } catch (e) {
-                            resolve(false);
+                            resolve("");
                         }
                     }
                     try {
                         const fragment = JSON.parse(stdout);
                         resolve(fragment.result.pagenumber);
                     } catch (e) {
-                        resolve(false);
+                        resolve("");
                     }
                 });
             } catch (e) {
-                resolve(false);
+                resolve("");
             }
         });
     }
@@ -157,10 +157,10 @@ export default class MatucCommands {
      * Initializes a Metadata-File
      * @param docpath path to the document where the Metadata applies
      */
-    public async initMetaData(docpath: string) {
+    public async initMetaData({ folderPath }: { folderPath: string }) {
         // see matuc-commands.js line 183
         return new Promise(function (resolve, reject) {
-            exec("matuc conf init", { cwd: docpath }, (error, stdout, stderr) => {
+            exec("matuc conf init", { cwd: folderPath }, (error, stdout, stderr) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
                     return reject(error);
@@ -173,7 +173,6 @@ export default class MatucCommands {
     /**
      * Updates the Metadata
      * @param alternatePrefix if the Checkbox "Appendix Prefix" is checked. the type is not clear but most propably a boolean.
-     * @param outputFormat aparently not used and not documented in the original matuc code of Atom.
      * @param editor Author of the Project
      * @param institution Institution where this is written
      * @param title Title of the Project
@@ -185,33 +184,44 @@ export default class MatucCommands {
      * @param workingGroup Working Group of the Author
      * @param folderPath Path to the Folder
      */
-    public async updateMetaData(
+    public async updateMetaData({
         alternatePrefix,
-        outputFormat,
-        editor: string,
-        institution: string,
-        title: string,
-        language: string,
-        source: string,
-        sourceAuthor: string,
+        editor,
+        institution,
+        title,
+        language,
+        source,
+        sourceAuthor,
         semYear,
-        tocDepth: number,
-        workingGroup: string,
-        folderPath: string
-    ) {
+        tocDepth,
+        workingGroup,
+        folderPath
+    }: {
+        alternatePrefix: boolean;
+        editor?: string;
+        institution: string;
+        title: string;
+        language: string;
+        source: string;
+        sourceAuthor: string;
+        semYear: string;
+        tocDepth: number;
+        workingGroup: string;
+        folderPath: string;
+    }) {
         // multiple parameters are needed
-        let cmd;
-        cmd = "matuc_js conf update ";
-        cmd = alternatePrefix ? cmd + "-a " : cmd;
-        cmd = editor ? cmd + '-e "' + editor + '" ' : cmd;
-        cmd = institution ? cmd + '-i "' + institution + '" ' : cmd;
-        cmd = title ? cmd + '-l "' + title + '" ' : cmd;
-        cmd = language ? cmd + '-L "' + language + '" ' : cmd;
-        cmd = source ? cmd + '-s "' + source + '" ' : cmd;
-        cmd = sourceAuthor ? cmd + '-A "' + sourceAuthor + '" ' : cmd;
-        cmd = semYear ? cmd + '-S "' + semYear + '" ' : cmd;
-        cmd = tocDepth ? cmd + "--toc-depth " + tocDepth + " " : cmd;
-        cmd = workingGroup ? cmd + '-w "' + workingGroup + '" ' : cmd;
+        let cmd = "matuc_js conf update";
+
+        if (alternatePrefix) cmd += " -a";
+        if (editor) cmd += ` -e "${editor}"`;
+        if (institution) cmd += ` -i "${institution}"`;
+        if (title) cmd += ` -l "${title}"`;
+        if (language) cmd += ` -L "${language}"`;
+        if (source) cmd += ` -s "${source}"`;
+        if (sourceAuthor) cmd += ` -A "${sourceAuthor}"`;
+        if (semYear) cmd += ` -S "${semYear}"`;
+        if (tocDepth) cmd += ` --toc-depth ${tocDepth}`;
+        if (workingGroup) cmd += ` -w "${workingGroup}"`;
         console.log("cmd update " + cmd);
         return new Promise(function (resolve, reject) {
             exec(cmd, { cwd: folderPath }, (error, stdout, stderr) => {
@@ -227,7 +237,7 @@ export default class MatucCommands {
     /**
      * Checks all markdown files in the project folder invoking mistkerl and saves the current opened file, executes `matuc_js mk`
      */
-    public async checkEntireProject(pathToFile: string, currentTextEditor?: vscode.TextEditor) {
+    public async checkEntireProject(currentTextEditor?: vscode.TextEditor) {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
         }
@@ -253,7 +263,7 @@ export default class MatucCommands {
      * Checks if a File is within the lecture
      * @param pathToFile absolute path to the file
      */
-    public async checkIfFileIsWithinLecture(pathToFile) {
+    public async checkIfFileIsWithinLecture(pathToFile: string) {
         const cmd = `matuc_js iswithinlecture \"${pathToFile}\"`;
         console.log("cmd checkIfFileIsWithinLecture : " + cmd);
         let isWithinLecture;
@@ -314,20 +324,26 @@ export default class MatucCommands {
      * @param {string} language Sets the language for the matuc project
      * @param {string} projectPath Sets the path where the project shall be stored
      */
-    public async newProject(
-        countOfAppendixChapters: number,
-        countOfChapters: number,
-        preface: boolean,
-        language: string,
-        projectPath: string
-    ) {
-        let cmd = "matuc new ";
-        cmd = countOfAppendixChapters ? cmd + "-a " + countOfAppendixChapters + " " : cmd;
-        cmd = countOfChapters !== null ? cmd + "-c " + countOfChapters + " " : cmd;
-        cmd = preface ? cmd + "-p " : cmd;
-        cmd = language !== null ? cmd + "-l " + language + " " : cmd;
-        cmd = projectPath !== null ? cmd + '"' + projectPath + '"' : cmd + ".";
-        console.log("command is  " + cmd);
+    public async newProject({
+        countOfAppendixChapters,
+        countOfChapters,
+        preface,
+        language,
+        folderPath
+    }: {
+        countOfAppendixChapters: number;
+        countOfChapters: number;
+        preface: boolean;
+        language: string;
+        folderPath: string;
+    }) {
+        let cmd = `matuc new ${folderPath !== null ? `"${folderPath}"` : "."}`;
+
+        if (countOfAppendixChapters) cmd += ` -a ${countOfAppendixChapters}`;
+        if (countOfChapters !== null) cmd += ` -c ${countOfChapters}`;
+        if (preface) cmd += " -p";
+        if (language !== null) cmd += ` -l ${language}`;
+
         return new Promise(function (resolve, reject) {
             exec(cmd, (error, stdout, stderr) => {
                 if (error) {
@@ -401,16 +417,17 @@ export default class MatucCommands {
                     showNotification({ message: this._language.get("mistkerlDidNotFindAnyError") });
                 } else {
                     if (parsedData.hasOwnProperty("error")) {
-                        this._sidebarCallback.addToSidebar(
-                            this._helper.FormatMatucErrorMessage(parsedData.error),
-                            this._language.get("error"),
-                            null
-                        );
+                        this._sidebarCallback.addToSidebar({
+                            html: this._helper.FormatMatucErrorMessage(parsedData.error),
+                            headline: this._language.get("error")
+                        });
                         reject();
                     } else {
                         if (parsedData.hasOwnProperty("result")) {
-                            this._sidebarCallback.addToSidebar(parsedData.error, this._language.get("error"), null);
-                            //this._helper.ShowMkErrorMessage(parsedData.result);
+                            this._sidebarCallback.addToSidebar({
+                                html: parsedData.error,
+                                headline: this._language.get("error")
+                            });
                             reject();
                         }
                     }
@@ -473,52 +490,6 @@ export default class MatucCommands {
             }
         });
         return noErrorFound;
-    }
-
-    /**
-     * Converts a whole project.
-     * @param profile the given profile, "visually" for the visually impaied or "blind" for the blind
-     * @param currentTextEditor optional. The current Text editor to work with.
-     */
-    public async convertEntireProject(profile: string, currentTextEditor?: vscode.TextEditor) {
-        if (!currentTextEditor) {
-            currentTextEditor = await this._helper.getCurrentTextEditor();
-        }
-        currentTextEditor.document.save();
-        const filePath = currentTextEditor.document.uri.fsPath;
-        const projectPath = path.dirname(path.dirname(filePath));
-        let cmd;
-        if (process.platform === "win32") {
-            cmd = "matuc_js conv";
-            cmd += ` \"${projectPath}\"`;
-        } else {
-            // OS X and Linux
-            cmd = `matuc_js conv ${projectPath}/..`;
-        }
-        console.log(cmd);
-        exec(cmd, { env: this.getOsLocale() }, (error, stdout, stderr) => {
-            if (error) {
-                const fragment = JSON.parse(stdout);
-                let message = "";
-                if (fragment.error.message.startsWith("No configuration")) {
-                    message = this._language.get("noConfiguration");
-                } else {
-                    message = fragment.error.message;
-                    if (fragment.error.hasOwnProperty("path")) {
-                        message += "\n\n\n" + this._language.get("checkFile") + " " + fragment.error.path;
-                    }
-                }
-                vscode.window.showErrorMessage(this._language.get("unExpectedMatucError") + message);
-                console.error(`exec error: ${error}`);
-                return;
-            } else {
-                this.loadGeneratedHtml(path);
-            }
-            console.log(`stdout: ${stdout}`);
-            console.log(`stderr: ${stderr}`);
-        });
-        //open file
-        this.loadGeneratedHtml(filePath);
     }
 
     /**

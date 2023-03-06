@@ -16,7 +16,7 @@ export default class Sidebar {
     private _context: vscode.ExtensionContext;
     private _helper: Helper;
     private _panel: vscode.WebviewPanel;
-    private _sidebarCallback: any;
+    private _sidebarCallback: (any) => void;
     private _snippets: SidebarSnippets;
     private _matuc: MatucCommands;
     private _wasOpenendBefore: boolean;
@@ -31,7 +31,7 @@ export default class Sidebar {
         this._language = new Language();
         this._wasOpenendBefore = false;
 
-        const disposable = vscode.commands.registerCommand("agsbs.focusSidebar", () => {
+        vscode.commands.registerCommand("agsbs.focusSidebar", () => {
             this.focus();
         });
     }
@@ -56,43 +56,41 @@ export default class Sidebar {
      * @return A promise that resolves to a WebviewPanel from Type vscode.WebviewPanel
      */
     public async show(): Promise<vscode.WebviewPanel> {
-        return new Promise(async (resolve, reject) => {
-            this._sidebarIsVisible = true;
-            const panel = vscode.window.createWebviewPanel(
-                "agsbssidebar", // Identifies the type of the webview. Used internally
-                "AGSBS Sidebar", // Title of the panel displayed to the user
-                //vscode.ViewColumn.X, // Editor column to show the new webview panel in.
-                {
-                    viewColumn: vscode.ViewColumn.Two,
-                    preserveFocus: true
-                },
-                {
-                    enableScripts: true
-                } // Webview options.
-            );
-            panel.webview.html = this._getBaseHTML();
-            panel.onDidDispose(() => {
-                this._sidebarIsVisible = false; //When panel is closed
-                this._panel = null;
-            }, null);
-            panel.webview.onDidReceiveMessage((message) => {
-                //If the Webview sends a Message
-                if (message.hasOwnProperty("text")) {
-                    this._messageFromWebviewHandler(message);
-                } else {
-                    if (message.hasOwnProperty("cancel")) {
-                        this._panel.webview.html = this._getBaseHTML();
-                    }
+        this._sidebarIsVisible = true;
+        const panel = vscode.window.createWebviewPanel(
+            "agsbssidebar", // Identifies the type of the webview. Used internally
+            "AGSBS Sidebar", // Title of the panel displayed to the user
+            //vscode.ViewColumn.X, // Editor column to show the new webview panel in.
+            {
+                viewColumn: vscode.ViewColumn.Two,
+                preserveFocus: true
+            },
+            {
+                enableScripts: true
+            } // Webview options.
+        );
+        panel.webview.html = this._getBaseHTML();
+        panel.onDidDispose(() => {
+            this._sidebarIsVisible = false; //When panel is closed
+            this._panel = null;
+        }, null);
+        panel.webview.onDidReceiveMessage((message) => {
+            //If the Webview sends a Message
+            if (message.hasOwnProperty("text")) {
+                this._messageFromWebviewHandler(message);
+            } else {
+                if (message.hasOwnProperty("cancel")) {
+                    this._panel.webview.html = this._getBaseHTML();
                 }
-            }, undefined);
-            this._panel = panel;
-
-            if (this._wasOpenendBefore === false) {
-                this._addWelcomeMessage();
             }
+        }, undefined);
+        this._panel = panel;
 
-            resolve(panel); //return panel
-        });
+        if (this._wasOpenendBefore === false) {
+            this._addWelcomeMessage();
+        }
+
+        return panel; //return panel
     }
 
     /**
@@ -127,21 +125,28 @@ export default class Sidebar {
      * @param css optional. Custom CSS for the form
      * @param script optional. Custom javascript for the form
      */
-    public addToSidebar = async (
-        html: string,
-        headline: string,
-        callback: any,
-        buttonText?: string,
-        css?: string,
-        script?: string
-    ) => {
+    public addToSidebar = async ({
+        html,
+        headline,
+        callback,
+        buttonText,
+        css,
+        script
+    }: {
+        html: string;
+        headline: string;
+        callback?: (any) => Promise<void | boolean>;
+        buttonText?: string;
+        css?: string;
+        script?: string;
+    }): Promise<void> => {
         this._panel.webview.html = this._getBaseHTML();
         this._sidebarCallback = callback;
         this._addToHTML("FORM_END", html);
         if (headline !== undefined && headline !== "") {
             this._addToHTML("HEADLINE", `<h2>${headline}</h2>`);
         }
-        const closeButtonRessource = this._helper.getWebviewResourceIconURI(this._panel, "close.svg", this._context);
+        const closeButtonRessource = this._helper.getWebviewResourceIconURI("close.svg", this._context);
         this._addToHTML(
             "CANCEL",
             `<br><button id='cancel' value="cancel" onclick='sendMessageCancel()' title='cancel'><img src='${closeButtonRessource}'></button>`

@@ -81,10 +81,10 @@ export default class ProjectToolsFunctions {
         );
         this._taskbarCallback.addProjectTool(
             "new_file.svg",
-            this._language.get("newFile"),
-            this.createNewFile,
+            this._language.get("File"),
+            this.createFile,
             this._language.get("documentTitle"),
-            "agsbs.newFile"
+            "agsbs.File"
         );
         this._taskbarCallback.addProjectTool(
             "undo.svg",
@@ -147,19 +147,16 @@ export default class ProjectToolsFunctions {
             return;
         }
         const optionsHTML = await this._projectHelper.getAllWorkspaceFoldersAsHTMLWithSpeciallyEscapedJSON();
-        let form = "";
-        form += this._snippets.get("newProjectHTMLPart1");
-        form += optionsHTML;
-        form += this._snippets.get("newProjectHTMLPart2");
+        let html = "";
+        html += this._snippets.get("newProjectHTMLPart1") + optionsHTML + this._snippets.get("newProjectHTMLPart2");
         const script = this._snippets.get("newProjectSCRIPT");
-        this._sidebarCallback.addToSidebar(
-            form,
-            this._language.get("newProject"),
-            this.createNewProjectSidebarCallback,
-            this._language.get("insert"),
-            "",
+        this._sidebarCallback.addToSidebar({
+            html,
+            headline: this._language.get("newProject"),
+            callback: this.createNewProjectSidebarCallback,
+            buttonText: this._language.get("insert"),
             script
-        );
+        });
     };
 
     /**
@@ -167,46 +164,51 @@ export default class ProjectToolsFunctions {
      */
     public createNewProjectSidebarCallback = async (params) => {
         const pathDataObject = this._projectHelper.convertSpeciallyEscapedJSONToObject(params.folder.value);
-        const path = pathDataObject.uri;
-        const chapterCount = params.chapters.value;
-        let appendixChapterCount;
+        const folderPath = pathDataObject.uri;
+        const countOfChapters = params.chapters.value;
+        let countOfAppendixChapters;
         if (params.appendixChapters.value === "") {
-            appendixChapterCount = 0;
+            countOfAppendixChapters = 0;
         } else {
-            appendixChapterCount = params.appendixChapters.value;
+            countOfAppendixChapters = params.appendixChapters.value;
         }
         const preface = params.preface.checked;
-        const projectLanguage = params.language.value;
+        const language = params.language.value;
         const tableOfContents = params.tableOfContents.checked;
-        let depthOfTableOfContents;
+        let tocDepth;
         if (tableOfContents) {
-            depthOfTableOfContents = params.tocDepth.value;
+            tocDepth = params.tocDepth.value;
         } else {
-            depthOfTableOfContents = 0;
+            tocDepth = 0;
         }
         const title = params.title.value;
         const editor = params.author.value;
         const institution = params.institution.value;
-        const sourceMaterial = params.materialSource.value;
+        const source = params.materialSource.value;
         const sourceAuthor = params.sourceAuthor.value;
         try {
-            let alternatePrefix, outputFormat, semYear, workingGroup;
-            await this._matuc.newProject(appendixChapterCount, chapterCount, preface, projectLanguage, path);
-            await this._matuc.initMetaData(path);
-            await this._matuc.updateMetaData(
+            let alternatePrefix, semYear, workingGroup;
+            await this._matuc.newProject({
+                countOfAppendixChapters,
+                countOfChapters,
+                preface,
+                language,
+                folderPath
+            });
+            await this._matuc.initMetaData({ folderPath });
+            await this._matuc.updateMetaData({
                 alternatePrefix,
-                outputFormat,
                 editor,
                 institution,
                 title,
-                projectLanguage,
-                sourceMaterial,
+                language,
+                source,
                 sourceAuthor,
                 semYear,
-                depthOfTableOfContents,
+                tocDepth,
                 workingGroup,
-                path
-            );
+                folderPath
+            });
         } catch (e) {
             vscode.window.showErrorMessage(this._language.get("somethingWentWrongDuringCreatingNewProject"));
             console.log(e);
@@ -226,51 +228,38 @@ export default class ProjectToolsFunctions {
         }
         const currentEditor: vscode.TextEditor = await this._helper.getCurrentTextEditor();
         const folder: string = await this._helper.getFolderFromFilePath(currentEditor.document.uri.fsPath);
-        const config: any = await this._matuc.showConfig(folder);
+        const config = await this._matuc.showConfig(folder);
         if (config === false) {
             vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
             return;
         }
-        const form: string = this._projectHelper.getEditProjectHTMLForm(config, folder);
-        this._sidebarCallback.addToSidebar(
-            form,
-            this._language.get("editProject"),
-            this.editProjectDataSidebarCallback,
-            this._language.get("updateEditedData")
-        );
+        const html = this._projectHelper.getEditProjectHTMLForm(config, folder);
+        this._sidebarCallback.addToSidebar({
+            html,
+            headline: this._language.get("editProject"),
+            callback: this.editProjectDataSidebarCallback,
+            buttonText: this._language.get("updateEditedData")
+        });
     };
 
     /**
      * Callback for editing the Metadata of the current project.
      */
     public editProjectDataSidebarCallback = async (params) => {
-        const alternatePrefix = params.preface.checked;
-        const editor = params.author.value;
-        const institution = params.institution.value;
-        const title = params.title.value;
-        const projectLanguage = params.language.value;
-        const source = params.materialSource.value;
-        const sourceAuthor = params.sourceAuthor.value;
-        const semYear = params.semYear.value;
-        const tocDepth = params.tocDepth.value;
-        const workingGroup = params.workingGroup.value;
-        let thisPath: string = params.folder.value;
-        thisPath = thisPath.replace("\\\\`", "'");
         try {
-            await this._matuc.updateMetaData(
-                alternatePrefix,
-                null,
-                editor,
-                institution,
-                title,
-                projectLanguage,
-                source,
-                sourceAuthor,
-                semYear,
-                tocDepth,
-                workingGroup,
-                thisPath
-            );
+            await this._matuc.updateMetaData({
+                alternatePrefix: params.preface.checked,
+                editor: params.author.value,
+                institution: params.institution.value,
+                title: params.title.value,
+                language: params.language.value,
+                source: params.materialSource.value,
+                sourceAuthor: params.sourceAuthor.value,
+                semYear: params.semYear.value,
+                tocDepth: params.tocDepth.value,
+                workingGroup: params.workingGroup.value,
+                folderPath: params.folder.value.replace("\\\\`", "'")
+            });
         } catch (e) {
             console.log(e);
             vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
@@ -291,7 +280,7 @@ export default class ProjectToolsFunctions {
     /**
      * creates a new file in the current Project
      */
-    public createNewFile = async () => {
+    public createFile = async () => {
         await this._helper.focusDocument(); //Puts focus back to the text editor
         await vscode.commands.executeCommand("workbench.action.files.newUntitledFile");
         await vscode.commands.executeCommand("workbench.action.files.save");
@@ -374,19 +363,8 @@ export default class ProjectToolsFunctions {
         }
         await this._matuc.checkAndSaveChanges();
         await this._matuc.convertMaterial(false);
-        this._helper.focusDocument(); //Puts focus back to the text editor
-
-        // }
-    };
-
-    /**
-     * Callback for generating the HTML for all projects, as a fallback when the setting is manually selected every time
-     */
-    public generateHTMLForAllProjectsSidebarCallback = async (params) => {
-        const profile = params.conversionProfile.value;
-        await this._matuc.checkAndSaveChanges();
-        await this._matuc.convertEntireProject(profile);
-        this._helper.focusDocument(); //Puts focus back to the text editor
+        // Puts focus back to the text editor
+        this._helper.focusDocument();
     };
 
     /**

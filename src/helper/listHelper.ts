@@ -19,7 +19,7 @@ export default class ListHelper {
      * @param line line to check.
      * @returns 0 if nothing is found, or the number of the line
      */
-    public async getLineListNumber(line: number) {
+    public async getLineListNumber(line: number): Promise<number> {
         const lineContent = await this._helper.getLineContent(line);
         if (lineContent === null) {
             return 0;
@@ -37,7 +37,7 @@ export default class ListHelper {
         }
     }
 
-    public async getListBullet(line: number) {
+    public async getListBullet(line: number): Promise<string> {
         const bulletRegex = /^[*-]/; // looks for * and -
         const lineContent = await this._helper.getLineContent(line);
         const result = lineContent.match(bulletRegex);
