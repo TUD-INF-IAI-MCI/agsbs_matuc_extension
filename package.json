@@ -416,6 +416,11 @@
                         "0.9.0"
                     ],
                     "description": "Only the named Version supports all functions of Matuc"
+                },
+                "agsbs.notificationTimeout": {
+                    "type": "number",
+                    "default": 5000,
+                    "description": "The time in ms that a notification is shown"
                 }
             }
         }

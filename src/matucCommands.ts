@@ -10,6 +10,7 @@ import { exec, spawn } from "child_process";
 import Sidebar from "./sidebar";
 import osLocale = require("os-locale");
 import path = require("path");
+import { showNotification } from "./helper/notificationHelper";
 
 /**
  * This Class contains all Functions regarding matuc
@@ -241,7 +242,7 @@ export default class MatucCommands {
             }
             const mistkerl = JSON.parse(stdout);
             if (typeof mistkerl.result === "string") {
-                vscode.window.showInformationMessage(this._language.get("mistkerlDidNotFindAnyError"));
+                showNotification({ message: this._language.get("mistkerlDidNotFindAnyError") });
             } else {
                 this._helper.ShowMkErrorMessage(mistkerl.result);
             }
@@ -397,7 +398,7 @@ export default class MatucCommands {
 
                 const parsedData = JSON.parse(data.toString());
                 if (typeof parsedData.result === "string") {
-                    vscode.window.showInformationMessage(this._language.get("mistkerlDidNotFindAnyError"));
+                    showNotification({ message: this._language.get("mistkerlDidNotFindAnyError") });
                 } else {
                     if (parsedData.hasOwnProperty("error")) {
                         this._sidebarCallback.addToSidebar(
@@ -417,7 +418,7 @@ export default class MatucCommands {
             });
             matucProcess.on("close", (code) => {
                 if (code === 0) {
-                    vscode.window.showInformationMessage(this._language.get("generatingSuccess"));
+                    showNotification({ message: this._language.get("generatingSuccess") });
                     resolve();
                 }
             });
@@ -464,7 +465,7 @@ export default class MatucCommands {
             }
             const mistkerl = JSON.parse(stdout);
             if (typeof mistkerl.result === "string") {
-                vscode.window.showInformationMessage(this._language.get("mistkerlDidNotFindAnyErrorAndSavedFile"));
+                showNotification({ message: this._language.get("mistkerlDidNotFindAnyError") });
                 noErrorFound = true;
             } else {
                 this._helper.ShowMkErrorMessage(mistkerl.result);

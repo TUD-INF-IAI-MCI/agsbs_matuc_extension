@@ -11,6 +11,7 @@ import ProjectHelper from "./helper/projectHelper";
 import ProjectToolsFunctionSnippets from "./snippets/projectToolsFunctionsSnippets";
 import SettingsHelper from "./helper/settingsHelper";
 import GitCommands from "./gitCommands";
+import { showNotification } from "./helper/notificationHelper";
 
 /**
  * This Class contains all functions of the project tools bar in the Taskbar. Here all Buttons are registered.
@@ -211,7 +212,7 @@ export default class ProjectToolsFunctions {
             console.log(e);
             return;
         }
-        vscode.window.showInformationMessage(this._language.get("createdProjectSuccessfully"));
+        showNotification({ message: this._language.get("createdProjectSuccessfully") });
     };
 
     /**
@@ -275,7 +276,7 @@ export default class ProjectToolsFunctions {
             vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
             return;
         }
-        vscode.window.showInformationMessage(this._language.get("updateSuccessfull"));
+        showNotification({ message: this._language.get("updateSuccessfull") });
     };
 
     /**
@@ -524,7 +525,7 @@ export default class ProjectToolsFunctions {
             let msg = this._language.get("SetUserDataInConfig");
             msg = msg.replace("$userName$", userName);
             msg = msg.replace("$emailAddress$", emailAddress);
-            vscode.window.showInformationMessage(msg);
+            showNotification({ message: msg });
             await this._git.commit(commitMessage, projectFolder);
         }
         await this._git.push(projectFolder);
