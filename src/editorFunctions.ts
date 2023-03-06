@@ -526,6 +526,7 @@ export default class EditorFunctions {
             return;
         } else {
             const selectedTable = await this._tableHelper.loadSelectedTable(currentSelection);
+            await this._helper.focusDocument();
             await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(selectedTable["file"]));
             const editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
             editCsv.activate().then(async () => {
@@ -644,14 +645,13 @@ export default class EditorFunctions {
 
         //create empty .csv file in /generatedTables
         const file = await this._tableHelper.writeCSVFile(",\n,");
+        await this._helper.focusDocument();
         await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(file));
-
         //open edit csv extension
         const editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
         editCsv.activate().then(async () => {
             await vscode.commands.executeCommand("edit-csv.edit");
-
-            //watch file changes
+            // watch file changes
             const watcher = vscode.workspace.createFileSystemWatcher(file);
             watcher.onDidChange(async () => {
                 let content: any = await this._helper.getContentOfFile(file);
@@ -660,13 +660,13 @@ export default class EditorFunctions {
                 const relativeTablePath =
                     ".\\" + path.relative(path.dirname(currentTextEditor.document.fileName), file);
                 const extraText = this._language.get("importedFrom") + " " + relativeTablePath;
-                //generate markdown table
+                // generate markdown table
                 const table = this._tableHelper.generateTable(false, result.data, "", extraText);
                 this._helper.replaceSelection(table, currentSelection, currentTextEditor);
-                //close edit csv extension and csv file
+                // close edit csv extension and csv file
                 await vscode.commands.executeCommand("edit-csv.goto-source");
                 await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
-                //close opened csv file window
+                // close opened csv file window
                 // await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
                 await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
                 watcher.dispose();
