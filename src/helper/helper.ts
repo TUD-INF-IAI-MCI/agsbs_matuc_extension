@@ -210,10 +210,10 @@ export default class Helper {
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Range
     ) {
-        if (currentTextEditor) {
+        if (!currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
-        if (selection) {
+        if (!selection) {
             selection = this.getWordsSelection(currentTextEditor);
         }
         const workSpaceEdit = new vscode.WorkspaceEdit();
@@ -241,10 +241,10 @@ export default class Helper {
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Selection
     ) {
-        if (currentTextEditor) {
+        if (!currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
-        if (selection) {
+        if (!selection) {
             selection = this.getWordsSelection(currentTextEditor);
         }
         const lineLength = currentTextEditor.document.lineAt(selection.end.line).range.end.character;
@@ -298,7 +298,6 @@ export default class Helper {
         }
         const newSelection = new vscode.Selection(newStartPosition, newEndPosition);
         return newSelection;
-        //currentTextEditor.selection = newSelection;
     }
 
     /**
