@@ -27,12 +27,12 @@ export default class ProjectToolsFunctions {
     private _settings: SettingsHelper;
     private _git: GitCommands;
 
-    constructor(taskbar, sidebar) {
+    constructor(taskbarCallback, sidebarCallback) {
         this._helper = new Helper();
         this._language = new Language();
-        this._sidebarCallback = sidebar;
-        this._taskbarCallback = taskbar;
-        this._matuc = new MatucCommands(sidebar);
+        this._sidebarCallback = sidebarCallback;
+        this._taskbarCallback = taskbarCallback;
+        this._matuc = new MatucCommands(sidebarCallback);
         this._projectHelper = new ProjectHelper();
         this._snippets = new ProjectToolsFunctionSnippets();
         this._settings = new SettingsHelper();
