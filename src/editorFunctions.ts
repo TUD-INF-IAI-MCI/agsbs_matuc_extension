@@ -480,7 +480,7 @@ export default class EditorFunctions {
      */
     public code = async () => {
         const currentTextEditor = await this._helper.getCurrentTextEditor();
-        const selection = await this._helper.getWordsSelection(currentTextEditor);
+        const selection = this._helper.getWordsSelection(currentTextEditor);
         let startInsertText = "```";
         let endInsertText = "```";
         if (selection.start.line !== selection.end.line) {
@@ -659,7 +659,7 @@ export default class EditorFunctions {
         } else {
             const tableData = await this._tableHelper.loadSelectedTable(insertSelection);
             const tablePath = tableData["file"];
-            await this._tableHelper.deleteCSVFile(tablePath);
+            this._tableHelper.deleteCSVFile(tablePath);
             console.log("CSV Deleted");
         }
     };
@@ -797,7 +797,7 @@ export default class EditorFunctions {
         const thisPicturesFolderName = await this._imageHelper.getPictureFolderName();
         const thisPath = await this._helper.getCurrentDocumentFolderPath();
         const thisPicturesArray = await this._imageHelper.getAllPicturesInFolder(thisPath, thisPicturesFolderName);
-        const allPicturesHTMLString = await this._imageHelper.generateSelectImagesOptionsHTML(thisPicturesArray);
+        const allPicturesHTMLString = this._imageHelper.generateSelectImagesOptionsHTML(thisPicturesArray);
         let form = "";
         const script = this._snippets.get("insertImageScript");
         form +=
@@ -894,23 +894,41 @@ export default class EditorFunctions {
      * Makes the current text bold.
      */
     public bold = async () => {
-        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("**", "**");
-        this._helper.focusDocument(); //Puts focus back to the text editor
+        if (this._helper.isSelectionEmpty()) {
+            this._helper.selectWordUnderCursor();
+            await this._helper.multiCursorsToggleCharactersAtStartAndEnd("**", "**");
+            this._helper.focusDocument();
+        } else {
+            await this._helper.multiCursorsToggleCharactersAtStartAndEnd("**", "**");
+            this._helper.focusDocument();
+        }
     };
 
     /**
      * Makes the current text italic.
      */
     public italic = async () => {
-        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("_", "_");
-        this._helper.focusDocument(); //Puts focus back to the text editor
+        if (this._helper.isSelectionEmpty()) {
+            this._helper.selectWordUnderCursor();
+            await this._helper.multiCursorsToggleCharactersAtStartAndEnd("_", "_");
+            this._helper.focusDocument();
+        } else {
+            await this._helper.multiCursorsToggleCharactersAtStartAndEnd("_", "_");
+            this._helper.focusDocument();
+        }
     };
 
     /**
      * Makes the current text strikethrough.
      */
     public strikethrough = async () => {
-        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("~~", "~~");
-        this._helper.focusDocument(); //Puts focus back to the text editor
+        if (this._helper.isSelectionEmpty()) {
+            this._helper.selectWordUnderCursor();
+            await this._helper.multiCursorsToggleCharactersAtStartAndEnd("~~", "~~");
+            this._helper.focusDocument();
+        } else {
+            await this._helper.multiCursorsToggleCharactersAtStartAndEnd("~~", "~~");
+            this._helper.focusDocument();
+        }
     };
-}
+    }
