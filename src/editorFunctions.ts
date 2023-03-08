@@ -368,7 +368,7 @@ export default class EditorFunctions {
         this._sidebarCallback.addToSidebar({
             html,
             headline: this._language.get("insertTextbox"),
-            callback: this.insertAnnotationsidebar,
+            callback: this.insertAnnotationSidebarCallback,
             buttonText: this._language.get("insert"),
             script
         });
@@ -377,7 +377,7 @@ export default class EditorFunctions {
     /**
      * Adds an specified annotation to the text.
      */
-    public insertAnnotationsidebar = async (params: {
+    public insertAnnotationSidebarCallback = async (params: {
         annotationType: { value: string };
         color: { value: string };
         titleOfBox: { value: string };
