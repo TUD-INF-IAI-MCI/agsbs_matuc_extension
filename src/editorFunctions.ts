@@ -432,7 +432,7 @@ export default class EditorFunctions {
         this._sidebarCallback.addToSidebar({
             html,
             headline: this._language.get("insertFootnote"),
-            callback: this.insertFootnotesidebar,
+            callback: this.insertFootnoteSidebarCallback,
             buttonText: this._language.get("insertFootnote")
         });
     };
@@ -440,7 +440,7 @@ export default class EditorFunctions {
     /**
      * Adds a specified footnote to the text.
      */
-    public insertFootnotesidebar = async (params: {
+    public insertFootnoteSidebarCallback = async (params: {
         footLabel: { value: string };
         footText: { value: string };
     }): Promise<void | boolean> => {
