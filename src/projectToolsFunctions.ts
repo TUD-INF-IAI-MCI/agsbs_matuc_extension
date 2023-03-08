@@ -432,7 +432,7 @@ export default class ProjectToolsFunctions {
         this._sidebarCallback.addToSidebar({
             html,
             headline: this._language.get("cloneExistingRepo"),
-            callback: this.cloneReposidebar,
+            callback: this.cloneRepoSidebarCallback,
             buttonText: this._language.get("clone")
         });
     };
@@ -440,7 +440,7 @@ export default class ProjectToolsFunctions {
     /**
      * clones a project
      */
-    public cloneReposidebar = async (params) => {
+    public cloneRepoSidebarCallback = async (params) => {
         const gitLoginName = params.gitLoginName.value;
         const repoName = params.repoName.value;
         const gitUserName = params.gitUserName.value;

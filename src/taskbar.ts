@@ -18,10 +18,10 @@ export default class Taskbar {
     private _editorFunctions: EditorFunctions;
     private _callbacks: (() => void)[];
     private _projectToolsFunctions: ProjectToolsFunctions;
-    constructor(sidebar, context) {
+    constructor(sidebarCallback, context) {
         this._context = context;
         this._taskbarIsVisible = false;
-        this._sidebarCallback = sidebar;
+        this._sidebarCallback = sidebarCallback;
         this._helper = new Helper();
         this._editorFunctions = new EditorFunctions(this, this._sidebarCallback, context);
         this._projectToolsFunctions = new ProjectToolsFunctions(this, this._sidebarCallback);
