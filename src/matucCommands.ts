@@ -21,10 +21,10 @@ export default class MatucCommands {
     private _helper: Helper;
     private _sidebarCallback: Sidebar;
 
-    constructor(sidebar) {
+    constructor(sidebarCallback) {
         this._language = new Language();
         this._helper = new Helper();
-        this._sidebarCallback = sidebar;
+        this._sidebarCallback = sidebarCallback;
     }
 
     /**
