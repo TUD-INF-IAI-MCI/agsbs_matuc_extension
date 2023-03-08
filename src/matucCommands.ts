@@ -45,8 +45,7 @@ export default class MatucCommands {
      * @returns version of Matuc if installed, otherwise false.
      */
     public async getMatucVersion() {
-        let cmd = "";
-        cmd += `matuc_js version`;
+        const cmd = "matuc_js version";
         return new Promise(function (resolve) {
             try {
                 exec(cmd, (error, stdout) => {
@@ -261,7 +260,7 @@ export default class MatucCommands {
     }
 
     /**
-     * Checks if a File is within the lecture
+     * Checks if a File is within   the lecture
      * @param pathToFile absolute path to the file
      */
     public async checkIfFileIsWithinLecture(pathToFile: string) {
@@ -337,12 +336,14 @@ export default class MatucCommands {
         language: string;
         folderPath: string;
     }) {
-        let cmd = `matuc new ${folderPath !== null ? `"${folderPath}"` : "."}`;
+        let cmd = "matuc new ";
 
-        if (countOfAppendixChapters) cmd += ` -a ${countOfAppendixChapters}`;
-        if (countOfChapters !== null) cmd += ` -c ${countOfChapters}`;
-        if (preface) cmd += " -p";
-        if (language !== null) cmd += ` -l ${language}`;
+        cmd = countOfAppendixChapters ? cmd + "-a " + countOfAppendixChapters + " " : cmd;
+        cmd = countOfChapters !== null ? cmd + "-c " + countOfChapters + " " : cmd;
+        cmd = preface ? cmd + "-p " : cmd;
+        cmd = language !== null ? cmd + "-l " + language + " " : cmd;
+        cmd = folderPath !== null ? cmd + '"' + folderPath + '"' : cmd + ".";
+        console.log("command is  " + cmd);
 
         return new Promise(function (resolve, reject) {
             exec(cmd, (error, stdout, stderr) => {
