@@ -67,7 +67,7 @@ export default class Helper {
      * Returns the last active TextEditor and returns it. In case of an error it will promt an Error to the user.
      * @returns current Text Editor or null if it cannot be determined
      */
-    public async getCurrentTextEditor() {
+    public async getCurrentTextEditor(): Promise<vscode.TextEditor | null> {
         const currentActiveTextEditor = await vscode.window.activeTextEditor;
         const textEditors = await vscode.window.visibleTextEditors;
         const openedTextEditor = textEditors[0];
@@ -98,10 +98,10 @@ export default class Helper {
      * Returns the primary Selection of the given Text Editor
      * @param textEditor from type vscode.TextEditor, the TextEditor the selection is returned from
      */
-    public getPrimarySelection(textEditor: vscode.TextEditor) {
+    public getPrimarySelection(textEditor: vscode.TextEditor): vscode.Selection {
         return textEditor.selection;
     }
-    public getWordsSelection(textEditor: vscode.TextEditor) {
+    public getWordsSelection(textEditor: vscode.TextEditor): vscode.Selection {
         const selection = this.getPrimarySelection(textEditor);
         let newSelection: vscode.Selection;
 
@@ -125,7 +125,7 @@ export default class Helper {
      * @param currentTextEditor the current text editor
      * @returns {int} number of next blank line
      */
-    public async getNextBlankLineAfterPos(currentTextEditor?: vscode.TextEditor) {
+    public async getNextBlankLineAfterPos(currentTextEditor?: vscode.TextEditor): Promise<number> {
         if (!currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -145,10 +145,10 @@ export default class Helper {
      * @param selection the current selection
      */
     public async insertStringAtStartOfSelection(
-        charactersToInsert: any,
+        charactersToInsert: string,
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Range
-    ) {
+    ): Promise<void> {
         if (!currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -168,10 +168,10 @@ export default class Helper {
      * @param selection the current selection
      */
     public async insertStringAtStartOfForEachLineOfSelection(
-        charactersToInsert?: any,
+        charactersToInsert?: string | number,
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Range
-    ) {
+    ): Promise<void> {
         if (!currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -185,7 +185,8 @@ export default class Helper {
         const workSpaceEdit = new vscode.WorkspaceEdit();
         let line; // line of selection
         for (line = selection.start.line; line <= selection.end.line; line++) {
-            charactersToInsert++;
+            //check if var is number
+            if (typeof charactersToInsert === "number") charactersToInsert++;
             if ((await this.getLineContent(line)).length <= 0) {
                 break;
             }
@@ -205,14 +206,14 @@ export default class Helper {
      * @param selection optional. the selection to work with
      */
     public async insertStringAtStartOfLine(
-        charactersToInsert: any,
+        charactersToInsert: string,
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Range
     ) {
-        if (currentTextEditor) {
+        if (!currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
-        if (selection) {
+        if (!selection) {
             selection = this.getWordsSelection(currentTextEditor);
         }
         const workSpaceEdit = new vscode.WorkspaceEdit();
@@ -236,14 +237,14 @@ export default class Helper {
      * @param selection optional. A custom selection
      */
     public async insertStringAtStartOfLineOrLinebreak(
-        charactersToInsert: any,
+        charactersToInsert: string,
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Selection
     ) {
-        if (currentTextEditor) {
+        if (!currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
-        if (selection) {
+        if (!selection) {
             selection = this.getWordsSelection(currentTextEditor);
         }
         const lineLength = currentTextEditor.document.lineAt(selection.end.line).range.end.character;
@@ -273,7 +274,7 @@ export default class Helper {
         selection: vscode.Range,
         startCharacters: string,
         endCharacters: string
-    ) {
+    ): Promise<vscode.Selection> {
         const workSpaceEdit = new vscode.WorkspaceEdit();
         workSpaceEdit.insert(currentTextEditor.document.uri, selection.start, startCharacters);
         workSpaceEdit.insert(currentTextEditor.document.uri, selection.end, endCharacters);
@@ -297,7 +298,6 @@ export default class Helper {
         }
         const newSelection = new vscode.Selection(newStartPosition, newEndPosition);
         return newSelection;
-        //currentTextEditor.selection = newSelection;
     }
 
     /**
@@ -338,7 +338,7 @@ export default class Helper {
         selection: vscode.Range,
         startCharacters: string,
         endCharacters: string
-    ) {
+    ): Promise<boolean> {
         const selectedText = currentTextEditor.document.getText(selection);
         if (selectedText === undefined) {
             return false;
@@ -442,7 +442,7 @@ export default class Helper {
         endCharacters: string,
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Range
-    ) {
+    ): Promise<vscode.Range | boolean> {
         if (!currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -610,7 +610,7 @@ export default class Helper {
      * @param context Context of the Extension
      * @returns resource from type vscode.Uri
      */
-    public getWebviewResourceIconURI(panel, name, context): vscode.Uri {
+    public getWebviewResourceIconURI(name, context): vscode.Uri {
         const resource = this.getWebviewResourceURI(name, "icons", context);
         return resource;
     }
@@ -818,7 +818,7 @@ export default class Helper {
         testString: string,
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Selection
-    ) {
+    ): Promise<vscode.Selection | false> {
         if (!currentTextEditor) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -922,7 +922,7 @@ export default class Helper {
      * @param currentTextEditor optional. The editor the Document is in
      * @returns string of content or null if not possible
      */
-    public async getLineContent(line: number, currentTextEditor?: vscode.TextEditor) {
+    public async getLineContent(line: number, currentTextEditor?: vscode.TextEditor): Promise<string> {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this.getCurrentTextEditor();
         }
@@ -963,8 +963,7 @@ export default class Helper {
         return path.normalize(path2normalize);
     }
 
-    // TODO: replace any with a proper type
-    public FormatMatucErrorMessage(matucError: any) {
+    public FormatMatucErrorMessage(matucError: string) {
         let errorMessage = this._language.get("matucErrorDetails");
         errorMessage = errorMessage.replace("$message$", matucError["message"]);
         errorMessage = errorMessage.replace("$path$", path.basename(matucError["path"]));
@@ -977,8 +976,7 @@ export default class Helper {
      * Show error message with the error info, line number and name of file
      * @param mkResult
      */
-    // TODO: replace any with a proper type
-    public async ShowMkErrorMessage(mkResult: any) {
+    public async ShowMkErrorMessage(mkResult: string) {
         Object.keys(mkResult).forEach((key) => {
             const location = key.split(path.sep).reverse()[0]; // file name or directory name
             let errorMessage = ""; // text of the errorMessageq
