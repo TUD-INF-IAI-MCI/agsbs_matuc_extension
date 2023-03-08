@@ -44,9 +44,8 @@ export default class MatucCommands {
      * Get the installed Version of Matuc.
      * @returns version of Matuc if installed, otherwise false.
      */
-    public async getMatucVersion() {
-        let cmd = "";
-        cmd += `matuc_js version`;
+    public async getMatucVersion(): Promise<string | false> {
+        const cmd = "`matuc_js version`";
         return new Promise(function (resolve) {
             try {
                 exec(cmd, (error, stdout) => {
