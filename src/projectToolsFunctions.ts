@@ -476,7 +476,7 @@ export default class ProjectToolsFunctions {
         this._sidebarCallback.addToSidebar({
             html,
             headline: this._language.get("commitChanges"),
-            callback: this.commitChangessidebar,
+            callback: this.commitChangesSidebarCallback,
             buttonText: this._language.get("commit")
         });
     };
@@ -484,7 +484,7 @@ export default class ProjectToolsFunctions {
     /**
      * commits the changes, and pushes them.
      */
-    public commitChangessidebar = async (params) => {
+    public commitChangesSidebarCallback = async (params) => {
         const commitMessage = params.commitChanges.value;
         const currentTexteditor = await this._helper.getCurrentTextEditor();
         const projectFolder = await this._helper.getFolderFromFilePath(currentTexteditor.document.uri.fsPath);
