@@ -153,7 +153,7 @@ export default class ProjectToolsFunctions {
         this._sidebarCallback.addToSidebar({
             html,
             headline: this._language.get("newProject"),
-            callback: this.createNewProjectsidebar,
+            callback: this.createNewProjectSidebarCallback,
             buttonText: this._language.get("insert"),
             script
         });
@@ -162,7 +162,7 @@ export default class ProjectToolsFunctions {
     /**
      * Callback for creating a new project
      */
-    public createNewProjectsidebar = async (params) => {
+    public createNewProjectSidebarCallback = async (params) => {
         const pathDataObject = this._projectHelper.convertSpeciallyEscapedJSONToObject(params.folder.value);
         const folderPath = pathDataObject.uri;
         const countOfChapters = params.chapters.value;
