@@ -389,7 +389,7 @@ export default class ProjectToolsFunctions {
         this._sidebarCallback.addToSidebar({
             html,
             headline: this._language.get("pagenumbering"),
-            callback: this.publishsidebar,
+            callback: this.publishSidebarCallback,
             buttonText: this._language.get("generate")
         });
         this._helper.focusDocument(); //Puts focus back to the text editor
@@ -398,7 +398,7 @@ export default class ProjectToolsFunctions {
     /**
      * Checks the whole project
      */
-    public publishsidebar = async (params) => {
+    public publishSidebarCallback = async (params) => {
         if (params.autoCorrectPageNumbering.checked) {
             await this._matuc.fixpnumInPlace();
         }
