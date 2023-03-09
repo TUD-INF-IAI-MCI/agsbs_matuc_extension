@@ -17,10 +17,10 @@ export function activate(context: vscode.ExtensionContext) {
     console.log("AGSBS extension is now active!");
     const extensionController = new ExtensionController(context);
     const disposable = vscode.commands.registerCommand("agsbs.open", () => {
-    vscode.window.showInformationMessage("AGSBS is active.");
-    if (!this._sidebar.isVisible()) {
-        this._sidebarPanel = this._sidebar.show();
-    }
+        vscode.window.showInformationMessage("AGSBS is active.");
+        if (!this._sidebar.isVisible()) {
+            this._sidebarPanel = this._sidebar.show();
+        }
     });
 
     vscode.commands.registerCommand("agsbs.clone", () => {

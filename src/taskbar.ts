@@ -12,11 +12,11 @@ import ProjectToolsFunctions from "./projectToolsFunctions";
 export default class Taskbar {
     private _taskbarIsVisible: boolean;
     private _panel: vscode.WebviewPanel;
-    private _sidebarCallback: any;
+    private _sidebarCallback: () => Promise<unknown>;
     private _helper: Helper;
     private _context: vscode.ExtensionContext;
     private _editorFunctions: EditorFunctions;
-    private _callbacks: any;
+    private _callbacks: (() => void)[];
     private _projectToolsFunctions: ProjectToolsFunctions;
     constructor(sidebarCallback, context) {
         this._context = context;
@@ -105,7 +105,13 @@ export default class Taskbar {
      * @param section optional section the button is displayed in
      * @param commandIdentifier optional. The identifier used in the package.json command and key binding.
      */
-    public addButton = (iconName: string, name: string, callback: any, section: string, commandIdentifier?: string) => {
+    public addButton = (
+        iconName: string,
+        name: string,
+        callback: () => Promise<void> | void,
+        section: string,
+        commandIdentifier?: string
+    ) => {
         const id = this._helper.generateUuid();
         let newSection = "";
         if (section !== undefined) {
@@ -115,7 +121,7 @@ export default class Taskbar {
             const newSectionHTML = this._generateSectionHTML(section);
             this._addToHTML("TOOLS_END", newSectionHTML);
         }
-        const icon = this._helper.getWebviewResourceIconURI(this._panel, iconName, this._context);
+        const icon = this._helper.getWebviewResourceIconURI(iconName, this._context);
         //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
         //ToDo Button
         const html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')"><img src="${icon}"></button>`;
@@ -128,7 +134,7 @@ export default class Taskbar {
                 commandIdentifier = "agsbs." + commandIdentifier;
             }
             try {
-                const disposable = vscode.commands.registerCommand(commandIdentifier, () => {
+                vscode.commands.registerCommand(commandIdentifier, () => {
                     callback();
                 });
             } catch (e) {
@@ -148,7 +154,7 @@ export default class Taskbar {
     public addProjectTool = (
         iconName: string,
         name: string,
-        callback: any,
+        callback: () => void,
         section: string,
         commandIdentifier?: string
     ) => {
@@ -161,7 +167,7 @@ export default class Taskbar {
             const newSectionHTML = this._generateSectionHTML(section);
             this._addToHTML("PROJECTTOOLS_END", newSectionHTML);
         }
-        const icon = this._helper.getWebviewResourceIconURI(this._panel, iconName, this._context);
+        const icon = this._helper.getWebviewResourceIconURI(iconName, this._context);
         //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
         const html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')"><img src="${icon}"></button>`;
         //var html="";
@@ -173,7 +179,7 @@ export default class Taskbar {
                 commandIdentifier = "agsbs." + commandIdentifier;
             }
             try {
-                const disposable = vscode.commands.registerCommand(commandIdentifier, () => {
+                vscode.commands.registerCommand(commandIdentifier, () => {
                     callback();
                 });
             } catch (e) {

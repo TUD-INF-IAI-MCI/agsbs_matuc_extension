@@ -17,7 +17,6 @@ import InsertHelper from "./helper/insertHelper";
 import HeadlineHelper from "./helper/headlineHelper";
 import SettingsHelper from "./helper/settingsHelper";
 import { showNotification } from "./helper/notificationHelper";
-
 /**
  * The Main Class to add Buttons and their functionality of the Editor Tools Bar.
  */
@@ -161,6 +160,14 @@ export default class EditorFunctions {
             this.editTable,
             this._language.get("table"),
             "agsbs.editTable"
+        );
+        // edit csv call
+        this._taskbarCallback.addButton(
+            "h.svg",
+            this._language.get("editTable"),
+            this.editTableGui,
+            this._language.get("table"),
+            "agsbs.editTableGui"
         );
         this._taskbarCallback.addButton(
             "deleteTable.svg",
@@ -312,7 +319,7 @@ export default class EditorFunctions {
             vscode.window.showErrorMessage(this._language.get("matucNotInstalled"));
             return;
         }
-        const result: any = await this._matucCommands.addPageNumber();
+        const result = await this._matucCommands.addPageNumber();
 
         if (!result.includes("|| - ")) {
             vscode.window.showErrorMessage(this._language.get("unExpectedMatucError"));
@@ -328,7 +335,7 @@ export default class EditorFunctions {
      */
     public insertHorizontalRule = async () => {
         const text = "\n---\n\n";
-        const insertPosition: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        const insertPosition = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
         if (!insertPosition) {
             await this._helper.insertStringAtStartOfLineOrLinebreak(text);
             return;
@@ -347,31 +354,35 @@ export default class EditorFunctions {
     public insertAnnotation = async () => {
         const settingsTextboxTitleIsOptional = await this._settings.get("optionalTextboxTitle");
         const settingsTextboxContentIsOptional = await this._settings.get("optionalTextboxContent");
-        let form = this._snippets.get("insertAnnotationHTMLPart1");
+        let html = this._snippets.get("insertAnnotationHTMLPart1");
         if (!settingsTextboxTitleIsOptional) {
-            form += "required='true'";
+            html += "required='true'";
         }
-        form += this._snippets.get("insertAnnotationHTMLPart2");
+        html += this._snippets.get("insertAnnotationHTMLPart2");
         if (!settingsTextboxContentIsOptional) {
-            form += "required='true'";
+            html += "required='true'";
         }
-        form += this._snippets.get("insertAnnotationHTMLPart3");
+        html += this._snippets.get("insertAnnotationHTMLPart3");
 
         const script = this._snippets.get("insertAnnotationSCRIPT");
-        this._sidebarCallback.addToSidebar(
-            form,
-            this._language.get("insertTextbox"),
-            this.insertAnnotationSidebarCallback,
-            this._language.get("insert"),
-            "",
+        this._sidebarCallback.addToSidebar({
+            html,
+            headline: this._language.get("insertTextbox"),
+            callback: this.insertAnnotationSidebarCallback,
+            buttonText: this._language.get("insert"),
             script
-        );
+        });
     };
 
     /**
      * Adds an specified annotation to the text.
      */
-    public insertAnnotationSidebarCallback = async (params) => {
+    public insertAnnotationSidebarCallback = async (params: {
+        annotationType: { value: string };
+        color: { value: string };
+        titleOfBox: { value: string };
+        contentOfBox: { value: string };
+    }): Promise<void> => {
         const annotationType = params.annotationType.value;
         const color = params.color.value;
         const title = params.titleOfBox.value;
@@ -400,7 +411,7 @@ export default class EditorFunctions {
             }
         }
         //Check if Annotation will be placed in Table (optional, but additional check);
-        const insertPosition: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        const insertPosition = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
         if (!insertPosition) {
             await this._helper.insertStringAtStartOfLineOrLinebreak(text);
             return;
@@ -417,19 +428,22 @@ export default class EditorFunctions {
      * Adds the form dialogue to the sidebar
      */
     public insertFootnote = async () => {
-        const form = this._snippets.get("insertFootnoteHTML");
-        this._sidebarCallback.addToSidebar(
-            form,
-            this._language.get("insertFootnote"),
-            this.insertFootnoteSidebarCallback,
-            this._language.get("insertFootnote")
-        );
+        const html = this._snippets.get("insertFootnoteHTML");
+        this._sidebarCallback.addToSidebar({
+            html,
+            headline: this._language.get("insertFootnote"),
+            callback: this.insertFootnoteSidebarCallback,
+            buttonText: this._language.get("insertFootnote")
+        });
     };
 
     /**
      * Adds a specified footnote to the text.
      */
-    public insertFootnoteSidebarCallback = async (params) => {
+    public insertFootnoteSidebarCallback = async (params: {
+        footLabel: { value: string };
+        footText: { value: string };
+    }): Promise<void | boolean> => {
         const label = params.footLabel.value;
         const text = params.footText.value;
         const currentLineLabel = "[^" + label + "]";
@@ -444,15 +458,14 @@ export default class EditorFunctions {
             return false;
         }
         const pageEndLabel = "\n" + currentLineLabel + ": " + text + "\n";
-        let endPoint: any = await this._insertHelper.getPageEndLine();
+        const endPoint = await this._insertHelper.getPageEndLine();
         const currentTextEditor = await this._helper.getCurrentTextEditor();
         const selection = this._helper.getPrimarySelection(currentTextEditor);
         const position = new vscode.Range(selection.active, selection.end);
         await this._helper.insertStringAtStartOfSelection(currentLineLabel, undefined, position);
-        if (!endPoint) {
+        if (endPoint === false) {
             this._helper.insertStringAtStartOfLineOrLinebreak(pageEndLabel);
         } else {
-            endPoint = await this._insertHelper.getPageEndLine();
             const newEndSelection = new vscode.Selection(endPoint, endPoint);
             await this._helper.insertStringAtStartOfLineOrLinebreak(pageEndLabel, currentTextEditor, newEndSelection);
         }
@@ -516,56 +529,144 @@ export default class EditorFunctions {
     };
 
     /**
-     * Editing an existing Table
+     * new function editCsv may complete change
      */
+
+    public editTableGui = async () => {
+        const editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
+
+        const loc = vscode.Uri.file(
+            "C:\\Users\\Jens Voegler\\Documents\\AGSBS_Git\\b-354-2021_klinische_psychologie_und_psychotherapie\\bearbeitet\\k13\\generatedTables\\generatedTable-2021-11-17_23-36-53.csv"
+        );
+        vscode.commands.executeCommand("vscode.open", loc);
+        if (!editCsv.isActive) {
+            editCsv.activate().then(
+                function () {
+                    vscode.commands.executeCommand("edit-csv.edit");
+                    //vscode.commands.executeCommand<vscode.Location[]>("edit-csv.edit", "C:\Users\Jens Voegler\Documents\AGSBS_Git\b-354-2021_klinische_psychologie_und_psychotherapie\bearbeitet\k13\generatedTables\generatedTable-2021-11-17_23-36-53.csv");
+                },
+                function () {
+                    console.log("Cannot start vscode-edit-csv");
+                }
+            );
+            vscode.commands.executeCommand("edit-csv.edit");
+        }
+    };
+
+    /**
+     * Editing a existing Table
+     */
+
     public editTable = async () => {
-        const currentSelection: false | vscode.Selection =
-            await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
-        const currentTextEditor = await this._helper.getCurrentTextEditor();
-        if (!currentSelection) {
+        const insertPosition = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        if (!insertPosition) {
             vscode.window.showErrorMessage(this._language.get("noTableFound"));
             return;
         } else {
-            const selectedTable = (await this._tableHelper.loadSelectedTable(currentSelection)).file;
-            await this._helper.focusDocument();
-            await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(selectedTable));
-            const editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
-            editCsv.activate().then(async () => {
-                await vscode.commands.executeCommand("edit-csv.edit");
-                // watch csv file changes
-                const watcher = vscode.workspace.createFileSystemWatcher(selectedTable);
-                watcher.onDidChange(async () => {
-                    await this._tableHelper.replaceTable(selectedTable, currentTextEditor, currentSelection);
-                    //dispose watcher only after edit-csv is closed
-                    if (!editCsv.isActive) {
-                        watcher.dispose();
-                    }
-                });
+            const tableData = await this._tableHelper.loadSelectedTable(insertPosition);
+            let html = this._snippets.get("editTableHTML");
+            html =
+                html + `<input type="hidden" value="${tableData["file"]}" name="hiddenFileName" id="hiddenFileName">`; //TODO possible escape file string
+            let script = this._snippets.get("editTableSCRIPT");
+            script += this._snippets.get("editTableScriptPart1");
+            let jsonToInsert = JSON.stringify(tableData["data"]);
+            jsonToInsert = jsonToInsert
+                .replace(/\\n/g, "___LINE_BREAK___")
+                .replace(/\\\\\\\\/g, "___BACK_SLASH___")
+                .replace(/\\\\/g, "") // remove existing
+                .replace(/\\([tr])/g, "___SLASH__$1")
+                .replace(/\\/g, "\\\\")
+                .replace(/\\"/g, '\\\\"')
+                .replace(/\\'/g, "\\\\'")
+                .replace(/\\&/g, "\\\\&")
+                .replace(/\\r/g, "\\\\r")
+                .replace(/\\t/g, "\\\\t")
+                .replace(/\\b/g, "\\\\b")
+
+                .replace(/\\f/g, "|\f");
+            jsonToInsert = jsonToInsert.replace(/___LINE_BREAK___/g, "\\\\n");
+            jsonToInsert = jsonToInsert.replace(/___BACK_SLASH___/g, "\\\\\\\\").replace(/___SLASH__([tr])/g, "\\\\$1");
+            console.log("#####\nJsonToInsert " + jsonToInsert);
+            script += jsonToInsert;
+            script += this._snippets.get("editTableScriptPart2");
+            const style = this._snippets.get("editTableSTYLE");
+            this._sidebarCallback.addToSidebar({
+                html,
+                headline: this._language.get("insertTable"),
+                callback: this.editTableSidebarCallback,
+                buttonText: this._language.get("insert"),
+                css: style,
+                script
             });
         }
     };
 
-    //Get ./generatedTable/example.csv from the comment and delete the csv
-    public deleteCSVTable = async () => {
-        const insertSelection: vscode.Selection | false =
-            await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+    /**
+     * Callback of the Sidebar for editing a table
+     */
+    public editTableSidebarCallback = async (params: {
+        tableHeadCheckbox: { checked: boolean };
+        tableType: { value: string };
+        tableJSON: { value: string };
+        hiddenFileName: { value: string };
+    }) => {
+        const hasHeader = params.tableHeadCheckbox.checked;
+        const tableType = params.tableType.value;
+        const rawdata = params.tableJSON.value;
+        let data;
+        try {
+            data = JSON.parse(rawdata);
+        } catch (e) {
+            console.log(e);
+            return;
+        }
+        const tableData = await this._tableHelper.generateCSVfromJSON(rawdata);
+        const fileName: string = params.hiddenFileName.value.replace(/^.*[\\\/]/, "");
+        const folderName: string = params.hiddenFileName.value.substr(
+            0,
+            params.hiddenFileName.value.lastIndexOf("/") - 1
+        );
+        const defaultGeneratedFolderName: string = await this._tableHelper.getTableFolderName();
+        let savedTable;
+        if (folderName === defaultGeneratedFolderName) {
+            savedTable = await this._tableHelper.writeCSVFile(tableData, fileName);
+        } else {
+            savedTable = await this._tableHelper.writeCSVFile(tableData);
+            //if table exists in other folder, generate new Name, because the file could potentially already exists
+            // with that name so no other file will be overridden by accident
+        }
+        showNotification({ message: this._language.get("filehasBeenWritten") + params.hiddenFileName.value });
+        let extraText = "";
+        if (savedTable) {
+            const relSavedTablePathParts = savedTable.split(path.sep);
+            const relSavedTablePath =
+                "." +
+                path.sep +
+                relSavedTablePathParts[relSavedTablePathParts.length - 2] +
+                path.sep +
+                relSavedTablePathParts[relSavedTablePathParts.length - 1];
+            extraText = "exported to " + relSavedTablePath;
+        }
+        const table = this._tableHelper.generateTable(hasHeader, data, tableType, extraText);
+        const insertSelection = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        if (!insertSelection) {
+            vscode.window.showErrorMessage(this._language.get("originalTableNotFound"));
+            this._helper.insertStringAtStartOfLineOrLinebreak(table);
+        } else {
+            this._helper.replaceSelection(table, insertSelection);
+        }
+    };
+
+    //Selects and Deletes Table in Markdown when cursor is between the comments of the Table
+    public deleteTable = async () => {
+        const insertSelection = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
         if (!insertSelection) {
             vscode.window.showErrorMessage(this._language.get("noTableFound"));
         } else {
+            //Get ./generatedTable/example.csv from the comment and delete the csv
             const tableData = await this._tableHelper.loadSelectedTable(insertSelection);
             const tablePath = tableData["file"];
             await this._tableHelper.deleteCSVFile(tablePath);
-            console.log("CSV Deleted");
-        }
-    };
-    //Selects and Deletes Table in Markdown when cursor is between the comments of the Table
-    public deleteTable = async () => {
-        const insertSelection: vscode.Selection | false =
-            await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
-        if (!insertSelection) {
-            vscode.window.showErrorMessage(this._language.get("noTableFound"));
-        } else {
-            this.deleteCSVTable();
             this._helper.replaceSelection("", insertSelection);
         }
     };
@@ -577,27 +678,26 @@ export default class EditorFunctions {
         const thisPath = await this._helper.getCurrentDocumentFolderPath();
         const results = await this._tableHelper.getAllTablesInFolder(thisPath);
         const selectionTablesHTML = this._tableHelper.generateSelectTableOptionsHTML(results);
-        const form = `
+        const html = `
         <select name='selectTable'>
         <option selected="true" disabled="disabled" value=''>${this._language.get("selectTable")}</option>
         ${selectionTablesHTML}
         </select>
         `;
-        this._sidebarCallback.addToSidebar(
-            form,
-            this._language.get("importTableCsv"),
-            this.insertCSVTableSidebarCallback,
-            this._language.get("insert")
-        );
+        this._sidebarCallback.addToSidebar({
+            html,
+            headline: this._language.get("importTableCsv"),
+            callback: this.insertCSVTablesidebar,
+            buttonText: this._language.get("insert")
+        });
     };
 
     /**
      * Callback for insert a table from a CSV-File
      */
-    public insertCSVTableSidebarCallback = async (params) => {
+    public insertCSVTablesidebar = async (params) => {
         const urlData = params.selectTable.value;
-
-        let url: any;
+        let url;
         if (urlData === "") {
             vscode.window.showErrorMessage(this._language.get("noFileSelected"));
             return false;
@@ -610,13 +710,13 @@ export default class EditorFunctions {
                 return false;
             }
         }
-        let content: any = await this._helper.getContentOfFile(url.completePath);
+        let content = await this._helper.getContentOfFile(url.completePath);
         content = content.replace(/\ +$/, "");
         content = content.replace(/\n+$/, ""); //removes trailing spaces and line breaks
         const result = await Papa.parse(content);
         const extraText = this._language.get("importedFrom") + " " + url.relativePath;
         const table = this._tableHelper.generateTable(false, result.data, "", extraText);
-        const insertPosition: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        const insertPosition = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
         if (!insertPosition) {
             this._helper.insertStringAtStartOfLineOrLinebreak(table);
         } else {
@@ -631,45 +731,23 @@ export default class EditorFunctions {
      * Insert Table Button Function
      */
     public insertTable = async () => {
-        const currentTextEditor = await this._helper.getCurrentTextEditor();
-        const currentSelection = currentTextEditor.selection;
-
-        if (!currentSelection) {
-            vscode.window.showErrorMessage(this._language.get("noCursorFound"));
-            return;
-        }
-
-        //create empty .csv file in /generatedTables
-        const file = await this._tableHelper.writeCSVFile(",\n,");
-        await this._helper.focusDocument();
-        await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(file));
-        //open edit csv extension
-        const editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
-        editCsv.activate().then(async () => {
-            await vscode.commands.executeCommand("edit-csv.edit");
-            // watch file changes
-            const watcher = vscode.workspace.createFileSystemWatcher(file);
-            const fileContents = await this._helper.getContentOfFile(file);
-            watcher.onDidChange(async () => {
-                // watcher is triggered in rare case when the file contents did not change
-                const fileContentsAfterChange = await this._helper.getContentOfFile(file);
-                if (fileContents === fileContentsAfterChange) return;
-
-                await this._tableHelper.replaceTable(file, currentTextEditor, currentSelection);
-                // close edit csv extension and csv file
-                await vscode.commands.executeCommand("edit-csv.goto-source");
-                await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
-                // close opened csv file window
-                await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
-                watcher.dispose();
-            });
+        const html = this._snippets.get("insertTableHTML");
+        const script = this._snippets.get("insertTableSCRIPT");
+        const css = this._snippets.get("insertTableSTYLE");
+        this._sidebarCallback.addToSidebar({
+            html,
+            headline: this._language.get("insertTable"),
+            callback: this.insertTablesidebar,
+            buttonText: this._language.get("insert"),
+            css,
+            script
         });
     };
 
     /**
-     * Insert Table SidebarCallback Function
+     * Insert Table sidebar Function
      */
-    public insertTableSidebarCallback = async (params) => {
+    public insertTablesidebar = async (params) => {
         const hasHeader = params.tableHeadCheckbox.checked;
         const tableType = params.tableType.value;
         const rawdata = params.tableJSON.value;
@@ -680,7 +758,7 @@ export default class EditorFunctions {
             console.log(e);
             return;
         }
-        const savedTable: any = await this._tableHelper.generateCSVfromJSONandSave(rawdata);
+        const savedTable = await this._tableHelper.generateCSVfromJSONandSave(rawdata);
         let extraText = "";
         if (savedTable) {
             const relSavedTablePathParts = savedTable.split(path.sep);
@@ -693,7 +771,7 @@ export default class EditorFunctions {
             extraText = "exported to " + relSavedTablePath;
         }
         const table = this._tableHelper.generateTable(hasHeader, data, tableType, extraText);
-        const insertPosition: any = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
+        const insertPosition = await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
         if (!insertPosition) {
             this._helper.insertStringAtStartOfLineOrLinebreak(table);
         } else {
@@ -717,27 +795,26 @@ export default class EditorFunctions {
         const thisPath = await this._helper.getCurrentDocumentFolderPath();
         const thisPicturesArray = await this._imageHelper.getAllPicturesInFolder(thisPath, thisPicturesFolderName);
         const allPicturesHTMLString = await this._imageHelper.generateSelectImagesOptionsHTML(thisPicturesArray);
-        let form = "";
+        let html = "";
         const script = this._snippets.get("insertImageScript");
-        form +=
+        html +=
             this._snippets.get("insertImageFormPart1") +
             allPicturesHTMLString +
             this._snippets.get("insertImageFormPart2");
-        this._sidebarCallback.addToSidebar(
-            form,
-            this._language.get("insertGraphic"),
-            this.insertImageSidebarCallback,
-            this._language.get("insert"),
-            "",
+        this._sidebarCallback.addToSidebar({
+            html,
+            headline: this._language.get("insertGraphic"),
+            callback: this.insertImagesidebar,
+            buttonText: this._language.get("insert"),
             script
-        );
+        });
     };
 
     /**
      * The Callback for inserting an image from the sidebar, inserts the image
      * @param params parameters given by the callback about the html-elements of the html-form
      */
-    public insertImageSidebarCallback = async (params) => {
+    public insertImagesidebar = async (params) => {
         let altText = "";
         let pictureTitle = "";
         const pictureSelector = JSON.parse(params.selectPicture.value);
@@ -769,7 +846,7 @@ export default class EditorFunctions {
      * Adds a panel to the sidebar to add a link
      */
     public insertLink = () => {
-        const form = this._snippets.get("insertLinkForm");
+        const html = this._snippets.get("insertLinkForm");
         const script = `
         function valueChanged(){
             var urlElement = document.getElementById("url");
@@ -783,23 +860,21 @@ export default class EditorFunctions {
             a.href = url;
             a.innerHTML = linkText;
             a.title = linkTitle;
-
         }
         `;
-        this._sidebarCallback.addToSidebar(
-            form,
-            this._language.get("insertLink"),
-            this.insertLinkSidebarCallback,
-            this._language.get("insertLinkSubmit"),
-            "",
+        this._sidebarCallback.addToSidebar({
+            html,
+            headline: this._language.get("insertLink"),
+            callback: this.insertLinksidebar,
+            buttonText: this._language.get("insertLinkSubmit"),
             script
-        );
+        });
     };
 
     /**
      * gets called when the 'insert Link'-Button is pressed
      */
-    public insertLinkSidebarCallback = async (params) => {
+    public insertLinksidebar = async (params) => {
         let stringToInsert: string;
         if (params.linkTitle.value !== "") {
             stringToInsert = `[${params.linkText.value}](${params.url.value} "${params.linkTitle.value}") `;
