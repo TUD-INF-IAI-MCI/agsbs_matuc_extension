@@ -92,6 +92,7 @@ export default class En {
         this.d["editTable"] = "Edit Table";
         this.d["deleteTable"] = "Delete Table";
         this.d["noTableFound"] = "No table found";
+        this.d["noCursorFound"] = "Please place the cursor inside the document";
         this.d["errorTableFileNonExistant"] = "File of the table does not exist";
         this.d["parsingError"] = "Error parsing Table";
         this.d["tableInsertionPositionConflictWarning"] =

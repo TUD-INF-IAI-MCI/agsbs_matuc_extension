@@ -92,6 +92,7 @@ export default class En {
         this.d["editTable"] = "Tabelle bearbeiten";
         this.d["deleteTable"] = "Tabelle löschen";
         this.d["noTableFound"] = "Keine Tabelle gefunden";
+        this.d["noCursorFound"] = "Bitte Cursor im Dokument platzieren";
         this.d["errorTableFileNonExistant"] = "Datei der Tabelle existiert nicht";
         this.d["parsingError"] = "Fehler beim Parsen der Tabelle.";
         this.d["tableInsertionPositionConflictWarning"] =
@@ -268,7 +269,7 @@ export default class En {
     }
 
     public get = (varname) => {
-        var result = this.d[varname];
+        const result = this.d[varname];
         if (result === undefined) {
             return varname;
         }
