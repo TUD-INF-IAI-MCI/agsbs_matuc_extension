@@ -520,8 +520,8 @@ export default class TableHelper {
     public async loadSelectedTable(
         selection: vscode.Selection,
         currentTextEditor?: vscode.TextEditor
-    ): Promise<TableSelection | string> {
-        const delimiter: any = await this._settings.get("csvDelimiter");
+    ): Promise<TableSelection> {
+        const delimiter = await this._settings.get("csvDelimiter");
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
         }
@@ -539,10 +539,6 @@ export default class TableHelper {
             }
         }
         const parts = startLineText.match(tableStartRegex);
-        if (parts.length !== 4) {
-            //If The number of matched string parts from the first line is too long or too short
-            return "";
-        } else {
             const tableType = parts[1];
             const tableHeader = parts[2] === "HAS HEADER";
             const tableSource = parts[3];
@@ -551,19 +547,14 @@ export default class TableHelper {
             const fileExists = await this._helper.fileExists(pathToFile);
             if (!fileExists) {
                 vscode.window.showErrorMessage(this._language.get("errorTableFileNonExistant"));
-                return "";
+                throw new Error(this._language.get("errorTableFileNonExistant"));
             }
             let content: string = await this._helper.getContentOfFile(pathToFile);
             content = content.replace(/\n+$/gm, ""); //removes trailing line breaks. Important, otherwise the resulting array will have weird empty arrays (like [""]) at the end.
             const json = await this._helper.parseCSVtoJSON(content, delimiter);
-            if (!json) {
+            if (!json || !json.hasOwnProperty("data")) {
                 vscode.window.showErrorMessage(this._language.get("parsingError"));
-                return "";
-            }
-            if (!json.hasOwnProperty("data")) {
-                //If the Result has no "data"-property
-                vscode.window.showErrorMessage(this._language.get("parsingError"));
-                return "";
+                throw new Error(this._language.get("parsingError"));
             }
             return {
                 data: {
@@ -573,7 +564,6 @@ export default class TableHelper {
                 },
                 file: pathToFile
             };
-        }
     }
 
     //delete CSVFile with the Path
@@ -581,5 +571,17 @@ export default class TableHelper {
         fs.unlink(pathToFile, () => {
             "No such file found";
         });
+    }
+
+    public replaceTable = async (file, currentTextEditor: vscode.TextEditor, currentSelection: vscode.Selection) => {
+        // get and parse content
+        const fileContents = await this._helper.getContentOfFile(file);
+        const parsedContent = await Papa.parse(fileContents.replace(/\ +$/, "").replace(/\n+$/, ""));
+        const relativeTablePath =
+        ".\\" + path.relative(path.dirname(currentTextEditor.document.fileName), file);
+        const extraText = this._language.get("importedFrom") + " " + relativeTablePath;
+        // generate markdown table and replace the old one
+        const newTable = this.generateTable(false, parsedContent.data, "", extraText);
+        this._helper.replaceSelection(newTable, currentSelection, currentTextEditor);
     }
 }

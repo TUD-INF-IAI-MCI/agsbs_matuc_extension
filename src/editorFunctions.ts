@@ -525,25 +525,20 @@ export default class EditorFunctions {
             vscode.window.showErrorMessage(this._language.get("noTableFound"));
             return;
         } else {
-            const selectedTable = await this._tableHelper.loadSelectedTable(currentSelection);
+            const selectedTable = (await this._tableHelper.loadSelectedTable(currentSelection)).file;
             await this._helper.focusDocument();
-            await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(selectedTable["file"]));
+            await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(selectedTable));
             const editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
             editCsv.activate().then(async () => {
                 await vscode.commands.executeCommand("edit-csv.edit");
                 // watch csv file changes
-                const watcher = vscode.workspace.createFileSystemWatcher(selectedTable["file"]);
+                const watcher = vscode.workspace.createFileSystemWatcher(selectedTable);
                 watcher.onDidChange(async () => {
-                    let content: string = await this._helper.getContentOfFile(selectedTable["file"]);
-                    content = content.replace(/\ +$/, "").replace(/\n+$/, "");
-                    const result = await Papa.parse(content);
-                    const relativeTablePath =
-                        ".\\" + path.relative(path.dirname(currentTextEditor.document.fileName), selectedTable["file"]);
-                    const extraText = this._language.get("importedFrom") + " " + relativeTablePath;
-                    // generate markdown table and replace the old one
-                    const table = this._tableHelper.generateTable(false, result.data, "", extraText);
-                    this._helper.replaceSelection(table, currentSelection, currentTextEditor);
-                    watcher.dispose();
+                    await this._tableHelper.replaceTable(selectedTable, currentTextEditor, currentSelection);
+                    //dispose watcher only after edit-csv is closed
+                    if (!editCsv.isActive) {
+                        watcher.dispose();
+                    }
                 });
             });
         }
@@ -653,21 +648,17 @@ export default class EditorFunctions {
             await vscode.commands.executeCommand("edit-csv.edit");
             // watch file changes
             const watcher = vscode.workspace.createFileSystemWatcher(file);
+            const fileContents = await this._helper.getContentOfFile(file);
             watcher.onDidChange(async () => {
-                let content: any = await this._helper.getContentOfFile(file);
-                content = content.replace(/\ +$/, "").replace(/\n+$/, "");
-                const result = await Papa.parse(content);
-                const relativeTablePath =
-                    ".\\" + path.relative(path.dirname(currentTextEditor.document.fileName), file);
-                const extraText = this._language.get("importedFrom") + " " + relativeTablePath;
-                // generate markdown table
-                const table = this._tableHelper.generateTable(false, result.data, "", extraText);
-                this._helper.replaceSelection(table, currentSelection, currentTextEditor);
+                // watcher is triggered in rare case when the file contents did not change
+                const fileContentsAfterChange = await this._helper.getContentOfFile(file);
+                if (fileContents === fileContentsAfterChange) return;
+
+                await this._tableHelper.replaceTable(file, currentTextEditor, currentSelection);
                 // close edit csv extension and csv file
                 await vscode.commands.executeCommand("edit-csv.goto-source");
                 await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
                 // close opened csv file window
-                // await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
                 await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
                 watcher.dispose();
             });
