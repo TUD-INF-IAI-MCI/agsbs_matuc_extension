@@ -12,6 +12,7 @@ import { getMaxListeners, removeAllListeners } from "cluster";
 import { ClientRequest } from "http";
 const exec = require("child_process").exec;
 const spawn = require("child_process").spawn;
+import { showNotification } from "./helper/notificationHelper";
 
 export default class GitCommands {
     private _helper: Helper;
@@ -30,9 +31,9 @@ export default class GitCommands {
      * @param repoName Name of the repo
      */
     public async clone(user, repoName) {
-        var gitLocalPath: any = await this._settings.get("gitLocalPath");
-        var gitServerPath: any = await this._settings.get("gitServerPath");
-        var usesHttpsOrSshForGit = await this._settings.get("usesHttpsOrSshForGit");
+        const gitLocalPath: any = await this._settings.get("gitLocalPath");
+        let gitServerPath: any = await this._settings.get("gitServerPath");
+        const usesHttpsOrSshForGit = await this._settings.get("usesHttpsOrSshForGit");
         if (gitServerPath.endsWith("/")) {
             gitServerPath = gitServerPath.substring(0, gitServerPath.length - 1);
             this._settings.update("gitServerPath", gitServerPath); //If Path in Settings ends with a /
@@ -82,7 +83,7 @@ export default class GitCommands {
             console.log("try to execute command:");
             console.log(`\t git clone ${gitServerPath}`);
             let lastStderr;
-            let gitCloneProcess = spawn("git", ["clone", gitServerPath, "--progress"], {
+            const gitCloneProcess = spawn("git", ["clone", gitServerPath, "--progress"], {
                 cwd: gitLocalPath,
                 shell: true
             });
@@ -92,12 +93,12 @@ export default class GitCommands {
             });
             gitCloneProcess.on("close", (code) => {
                 if (code === 0) {
-                    vscode.window.showInformationMessage(this._language.get("gitCloneSucess"));
+                    showNotification({ message: this._language.get("gitCloneSucess") });
                     if (repoName.includes("/")) {
-                        var arr = repoName.split("/");
+                        const arr = repoName.split("/");
                         repoName = arr[arr.length - 1];
                     }
-                    var newFolderName = path.join(gitLocalPath, repoName);
+                    const newFolderName = path.join(gitLocalPath, repoName);
                     this._helper.addWorkspaceFolder(newFolderName);
                     this.track(newFolderName);
                     resolve();
@@ -166,7 +167,7 @@ export default class GitCommands {
      * @param {string} path The path of the local git repository.
      */
     public async commit(message, path) {
-        var promThis = this;
+        const promThis = this;
         return new Promise(function (resolve, reject) {
             exec(`git commit -am "${message}"`, { cwd: path }, (error, stdout, stderr) => {
                 if (error) {
@@ -189,16 +190,16 @@ export default class GitCommands {
                 vscode.window.showErrorMessage(this._language.get("gitPushError"));
                 return;
             }
-            vscode.window.showInformationMessage(this._language.get("gitPushSuccess"));
+            showNotification({ message: this._language.get("gitPushSuccess") });
             console.log(`stdout: ${stdout}`);
             console.log(`stderr: ${stderr}`);
         });
     }
 
     public async setConfig(userName: string, eMail: string, path) {
-        var gitConfig: any = await this.getConfig(path);
+        const gitConfig: any = await this.getConfig(path);
         if (!gitConfig.includes("user.email") || !gitConfig.includes("user.name")) {
-            var command = `git config --local user.email \"${eMail}\" && `;
+            let command = `git config --local user.email \"${eMail}\" && `;
             command += `git config --local user.name  \"${userName}\"`;
             return new Promise(function (resolve, reject) {
                 exec(command, { cwd: path }, (error, stdout, stderr) => {

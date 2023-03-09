@@ -10,6 +10,7 @@ import { exec, spawn } from "child_process";
 import Sidebar from "./sidebar";
 import osLocale = require("os-locale");
 import path = require("path");
+import { showNotification } from "./helper/notificationHelper";
 
 /**
  * This Class contains all Functions regarding matuc
@@ -241,7 +242,7 @@ export default class MatucCommands {
             }
             const mistkerl = JSON.parse(stdout);
             if (typeof mistkerl.result === "string") {
-                vscode.window.showInformationMessage(this._language.get("mistkerlDidNotFindAnyError"));
+                showNotification({ message: this._language.get("mistkerlDidNotFindAnyError") });
             } else {
                 this._helper.ShowMkErrorMessage(mistkerl.result);
             }
@@ -374,11 +375,11 @@ export default class MatucCommands {
                 title: this._language.get("generateMaterial"),
                 cancellable: true
             },
-            (progress, token) => {
-                return this.executeConversion(progress, token, parameter);
+            async (progress, token) => {
+                await this.executeConversion(progress, token, parameter);
+                this.loadGeneratedHtml(filePath);
             }
         );
-        this.loadGeneratedHtml(filePath);
     }
 
     public executeConversion(
@@ -397,7 +398,7 @@ export default class MatucCommands {
 
                 const parsedData = JSON.parse(data.toString());
                 if (typeof parsedData.result === "string") {
-                    vscode.window.showInformationMessage(this._language.get("mistkerlDidNotFindAnyError"));
+                    showNotification({ message: this._language.get("mistkerlDidNotFindAnyError") });
                 } else {
                     if (parsedData.hasOwnProperty("error")) {
                         this._sidebarCallback.addToSidebar(
@@ -417,7 +418,7 @@ export default class MatucCommands {
             });
             matucProcess.on("close", (code) => {
                 if (code === 0) {
-                    vscode.window.showInformationMessage(this._language.get("generatingSuccess"));
+                    showNotification({ message: this._language.get("generatingSuccess") });
                     resolve();
                 }
             });
@@ -425,50 +426,8 @@ export default class MatucCommands {
         });
     }
 
-    /**
-     * Converts a File
-     * @param profile the given profile, "visually" for the visually impaied or "blind" for the blind
-     * @param currentTextEditor optional. The current Text editor to work with.
-     */
-    public async convertFile(profile: string, currentTextEditor?: vscode.TextEditor) {
-        if (currentTextEditor === undefined) {
-            currentTextEditor = await this._helper.getCurrentTextEditor();
-        }
-        const filePath = currentTextEditor.document.uri.fsPath;
-        if (await currentTextEditor.document.isDirty) {
-            await currentTextEditor.document.save();
-        }
-        const cmd = `matuc_js conv "${filePath}"`;
-        console.log("matuc conv command " + cmd);
-        exec(cmd, { env: this.getOsLocale() }, (error, stdout, stderr) => {
-            if (error) {
-                const fragment = JSON.parse(stdout);
-                let message = "";
-                if (fragment.error.hasOwnProperty("message")) {
-                    message += fragment.error.message;
-                }
-                if (fragment.error.hasOwnProperty("line")) {
-                    message += "\n\n\n" + this._language.get("checkLine") + fragment.error.line;
-                }
-                if (fragment.error.hasOwnProperty("path")) {
-                    message += "\n\n" + this._language.get("checkFile") + " " + fragment.error.path;
-                }
-                //this._helper.ShowMkErrorMessage(fragment.result);
-                vscode.window.showErrorMessage(this._language.get("error") + message);
-
-                console.error(`exec error: ${error}`);
-                console.log(`stderr: ${stderr}`);
-                console.log(`stdout: ${stdout}`);
-                return;
-            }
-            console.log(`stdout: ${stdout}`);
-
-            //load generate HTML-file
-            this.loadGeneratedHtml(filePath);
-        });
-    }
     // add quotes to path if necessary and loads generate Html afterthat
-    loadGeneratedHtml(filePath) {
+    public loadGeneratedHtml(filePath) {
         let cmd = "";
         if (process.platform === "win32") {
             cmd = `\"${filePath.replace("md", "html")}\"`;
@@ -506,7 +465,7 @@ export default class MatucCommands {
             }
             const mistkerl = JSON.parse(stdout);
             if (typeof mistkerl.result === "string") {
-                vscode.window.showInformationMessage(this._language.get("mistkerlDidNotFindAnyErrorAndSavedFile"));
+                showNotification({ message: this._language.get("mistkerlDidNotFindAnyError") });
                 noErrorFound = true;
             } else {
                 this._helper.ShowMkErrorMessage(mistkerl.result);
