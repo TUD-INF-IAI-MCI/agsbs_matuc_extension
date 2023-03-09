@@ -84,6 +84,9 @@ export default class ImageHelper {
                 case "png":
                 case "jpeg":
                 case "svg":
+                case "tiff":
+                case "tif":
+                case "webp":
                     //etc
                     return true;
             }
