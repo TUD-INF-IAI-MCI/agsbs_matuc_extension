@@ -146,6 +146,23 @@ export default class GitCommands {
     }
 
     /**
+     * Executes `git add`.
+     * @param filePath Path to the file to add.
+     */
+        public async addFile(path) {
+            return new Promise(function (resolve, reject) {
+                exec("git add", { cwd: path }, (error, stdout, stderr) => {
+                    if (error) {
+                        console.error("path " + path);
+                        console.error(`exec error: ${error}`);
+                        reject(error);
+                    }
+                    resolve({ out: stdout, err: stderr });
+                });
+            });
+        }
+
+    /**
      * Executes `git add -A`.
      */
     public async addAll(path) {

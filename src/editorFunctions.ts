@@ -17,6 +17,7 @@ import InsertHelper from "./helper/insertHelper";
 import HeadlineHelper from "./helper/headlineHelper";
 import SettingsHelper from "./helper/settingsHelper";
 import { showNotification } from "./helper/notificationHelper";
+import GitCommands from "./gitCommands";
 /**
  * The Main Class to add Buttons and their functionality of the Editor Tools Bar.
  */
@@ -33,6 +34,7 @@ export default class EditorFunctions {
     private _insertHelper: InsertHelper;
     private _headlineHelper: HeadlineHelper;
     private _settings: SettingsHelper;
+    private _gitCommands: GitCommands;
 
     constructor(taskbarCallback, sidebarCallback, context) {
         this._helper = new Helper();
@@ -47,6 +49,7 @@ export default class EditorFunctions {
         this._insertHelper = new InsertHelper();
         this._headlineHelper = new HeadlineHelper();
         this._settings = new SettingsHelper();
+        this._gitCommands = new GitCommands();
     }
 
     /**
@@ -160,14 +163,6 @@ export default class EditorFunctions {
             this.editTable,
             this._language.get("table"),
             "agsbs.editTable"
-        );
-        // edit csv call
-        this._taskbarCallback.addButton(
-            "h.svg",
-            this._language.get("editTable"),
-            this.editTableGui,
-            this._language.get("table"),
-            "agsbs.editTableGui"
         );
         this._taskbarCallback.addButton(
             "deleteTable.svg",
@@ -529,31 +524,6 @@ export default class EditorFunctions {
     };
 
     /**
-     * new function editCsv may complete change
-     */
-
-    public editTableGui = async () => {
-        const editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
-
-        const loc = vscode.Uri.file(
-            "C:\\Users\\Jens Voegler\\Documents\\AGSBS_Git\\b-354-2021_klinische_psychologie_und_psychotherapie\\bearbeitet\\k13\\generatedTables\\generatedTable-2021-11-17_23-36-53.csv"
-        );
-        vscode.commands.executeCommand("vscode.open", loc);
-        if (!editCsv.isActive) {
-            editCsv.activate().then(
-                function () {
-                    vscode.commands.executeCommand("edit-csv.edit");
-                    //vscode.commands.executeCommand<vscode.Location[]>("edit-csv.edit", "C:\Users\Jens Voegler\Documents\AGSBS_Git\b-354-2021_klinische_psychologie_und_psychotherapie\bearbeitet\k13\generatedTables\generatedTable-2021-11-17_23-36-53.csv");
-                },
-                function () {
-                    console.log("Cannot start vscode-edit-csv");
-                }
-            );
-            vscode.commands.executeCommand("edit-csv.edit");
-        }
-    };
-
-    /**
      * Editing an existing Table
      */
     public editTable = async () => {
@@ -573,6 +543,8 @@ export default class EditorFunctions {
                 // watch csv file changes
                 const watcher = vscode.workspace.createFileSystemWatcher(selectedTable);
                 watcher.onDidChange(async () => {
+                    await this._gitCommands.addFile(selectedTable);
+                    await this._gitCommands.commit(selectedTable, this._language.get("tableEditCommit"));
                     await this._tableHelper.replaceTable(selectedTable, currentTextEditor, currentSelection);
                     //dispose watcher only after edit-csv is closed
                     if (!editCsv.isActive) {
