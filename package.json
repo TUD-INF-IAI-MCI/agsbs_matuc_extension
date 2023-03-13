@@ -455,7 +455,6 @@
     },
     "extensionDependencies": [
         "janisdd.vscode-edit-csv",
-        "nhoizey.gremlins",
-        "shd101wyy.markdown-preview-enhanced"
+        "nhoizey.gremlins"
     ]
 }
