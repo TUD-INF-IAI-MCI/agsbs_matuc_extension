@@ -45,7 +45,7 @@ export default class MatucCommands {
      * @returns version of Matuc if installed, otherwise false.
      */
     public async getMatucVersion(): Promise<string | false> {
-        const cmd = "`matuc_js version`";
+        const cmd = "matuc_js version";
         return new Promise(function (resolve) {
             try {
                 exec(cmd, (error, stdout) => {
@@ -356,19 +356,6 @@ export default class MatucCommands {
         });
     }
 
-    /**
-     * Generates and returns a os locale
-     * @returns the OS-Locale string
-     */
-    getOsLocale() {
-        const env = Object.create(process.env);
-        let lang = "de_De";
-        osLocale().then((locale) => {
-            lang = locale;
-        });
-        env.LANG = `${lang}.UTF-8`; // form should be "de_DE.UTF-8";
-        return env;
-    }
     /**
      * Converts a single file or all file with a project
      * @param isOnlyFile if true only a file is convert, if false all markdown file will converted
