@@ -8,7 +8,6 @@ import Language from "./languages";
 import Helper from "./helper/helper";
 import { exec, spawn } from "child_process";
 import Sidebar from "./sidebar";
-import osLocale = require("os-locale");
 import path = require("path");
 import { showNotification } from "./helper/notificationHelper";
 import { ProjectConfig } from "./types/types";

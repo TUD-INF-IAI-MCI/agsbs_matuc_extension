@@ -161,14 +161,6 @@ export default class EditorFunctions {
             this._language.get("table"),
             "agsbs.editTable"
         );
-        // edit csv call
-        this._taskbarCallback.addButton(
-            "h.svg",
-            this._language.get("editTable"),
-            this.editTableGui,
-            this._language.get("table"),
-            "agsbs.editTableGui"
-        );
         this._taskbarCallback.addButton(
             "deleteTable.svg",
             this._language.get("deleteTable"),
@@ -526,31 +518,6 @@ export default class EditorFunctions {
     public orderedList = async () => {
         this._listHelper.orderedList();
         this._helper.focusDocument(); //Puts focus back to the text editor
-    };
-
-    /**
-     * new function editCsv may complete change
-     */
-
-    public editTableGui = async () => {
-        const editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
-
-        const loc = vscode.Uri.file(
-            "C:\\Users\\Jens Voegler\\Documents\\AGSBS_Git\\b-354-2021_klinische_psychologie_und_psychotherapie\\bearbeitet\\k13\\generatedTables\\generatedTable-2021-11-17_23-36-53.csv"
-        );
-        vscode.commands.executeCommand("vscode.open", loc);
-        if (!editCsv.isActive) {
-            editCsv.activate().then(
-                function () {
-                    vscode.commands.executeCommand("edit-csv.edit");
-                    //vscode.commands.executeCommand<vscode.Location[]>("edit-csv.edit", "C:\Users\Jens Voegler\Documents\AGSBS_Git\b-354-2021_klinische_psychologie_und_psychotherapie\bearbeitet\k13\generatedTables\generatedTable-2021-11-17_23-36-53.csv");
-                },
-                function () {
-                    console.log("Cannot start vscode-edit-csv");
-                }
-            );
-            vscode.commands.executeCommand("edit-csv.edit");
-        }
     };
 
     /**
