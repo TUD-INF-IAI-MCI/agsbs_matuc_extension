@@ -129,6 +129,7 @@ export default class En {
             'Es wurde die E-Mailadresse "$emailAddress$" und der Username "$userName$"  aus den Einstellung der Erweiterung in die lokale Konfiguration geschrieben.';
         this.d["repoNameContainsSpaces"] =
             "Der Reponame enthielt Leerzeichen. Sollte das Klonen nicht erfolgreich gewesen sein. Überprüfen Sie den Reponamen und starten Sie das Klonen erneut!";
+        this.d["tableEditCommit"]="Tabelle bearbeitet";
         // //new-project
         this.d["noFolder"] = "Kein Ordner ausgewählt";
         this.d["preface"] = "Vorwort einfügen";

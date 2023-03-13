@@ -535,6 +535,8 @@ export default class EditorFunctions {
             return;
         } else {
             const selectedTable = (await this._tableHelper.loadSelectedTable(currentSelection)).file;
+            const lastIndex = selectedTable.lastIndexOf("\\"); // Find the last occurrence of the backslash character
+            const csvFilename = selectedTable.slice(lastIndex + 1);
             await this._helper.focusDocument();
             await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(selectedTable));
             const editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
@@ -543,9 +545,9 @@ export default class EditorFunctions {
                 // watch csv file changes
                 const watcher = vscode.workspace.createFileSystemWatcher(selectedTable);
                 watcher.onDidChange(async () => {
-                    await this._gitCommands.addFile(selectedTable);
-                    await this._gitCommands.commit(selectedTable, this._language.get("tableEditCommit"));
                     await this._tableHelper.replaceTable(selectedTable, currentTextEditor, currentSelection);
+                    await this._gitCommands.addFile(selectedTable, csvFilename);
+                    await this._gitCommands.commit(selectedTable, this._language.get("tableEditCommit") + csvFilename);
                     //dispose watcher only after edit-csv is closed
                     if (!editCsv.isActive) {
                         watcher.dispose();
