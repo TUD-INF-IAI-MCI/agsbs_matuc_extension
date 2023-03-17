@@ -549,7 +549,10 @@ export default class EditorFunctions {
                     await this._tableHelper.replaceTable(selectedTable, currentTextEditor, currentSelection);
                     console.log("Table updated");
                     await vscode.commands.executeCommand("workbench.action.files.saveAll");
+                    //add csv to commit
                     await this._gitCommands.addFile(projectFolder, selectedTable);
+                    //add md to commit
+                    await this._gitCommands.addFile(projectFolder, currentTextEditor.document.uri.fsPath);
                     await this._gitCommands.commit(this._language.get("tableEditCommit") + selectedTable, projectFolder);
                     //dispose watcher only after edit-csv is closed
                     if (!editCsv.isActive) {
