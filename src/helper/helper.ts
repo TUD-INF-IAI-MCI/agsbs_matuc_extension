@@ -126,27 +126,22 @@ export default class Helper {
         if (!editor) {
           return;
         }
-      
-        const document = editor.document;
         const selection = editor.selection;
         const cursorPosition = selection.active;
       
         // Find the start and end positions of the word under the cursor
         let startPosition = cursorPosition;
         let endPosition = cursorPosition;
-        const wordSeparators = ' \t\n\r\v,.;:!?"\'()[]{}<>';
-        while (startPosition.character > 0 &&
-               !wordSeparators.includes(document.getText(new vscode.Range(startPosition.translate(0, -1), startPosition)))) {
-          startPosition = startPosition.translate(0, -1);
+        while (startPosition.character > 0 && !editor.document.lineAt(startPosition.line).text[startPosition.character - 1].match(/\s/)) {
+            startPosition = startPosition.translate(0, -1);
         }
-        while (endPosition.character < document.lineAt(endPosition).range.end.character &&
-               !wordSeparators.includes(document.getText(new vscode.Range(endPosition, endPosition.translate(0, 1))))) {
-          endPosition = endPosition.translate(0, 1);
+        while (endPosition.character < editor.document.lineAt(endPosition.line).text.length && !editor.document.lineAt(endPosition.line).text[endPosition.character].match(/\s/)) {
+            endPosition = endPosition.translate(0, 1);
         }
-      
         // Select the word under the cursor
         editor.selection = new vscode.Selection(startPosition, endPosition);
       }
+    
       
     public isSelectionEmpty() {
         const editor = vscode.window.activeTextEditor;
