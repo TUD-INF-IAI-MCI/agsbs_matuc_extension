@@ -530,13 +530,14 @@ export default class EditorFunctions {
         const currentSelection: false | vscode.Selection =
             await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
         const currentTextEditor = await this._helper.getCurrentTextEditor();
+        const projectFolder = await this._helper.getFolderFromFilePath(currentTextEditor.document.uri.fsPath);
         if (!currentSelection) {
             vscode.window.showErrorMessage(this._language.get("noTableFound"));
             return;
         } else {
             const selectedTable = (await this._tableHelper.loadSelectedTable(currentSelection)).file;
             const lastIndex = selectedTable.lastIndexOf("\\"); // Find the last occurrence of the backslash character
-            const csvFilename = selectedTable.slice(lastIndex + 1);
+            //const csvFilename = "./" + selectedTable.slice(lastIndex + 1);
             await this._helper.focusDocument();
             await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(selectedTable));
             const editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
@@ -546,8 +547,10 @@ export default class EditorFunctions {
                 const watcher = vscode.workspace.createFileSystemWatcher(selectedTable);
                 watcher.onDidChange(async () => {
                     await this._tableHelper.replaceTable(selectedTable, currentTextEditor, currentSelection);
-                    await this._gitCommands.addFile(selectedTable, csvFilename);
-                    await this._gitCommands.commit(selectedTable, this._language.get("tableEditCommit") + csvFilename);
+                    console.log("Table updated");
+                    await vscode.commands.executeCommand("workbench.action.files.saveAll");
+                    await this._gitCommands.addFile(projectFolder, selectedTable);
+                    await this._gitCommands.commit(this._language.get("tableEditCommit") + selectedTable, projectFolder);
                     //dispose watcher only after edit-csv is closed
                     if (!editCsv.isActive) {
                         watcher.dispose();
