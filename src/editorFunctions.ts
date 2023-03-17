@@ -548,7 +548,8 @@ export default class EditorFunctions {
                 watcher.onDidChange(async () => {
                     await this._tableHelper.replaceTable(selectedTable, currentTextEditor, currentSelection);
                     console.log("Table updated");
-                    await vscode.commands.executeCommand("workbench.action.files.saveAll");
+                    //save md file
+                    await currentTextEditor.document.save();
                     //add csv to commit
                     await this._gitCommands.addFile(projectFolder, selectedTable);
                     //add md to commit
