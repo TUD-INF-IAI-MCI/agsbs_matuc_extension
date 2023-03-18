@@ -150,16 +150,23 @@ export default class Helper {
         return editor.selection.isEmpty;
     }
 
+    public getSelection(): string {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            return "";
+        }
+        return editor.document.getText(editor.selection);
+    }
+
     //check if the selection is wrapped with a delimiter if there is no selection select the word under the cursor
     public isSelectionWrappedWith(delimiter: string): boolean {
         if(!vscode.window.activeTextEditor||!vscode.window.activeTextEditor.selection) {
             return false;
         }
-        const editor = vscode.window.activeTextEditor;
-        const selection = editor.selection;
-        const textToWrap = editor.document.getText(selection);
-        console.log("158" + textToWrap);
-        console.log(textToWrap.startsWith(delimiter) && textToWrap.endsWith(delimiter));
+        if (this.isSelectionEmpty()) {
+            this.selectWordUnderCursor();
+        }
+        const textToWrap = this.getSelection();
         return textToWrap.startsWith(delimiter) && textToWrap.endsWith(delimiter);
         
     }
@@ -171,14 +178,11 @@ export default class Helper {
             return;
         }
         const selection = editor.selection;
-        const cursorPosition = selection.active;
-        const textToWrap = editor.document.getText(selection);
-        console.log(textToWrap);
+        const textToWrap = this.getSelection();
         const wrappedText = text + textToWrap + text;
         editor.edit(editBuilder => {
             editBuilder.replace(selection, wrappedText);
         });
-        editor.selection = new vscode.Selection(cursorPosition, cursorPosition.translate(0, textToWrap.length));
     }
 
     //unwraps the selection if it is wrapped with a delimiter
@@ -187,12 +191,10 @@ export default class Helper {
         if (!editor) {
             return;
         }
-
         const selection = editor.selection;
-        const textToWrap = editor.document.getText(selection);
-        console.log(textToWrap);
-        console.log(delimiter.length);
-        const unwrappedText = textToWrap.slice(delimiter.length, -delimiter.length);
+        const textToUnwrap = this.getSelection();
+        console.log(textToUnwrap);
+        const unwrappedText = textToUnwrap.substring(delimiter.length, textToUnwrap.length - delimiter.length);
         editor.edit(editBuilder => {
             editBuilder.replace(selection, unwrappedText);
         });
