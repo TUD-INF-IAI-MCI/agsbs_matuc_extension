@@ -193,7 +193,6 @@ export default class Helper {
         }
         const selection = editor.selection;
         const textToUnwrap = this.getSelection();
-        console.log(textToUnwrap);
         const unwrappedText = textToUnwrap.substring(delimiter.length, textToUnwrap.length - delimiter.length);
         editor.edit(editBuilder => {
             editBuilder.replace(selection, unwrappedText);
@@ -202,33 +201,29 @@ export default class Helper {
     
     public async styleSelection(delimiter:string): Promise<void> {
         //selection empty and not wrapped
-        if (this.isSelectionEmpty() && !this.isSelectionWrappedWith(delimiter)) {
+        if (this.isSelectionEmpty() === true && this.isSelectionWrappedWith(delimiter) === false) {
             this.selectWordUnderCursor();
             this.wrapSelectionWith(delimiter);
             await this.focusDocument();
-            console.log("empty and not wrapped");
             return;
         }
         //selection empty and wrapped
-        if (this.isSelectionEmpty && this.isSelectionWrappedWith(delimiter)) {
+        if (this.isSelectionEmpty() === true && this.isSelectionWrappedWith(delimiter) === true) {
             this.selectWordUnderCursor();
             this.unwrapSelection(delimiter);
             await this.focusDocument();
-            console.log("empty and wrapped");
             return;
         } 
         //selection not empty and not wrapped
-        if (!this.isSelectionEmpty() && !this.isSelectionWrappedWith(delimiter)) {
+        if (this.isSelectionEmpty() === false && this.isSelectionWrappedWith(delimiter) === false) {
             this.wrapSelectionWith(delimiter);
             await this.focusDocument();
-            console.log("not empty and not wrapped");
             return;
         }
         //selection not empty and wrapped
-        if (!this.isSelectionEmpty() && this.isSelectionWrappedWith(delimiter)) {
+        if (this.isSelectionEmpty() === false && this.isSelectionWrappedWith(delimiter) === true) {
             this.unwrapSelection(delimiter);
             await this.focusDocument();
-            console.log("not empty and wrapped");
             return;
         }
     }
