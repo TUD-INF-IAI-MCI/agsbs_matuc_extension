@@ -75,6 +75,7 @@ export default class En {
         this.d["bold"] = "Fett";
         this.d["italic"] = "Kursiv";
         this.d["strikethrough"] = "Durchgestrichen";
+        this.d["underline"] = "Unterstrichen";
         this.d["subscript"] = "Untergestellt";
         this.d["superscript"] = "Übergestellt";
         this.d["headline"] = "Überschrift";
