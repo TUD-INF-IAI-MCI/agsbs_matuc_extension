@@ -130,6 +130,7 @@ export default class En {
         this.d["repoNameContainsSpaces"] =
             "Der Reponame enthielt Leerzeichen. Sollte das Klonen nicht erfolgreich gewesen sein. Überprüfen Sie den Reponamen und starten Sie das Klonen erneut!";
         this.d["tableEditCommit"]="Tabelle bearbeitet";
+        this.d["tableCreateCommit"]="Tabelle erstellt";
         // //new-project
         this.d["noFolder"] = "Kein Ordner ausgewählt";
         this.d["preface"] = "Vorwort einfügen";

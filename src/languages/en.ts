@@ -129,6 +129,7 @@ export default class En {
         this.d["repoNameContainsSpaces"] =
             "The repo contained spaces. If the clone did not successed. Please checkout the repo name and try it again";
         this.d["tableEditCommit"]="Following table edited:";
+        this.d["tableCreateCommit"]="Following table inserted:";
         // //new-project
         this.d["noFolder"] = "No folder set";
         this.d["preface"] = "Add a preface to the document.";
