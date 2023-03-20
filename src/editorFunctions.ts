@@ -17,6 +17,7 @@ import InsertHelper from "./helper/insertHelper";
 import HeadlineHelper from "./helper/headlineHelper";
 import SettingsHelper from "./helper/settingsHelper";
 import { showNotification } from "./helper/notificationHelper";
+import GitCommands from "./gitCommands";
 /**
  * The Main Class to add Buttons and their functionality of the Editor Tools Bar.
  */
@@ -33,6 +34,7 @@ export default class EditorFunctions {
     private _insertHelper: InsertHelper;
     private _headlineHelper: HeadlineHelper;
     private _settings: SettingsHelper;
+    private _gitCommands: GitCommands;
 
     constructor(taskbarCallback, sidebarCallback, context) {
         this._helper = new Helper();
@@ -47,6 +49,7 @@ export default class EditorFunctions {
         this._insertHelper = new InsertHelper();
         this._headlineHelper = new HeadlineHelper();
         this._settings = new SettingsHelper();
+        this._gitCommands = new GitCommands();
     }
 
     /**
@@ -526,11 +529,14 @@ export default class EditorFunctions {
         const currentSelection: false | vscode.Selection =
             await this._tableHelper.getIfSelectionIsInTableAndReturnSelection();
         const currentTextEditor = await this._helper.getCurrentTextEditor();
+        const projectFolder = await this._helper.getFolderFromFilePath(currentTextEditor.document.uri.fsPath);
         if (!currentSelection) {
             vscode.window.showErrorMessage(this._language.get("noTableFound"));
             return;
         } else {
             const selectedTable = (await this._tableHelper.loadSelectedTable(currentSelection)).file;
+            const lastIndex = selectedTable.lastIndexOf("\\"); // Find the last occurrence of the backslash character
+            //const csvFilename = "./" + selectedTable.slice(lastIndex + 1);
             await this._helper.focusDocument();
             await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(selectedTable));
             const editCsv = vscode.extensions.getExtension("janisdd.vscode-edit-csv");
@@ -540,6 +546,14 @@ export default class EditorFunctions {
                 const watcher = vscode.workspace.createFileSystemWatcher(selectedTable);
                 watcher.onDidChange(async () => {
                     await this._tableHelper.replaceTable(selectedTable, currentTextEditor, currentSelection);
+                    const csvFilename = selectedTable.slice(lastIndex + 1);
+                    //save md file
+                    await currentTextEditor.document.save();
+                    //add csv to commit
+                    await this._gitCommands.addFile(projectFolder, selectedTable);
+                    //add md to commit
+                    await this._gitCommands.addFile(projectFolder, currentTextEditor.document.uri.fsPath);
+                    await this._gitCommands.commit(this._language.get("tableEditCommit") + csvFilename, projectFolder);
                     //dispose watcher only after edit-csv is closed
                     if (!editCsv.isActive) {
                         watcher.dispose();
@@ -689,6 +703,8 @@ export default class EditorFunctions {
 
         //create empty .csv file in /generatedTables
         const file = await this._tableHelper.writeCSVFile(",\n,");
+        const lastIndex = file.lastIndexOf("\\");
+        const projectFolder = await this._helper.getFolderFromFilePath(currentTextEditor.document.uri.fsPath);
         await this._helper.focusDocument();
         await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(file));
         //open edit csv extension
@@ -704,6 +720,14 @@ export default class EditorFunctions {
                 if (fileContents === fileContentsAfterChange) return;
 
                 await this._tableHelper.replaceTable(file, currentTextEditor, currentSelection);
+                const csvFilename = file.slice(lastIndex + 1);
+                    //save md file
+                    await currentTextEditor.document.save();
+                    //add csv to commit
+                    await this._gitCommands.addFile(projectFolder, file);
+                    //add md to commit
+                    await this._gitCommands.addFile(projectFolder, currentTextEditor.document.uri.fsPath);
+                    await this._gitCommands.commit(this._language.get("tableCreateCommit") + csvFilename, projectFolder);
                 // close edit csv extension and csv file
                 await vscode.commands.executeCommand("edit-csv.goto-source");
                 await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
