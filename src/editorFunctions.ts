@@ -249,7 +249,6 @@ export default class EditorFunctions {
      */
     public headline = async () => {
         const result = await this._headlineHelper.getNextHeadlineString();
-
         const headlineGrade: number = (result.match(/\#/g) || []).length;
         showNotification({ message: this._language.get("headlineInsertedWithGrade") + headlineGrade });
         this._headlineHelper.setSpecificHeadline(headlineGrade);
@@ -477,7 +476,7 @@ export default class EditorFunctions {
      */
     public code = async () => {
         const currentTextEditor = await this._helper.getCurrentTextEditor();
-        const selection = await this._helper.getWordsSelection(currentTextEditor);
+        const selection = this._helper.getWordsSelection(currentTextEditor);
         let startInsertText = "```";
         let endInsertText = "```";
         if (selection.start.line !== selection.end.line) {
@@ -827,7 +826,6 @@ export default class EditorFunctions {
             var linkTitleElement = document.getElementById("linkTitle");
             var linkTitle = linkTitleElement.value;
             var a = document.getElementById("link");
-
             a.href = url;
             a.innerHTML = linkText;
             a.title = linkTitle;
@@ -859,23 +857,22 @@ export default class EditorFunctions {
      * Makes the current text bold.
      */
     public bold = async () => {
-        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("**", "**");
-        this._helper.focusDocument(); //Puts focus back to the text editor
+            await this._helper.styleSelection("**");
     };
 
     /**
      * Makes the current text italic.
      */
     public italic = async () => {
-        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("_", "_");
-        this._helper.focusDocument(); //Puts focus back to the text editor
+            await this._helper.styleSelection("_");
     };
 
     /**
      * Makes the current text strikethrough.
      */
     public strikethrough = async () => {
-        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("~~", "~~");
-        this._helper.focusDocument(); //Puts focus back to the text editor
+        await this._helper.styleSelection("~~");
     };
 }
+
+    

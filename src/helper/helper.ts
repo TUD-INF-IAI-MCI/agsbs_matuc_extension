@@ -120,6 +120,114 @@ export default class Helper {
         }
         return newSelection;
     }
+ 
+    public selectWordUnderCursor():void {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+          return;
+        }
+        const selection = editor.selection;
+        const cursorPosition = selection.active;
+      
+        // Find the start and end positions of the word under the cursor
+        let startPosition = cursorPosition;
+        let endPosition = cursorPosition;
+        while (startPosition.character > 0 && !editor.document.lineAt(startPosition.line).text[startPosition.character - 1].match(/\s/)) {
+            startPosition = startPosition.translate(0, -1);
+        }
+        while (endPosition.character < editor.document.lineAt(endPosition.line).text.length && !editor.document.lineAt(endPosition.line).text[endPosition.character].match(/\s/)) {
+            endPosition = endPosition.translate(0, 1);
+        }
+        // Select the word under the cursor
+        editor.selection = new vscode.Selection(startPosition, endPosition);      
+      }
+    
+    public isSelectionEmpty() {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            return true;
+        }
+        return editor.selection.isEmpty;
+    }
+
+    public getSelection(): string {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            return "";
+        }
+        return editor.document.getText(editor.selection);
+    }
+
+    //check if the selection is wrapped with a delimiter if there is no selection select the word under the cursor
+    public isSelectionWrappedWith(delimiter: string): boolean {
+        if(!vscode.window.activeTextEditor||!vscode.window.activeTextEditor.selection) {
+            return false;
+        }
+        if (this.isSelectionEmpty()) {
+            this.selectWordUnderCursor();
+        }
+        const textToWrap = this.getSelection();
+        return textToWrap.startsWith(delimiter) && textToWrap.endsWith(delimiter);
+        
+    }
+
+    //wraps the selection with a delimiter
+    public wrapSelectionWith(text: string): void {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            return;
+        }
+        const selection = editor.selection;
+        const textToWrap = this.getSelection();
+        const wrappedText = text + textToWrap + text;
+        editor.edit(editBuilder => {
+            editBuilder.replace(selection, wrappedText);
+        });
+    }
+
+    //unwraps the selection if it is wrapped with a delimiter
+    public unwrapSelection(delimiter: string): void {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            return;
+        }
+        const selection = editor.selection;
+        const textToUnwrap = this.getSelection();
+        const unwrappedText = textToUnwrap.substring(delimiter.length, textToUnwrap.length - delimiter.length);
+        editor.edit(editBuilder => {
+            editBuilder.replace(selection, unwrappedText);
+        });
+    }
+    
+    public async styleSelection(delimiter:string): Promise<void> {
+        //selection empty and not wrapped
+        if (this.isSelectionEmpty() === true && this.isSelectionWrappedWith(delimiter) === false) {
+            this.selectWordUnderCursor();
+            this.wrapSelectionWith(delimiter);
+            await this.focusDocument();
+            return;
+        }
+        //selection empty and wrapped
+        if (this.isSelectionEmpty() === true && this.isSelectionWrappedWith(delimiter) === true) {
+            this.selectWordUnderCursor();
+            this.unwrapSelection(delimiter);
+            await this.focusDocument();
+            return;
+        } 
+        //selection not empty and not wrapped
+        if (this.isSelectionEmpty() === false && this.isSelectionWrappedWith(delimiter) === false) {
+            this.wrapSelectionWith(delimiter);
+            await this.focusDocument();
+            return;
+        }
+        //selection not empty and wrapped
+        if (this.isSelectionEmpty() === false && this.isSelectionWrappedWith(delimiter) === true) {
+            this.unwrapSelection(delimiter);
+            await this.focusDocument();
+            return;
+        }
+    }
+
     /**
      * Look for next blank line after current cursor position
      * @param currentTextEditor the current text editor
