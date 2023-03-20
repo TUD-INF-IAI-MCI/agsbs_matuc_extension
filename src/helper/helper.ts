@@ -159,7 +159,7 @@ export default class Helper {
     }
 
     //check if the selection is wrapped with a delimiter if there is no selection select the word under the cursor
-    public isSelectionWrappedWith(delimiter: string): boolean {
+    public isSelectionWrappedWith(delimiter1: string, delimiter2): boolean {
         if(!vscode.window.activeTextEditor||!vscode.window.activeTextEditor.selection) {
             return false;
         }
@@ -167,62 +167,62 @@ export default class Helper {
             this.selectWordUnderCursor();
         }
         const textToWrap = this.getSelection();
-        return textToWrap.startsWith(delimiter) && textToWrap.endsWith(delimiter);
+        return textToWrap.startsWith(delimiter1) && textToWrap.endsWith(delimiter2);
         
     }
 
     //wraps the selection with a delimiter
-    public wrapSelectionWith(text: string): void {
+    public wrapSelectionWith(text1: string, text2:string): void {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
             return;
         }
         const selection = editor.selection;
         const textToWrap = this.getSelection();
-        const wrappedText = text + textToWrap + text;
+        const wrappedText = text1 + textToWrap + text2;
         editor.edit(editBuilder => {
             editBuilder.replace(selection, wrappedText);
         });
     }
 
     //unwraps the selection if it is wrapped with a delimiter
-    public unwrapSelection(delimiter: string): void {
+    public unwrapSelection(delimiter1: string, delimiter2: string): void {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
             return;
         }
         const selection = editor.selection;
         const textToUnwrap = this.getSelection();
-        const unwrappedText = textToUnwrap.substring(delimiter.length, textToUnwrap.length - delimiter.length);
+        const unwrappedText = textToUnwrap.substring(delimiter1.length, textToUnwrap.length - delimiter2.length);
         editor.edit(editBuilder => {
             editBuilder.replace(selection, unwrappedText);
         });
     }
     
-    public async styleSelection(delimiter:string): Promise<void> {
+    public async styleSelection(delimiter1:string, delimiter2:string): Promise<void> {
         //selection empty and not wrapped
-        if (this.isSelectionEmpty() === true && this.isSelectionWrappedWith(delimiter) === false) {
+        if (this.isSelectionEmpty() === true && this.isSelectionWrappedWith(delimiter1, delimiter2) === false) {
             this.selectWordUnderCursor();
-            this.wrapSelectionWith(delimiter);
+            this.wrapSelectionWith(delimiter1, delimiter2);
             await this.focusDocument();
             return;
         }
         //selection empty and wrapped
-        if (this.isSelectionEmpty() === true && this.isSelectionWrappedWith(delimiter) === true) {
+        if (this.isSelectionEmpty() === true && this.isSelectionWrappedWith(delimiter1, delimiter2) === true) {
             this.selectWordUnderCursor();
-            this.unwrapSelection(delimiter);
+            this.unwrapSelection(delimiter1, delimiter2);
             await this.focusDocument();
             return;
         } 
         //selection not empty and not wrapped
-        if (this.isSelectionEmpty() === false && this.isSelectionWrappedWith(delimiter) === false) {
-            this.wrapSelectionWith(delimiter);
+        if (this.isSelectionEmpty() === false && this.isSelectionWrappedWith(delimiter1, delimiter2) === false) {
+            this.wrapSelectionWith(delimiter1, delimiter2);
             await this.focusDocument();
             return;
         }
         //selection not empty and wrapped
-        if (this.isSelectionEmpty() === false && this.isSelectionWrappedWith(delimiter) === true) {
-            this.unwrapSelection(delimiter);
+        if (this.isSelectionEmpty() === false && this.isSelectionWrappedWith(delimiter1, delimiter2) === true) {
+            this.unwrapSelection(delimiter1, delimiter2);
             await this.focusDocument();
             return;
         }

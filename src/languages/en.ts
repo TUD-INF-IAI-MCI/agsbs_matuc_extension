@@ -75,6 +75,8 @@ export default class En {
         this.d["bold"] = "Bold";
         this.d["italic"] = "Italic";
         this.d["strikethrough"] = "Strikethrough";
+        this.d["subscript"] = "Subscript";
+        this.d["superscript"] = "Superscript";
         this.d["headline"] = "Headline";
         this.d["headline1"] = "First level headline";
         this.d["headline2"] = "Second level headline";

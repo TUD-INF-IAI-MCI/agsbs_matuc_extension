@@ -74,7 +74,20 @@ export default class EditorFunctions {
             this._language.get("emphasis"),
             "agsbs.strikethrough"
         );
-
+        this._taskbarCallback.addButton(
+            "Subscript.svg",
+            this._language.get("subscript"),
+            this.subscript,
+            this._language.get("emphasis"),
+            "agsbs.subscript"
+        );
+        this._taskbarCallback.addButton(
+            "Superscript.svg",
+            this._language.get("supercript"),
+            this.superscript,
+            this._language.get("emphasis"),
+            "agsbs.superscript"
+        );
         this._taskbarCallback.addButton(
             "h.svg",
             this._language.get("headline"),
@@ -857,22 +870,32 @@ export default class EditorFunctions {
      * Makes the current text bold.
      */
     public bold = async () => {
-            await this._helper.styleSelection("**");
+            await this._helper.styleSelection("**","**");
     };
 
     /**
      * Makes the current text italic.
      */
     public italic = async () => {
-            await this._helper.styleSelection("_");
+            await this._helper.styleSelection("_", "_");
     };
 
     /**
      * Makes the current text strikethrough.
      */
     public strikethrough = async () => {
-        await this._helper.styleSelection("~~");
+        await this._helper.styleSelection("~~", "~~");
     };
+
+    //makes the text subscript
+    public subscript = async () => {
+        await this._helper.styleSelection("<sub>", "</sub>");
+    };
+
+    //makes the text superscript
+    public superscript = async () => {
+        await this._helper.styleSelection("<sup>", "</sup>");
+    }
 }
 
     
