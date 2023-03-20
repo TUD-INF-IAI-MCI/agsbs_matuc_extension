@@ -17,7 +17,7 @@ export default class InsertHelper {
     /**
      * Returns the page identifier
      */
-    public getNewPageIdentifier() {
+    public getNewPageIdentifier(): string {
         return "|| - Seite ";
     }
 
@@ -27,31 +27,31 @@ export default class InsertHelper {
      * @param currentTextEditor optional. The text editor to work with.
      * @returns false if error, otherwise a point from type vscode.Position ending at the end of the page.
      */
-    public getPageEndLine = async (selection?: vscode.Selection, currentTextEditor?: vscode.TextEditor) => {
-        return new Promise(async (resolve, reject) => {
-            if (currentTextEditor === undefined) {
-                currentTextEditor = await this._helper.getCurrentTextEditor();
-            }
-            if (selection === undefined) {
-                selection = this._helper.getWordsSelection(currentTextEditor);
-            }
-            const newpageString = this.getNewPageIdentifier();
-            const newSelection = await this.iterateDownwardsToCheckForStringStart(newpageString);
-            if (newSelection !== false) {
-                if (selection.end.line > 0) {
-                    //if there is room above the line
-                    const previousLineNumber = newSelection.end.line - 1;
-                    const previousLineLength =
-                        currentTextEditor.document.lineAt(previousLineNumber).range.end.character;
-                    const newEndPoint = new vscode.Position(previousLineNumber, previousLineLength);
-                    resolve(newEndPoint);
-                } else {
-                    resolve(false);
-                }
+    public getPageEndLine = async (
+        selection?: vscode.Selection,
+        currentTextEditor?: vscode.TextEditor
+    ): Promise<false | vscode.Position> => {
+        if (currentTextEditor === undefined) {
+            currentTextEditor = await this._helper.getCurrentTextEditor();
+        }
+        if (selection === undefined) {
+            selection = this._helper.getWordsSelection(currentTextEditor);
+        }
+        const newpageString = this.getNewPageIdentifier();
+        const newSelection = await this.iterateDownwardsToCheckForStringStart(newpageString);
+        if (newSelection !== false) {
+            if (selection.end.line > 0) {
+                //if there is room above the line
+                const previousLineNumber = newSelection.end.line - 1;
+                const previousLineLength = currentTextEditor.document.lineAt(previousLineNumber).range.end.character;
+                const newEndPoint = new vscode.Position(previousLineNumber, previousLineLength);
+                return newEndPoint;
             } else {
-                resolve(false);
+                return false;
             }
-        });
+        } else {
+            return false;
+        }
     };
 
     /**
@@ -64,7 +64,7 @@ export default class InsertHelper {
         testString: string,
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Selection
-    ) {
+    ): Promise<false | vscode.Selection> {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
         }
@@ -105,7 +105,7 @@ export default class InsertHelper {
      * @param currentTextEditor optional. The Editor to work with.
      * @returns true if the string was found, otherwise false
      */
-    public async checkDocumentForString(testString: string, currentTextEditor?: vscode.TextEditor) {
+    public async checkDocumentForString(testString: string, currentTextEditor?: vscode.TextEditor): Promise<boolean> {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
         }

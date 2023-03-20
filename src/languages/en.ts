@@ -92,6 +92,7 @@ export default class En {
         this.d["editTable"] = "Edit Table";
         this.d["deleteTable"] = "Delete Table";
         this.d["noTableFound"] = "No table found";
+        this.d["noCursorFound"] = "Please place the cursor inside the document";
         this.d["errorTableFileNonExistant"] = "File of the table does not exist";
         this.d["parsingError"] = "Error parsing Table";
         this.d["tableInsertionPositionConflictWarning"] =
@@ -254,111 +255,10 @@ export default class En {
 
         //information message
         this.d["noEditorIsOpenCannotLoadDocument"] = "Cannot open a file, open/create a file";
-
-        //unused:
-
-        // this.d['SelectedWrongFileErrorDetail'] =  'Please select a .md or .html file.';
-        // this.d['changesFromEditProjectDialogSaved'] =  'Your changes has been saved.';
-
-        // this.d['wrongMatucVersion'] =  "You have to install the latest Matuc version. Latest version is ${version}.";
-
-        // this.d['begin'] =  "Begin";
-        // this.d['end'] =  "End";
-        // this.d['errorMessage'] =  'Error message is:';
-        // this.d['addContentHere'] =  "Add AND FORMAT CONTENT HERE";
-        // //temporary warnings
-        // this.d['noGitSupportJet'] =  'Git is not supported';
-        // this.d['noGitSupportJetDetail'] =  'We are working on it, please try again later';
-        // this.d['languageTitle'] =  'Language';
-        // this.d['english'] =  'Englisch';
-        // this.d['german'] =  'German';
-        // //dialog
-        // this.d['close'] =  'close';
-        // this.d['submit'] =  'Submit';
-        // this.d['textboxContentPlaceholder'] =  "Only required for annotation of the transcriber";
-
-        //this.d['textBox'] =  "text frame";
-        // this.d['textFrame'] =  "text box";
-        // this.d['gitPassword'] =  'Password';
-        // this.d['useGit'] =  'Use a given git repository';
-        // this.d['directory'] =  'Directory';
-        // this.d['source'] =  'Source';
-        //this.d['tocDepth'] =  'Depth';
-        // this.d['create'] =  'Create';
-
-        // this.d['newProjectDialogMissingGitValue'] =  'Missing git value';
-        // this.d['newProjectDialogMissingGitValueSource'] =  'Please enter your git path or dismiss adding a git repository.';
-        // this.d['newProjectDialogMissingGitValueUsername'] =  'Please enter your git username or dismiss adding a git repository.';
-        // this.d['newProjectDialogMissingGitValuePassword'] =  'Please enter your git password or dismiss adding a git repository.';
-        // this.d['newProjectDialogNoPath'] =  'No path is set';
-        // this.d['newProjectDialogNoPathDetail'] =  'Please choose a path where you want to save your new project.';
-        // this.d['newProjectDialogNoChapters'] =  'No Chapters Set';
-        // this.d['newProjectDialogNoChaptersDetail'] =  'There is no way to create a project with 0 chapters.';
-        // this.d['newProjectDialogMissingMetadataValue'] =  'Missing Metadata';
-        // this.d['newProjectDialogMissingMetadataValueTitle'] =  'Please enter the name of your project.';
-        // this.d['newProjectDialogMissingMetadataValueAuthor'] =  'Please enter your name, your nickname or the name of someone else.';
-        // this.d['newProjectDialogMissingMetadataValueInstitution'] =  'Please enter the name of your Institution (i.e. university, company, mom).';
-        // this.d['edit'] = 'Save';
-        // this.d['alternatePrefix'] =  'Use "A" as prefix to appendix chapter numbering and turn the extra heading "appendix" (or translated equivalent) off';
-        // this.d['outputFormat'] =  'Output format';
-        // this.d['appendixPrefix'] =  'Appendix Prefix';
-
-        // this.d['SelectedWrongFileError'] =  'File does not belong to your project';
-        // this.d['somethingWentWrongDuringSavingProjectMetadata'] =  'An unexpected matuc error occured';
-        // this.d['commitChangesSuccess'] =  'Your changes have been committed successfully.';
-        // this.d['commitChangesError'] =  'Your changes could not have been committed.';
-        // this.d['userWantsToCommitChanges'] =  'Do you want to commit your changes now?';
-        // //view functions
-        // this.d['noMdWarningPreview'] =  'No markdown file';
-        // this.d['noMdDetailPreview'] =  'Please open a markdown file (*.md) to preview.';
-
-        // this.d['head'] =  'Head';
-        // this.d['field'] =  'Field';
-        // this.d['toFastError'] =  'You are too fast, Dude';
-        // this.d['toFastErrorDetails'] =  'Please, do not treat the table this hard.';
-        // this.d['selectTableType'] =  'Table type';
-        // this.d['ErrorNoTable'] =  'No tables found!';
-
-        // this.d['noMdWarningGenerate'] =  'No markdown file';
-        // this.d['noMdDetailGenerate'] =  'Please select a markdown file (*.md) to generate a html file.';
-        // this.d['headlineError'] =  'No headline possible';
-        // this.d['headlineErrorDetail'] =  'Only a fully selected line can be declared as headline.';
-        // this.d['blockquoteError'] =  'No blockquote possible';
-        // this.d['blockquoteErrorDetail'] =  'Only a fully selected line can be declared as blockquote.';
-        // this.d['addHorizontalRuleError'] =  'No horizontal rule possible';
-        // this.d['addHorizontalRuleErrorDetail'] =  'Text can not be set as horizontal rule.';
-        // this.d['addListError'] =  'No list possible';
-        // this.d['addListErrorDetail'] =  'Only fully selected lines can be set as list items.';
-        // this.d['importTableFromCsvErrorDetail'] =  'Can not replace text by table from CSV.';
-        // this.d['AddPageNumberError'] =  'Error during the generation of the page number. Matuc-Message is';
-
-        //this.d['multilineTable'] =  "Multiline Table";
-        // this.d['addTableToFolder'] =  'Save csv tables in folder ';
-        // this.d['importTableErrorText'] =  "Check the csv table";
-        // //insert graphic dialog
-        // this.d['selectMdFile'] =  'Open .md file';
-        // this.d['selectPicture'] =  'Found picture';
-        // this.d['graphicFile'] =  'Pick a file';
-        // this.d['thereAreNoCsvFileInFolder'] =  "No csv-file found in folder or the file names contain spaces.";
-        // this.d['addPictureToFolder'] =  "Save pictures in folder ";
-        // this.d['addCsvFileToFolder'] =  "Save csvlfile in folder ";
-        // this.d['ErrorNoPicture'] =  "Not pictures found!";
-        // this.d['ErrorNoCsvFile'] =  "Not csv files found!";
-        // this.d['import'] =  'Import';
-
-        // this.d['mistkerlFoundGlobalError'] =  'A global error in your markdown occured.';
-        // this.d['mistkerlFoundErrorInFile'] =  'There are errors in ';
-        // this.d['line'] =  'Line ';
-
-        // //dialog warningPagenumbering
-        // this.d['warningPagenumbering'] =  "Warning";
-        // this.d['correct'] =  "Correct";
-
-        // this.d['textAutoCorrection'] =  "Press <strong>Correct</strong> if the page number\n should be corrected <strong>automatically</strong>.\n Press Abort for a manually correction!";
     }
 
     public get = (varname) => {
-        var result = this.d[varname];
+        const result = this.d[varname];
         if (result === undefined) {
             return varname;
         }

@@ -2,7 +2,7 @@
     "name": "agsbsextension",
     "displayName": "AGSBS extension",
     "description": "This package is developed to make the transcription process more effective of our working group",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "publisher": "TUD-AGSBS",
     "categories": [
         "Other"
@@ -450,6 +450,7 @@
         "open": "8.2.0",
         "os-locale": "^3.1.0",
         "papaparse": ">=5.2.0",
-        "path": "^0.12.7"
+        "path": "^0.12.7",
+        "punycode": "^2.3.0"
     }
 }
