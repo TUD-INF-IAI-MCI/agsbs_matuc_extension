@@ -90,7 +90,7 @@ export default class EditorFunctions {
         );
         this._taskbarCallback.addButton(
             "Superscript.svg",
-            this._language.get("supercript"),
+            this._language.get("superscript"),
             this.superscript,
             this._language.get("emphasis"),
             "agsbs.superscript"
