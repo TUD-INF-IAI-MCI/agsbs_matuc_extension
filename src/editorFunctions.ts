@@ -878,6 +878,7 @@ export default class EditorFunctions {
      */
     public bold = async () => {
             await this._helper.styleSelection("**","**");
+            this._helper.focusDocument();
     };
 
     /**
