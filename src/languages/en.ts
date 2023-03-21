@@ -128,8 +128,8 @@ export default class En {
             'The email address "$emailAddress$" and user name "$userName$" of the user settings were set in the local configuration.';
         this.d["repoNameContainsSpaces"] =
             "The repo contained spaces. If the clone did not successed. Please checkout the repo name and try it again";
-        this.d["tableEditCommit"]="Following table edited:";
-        this.d["tableCreateCommit"]="Following table inserted:";
+        this.d["tableEditCommit"] = "Following table edited:";
+        this.d["tableCreateCommit"] = "Following table inserted:";
         // //new-project
         this.d["noFolder"] = "No folder set";
         this.d["preface"] = "Add a preface to the document.";
@@ -257,6 +257,9 @@ export default class En {
 
         //information message
         this.d["noEditorIsOpenCannotLoadDocument"] = "Cannot open a file, open/create a file";
+
+        this.d["settings"] = "Settings";
+        this.d["openSettings"] = "Open AGSBS Settings";
     }
 
     public get = (varname) => {

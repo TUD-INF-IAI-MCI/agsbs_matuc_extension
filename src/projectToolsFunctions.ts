@@ -135,6 +135,13 @@ export default class ProjectToolsFunctions {
                 "agsbs.commitChanges"
             );
         }
+        this._taskbarCallback.addProjectTool(
+            "settings.svg",
+            this._language.get("openSettings"),
+            this.openSettings,
+            this._language.get("settings"),
+            "agsbs.openSettings"
+        );
     };
 
     /**
@@ -502,5 +509,10 @@ export default class ProjectToolsFunctions {
             await this._git.commit(commitMessage, projectFolder);
         }
         await this._git.push(projectFolder);
+    };
+
+    public openSettings = async () => {
+        // open UI vscode settings page with agsbs settings
+        vscode.commands.executeCommand("workbench.action.openSettings", "@ext:TUD-AGSBS.agsbsextension");
     };
 }

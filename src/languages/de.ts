@@ -129,8 +129,8 @@ export default class En {
             'Es wurde die E-Mailadresse "$emailAddress$" und der Username "$userName$"  aus den Einstellung der Erweiterung in die lokale Konfiguration geschrieben.';
         this.d["repoNameContainsSpaces"] =
             "Der Reponame enthielt Leerzeichen. Sollte das Klonen nicht erfolgreich gewesen sein. Überprüfen Sie den Reponamen und starten Sie das Klonen erneut!";
-        this.d["tableEditCommit"]="Tabelle bearbeitet";
-        this.d["tableCreateCommit"]="Tabelle erstellt";
+        this.d["tableEditCommit"] = "Tabelle bearbeitet";
+        this.d["tableCreateCommit"] = "Tabelle erstellt";
         // //new-project
         this.d["noFolder"] = "Kein Ordner ausgewählt";
         this.d["preface"] = "Vorwort einfügen";
@@ -268,6 +268,9 @@ export default class En {
         //information message
         this.d["noEditorIsOpenCannotLoadDocument"] =
             "Es konnte keine Datei geladen werden, öffne/oder legen Sie eine neue Datei an";
+
+        this.d["settings"] = "Einstellungen";
+        this.d["openSettings"] = "AGSBS Einstellungen öffnen";
     }
 
     public get = (varname) => {
