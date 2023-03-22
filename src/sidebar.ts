@@ -6,6 +6,9 @@ import Helper from "./helper/helper";
 import Language from "./languages";
 import SidebarSnippets from "./snippets/sidebarSnippets";
 import MatucCommands from "./matucCommands";
+import { showNotification } from "./helper/notificationHelper";
+
+type SidebarSection = "HEADLINE" | "BUTTON" | "FORM_START" | "FORM_END" | "CANCEL" | "CSS" | "SCRIPT";
 
 /**
  * The main class of the sidebar.
@@ -88,6 +91,7 @@ export default class Sidebar {
 
         if (this._wasOpenendBefore === false) {
             this._addWelcomeMessage();
+            this._addOnboardingSettings();
         }
 
         return panel; //return panel
@@ -98,9 +102,12 @@ export default class Sidebar {
      * @param message from Webview
      */
     private _messageFromWebviewHandler = (message) => {
-        this._sidebarCallback(JSON.parse(message.text));
-        this._panel.webview.html = this._getBaseHTML(); // erase the contents of the sidebar
-        this._helper.focusDocument();
+        if (message.command === "setSettings") this.updateSettings(message.text.key, message.text.value);
+        else {
+            this._sidebarCallback(JSON.parse(message.text));
+            this._panel.webview.html = this._getBaseHTML(); // erase the contents of the sidebar
+            this._helper.focusDocument();
+        }
     };
 
     /**
@@ -169,7 +176,7 @@ export default class Sidebar {
      * @param section section Name, see examples above
      * @param html html to insert
      */
-    private _addToHTML = (section: string, html: string) => {
+    private _addToHTML = (section: SidebarSection, html: string) => {
         const marker = "<!--" + section + "-->";
         const oldHTML = this._panel.webview.html;
         html = html + marker;
@@ -248,5 +255,193 @@ export default class Sidebar {
             element += "<p>" + this._language.get(item) + "</p>";
         });
         return element;
+    }
+
+    /**
+     * Add onboarding settings to the sidebar,
+     * "agsbs.gitLocalPath": "C:\\Users\\USER\\Documents\\AGSBS_Git",
+     *  "agsbs.gitServerPath": "USER.inf.tu-dresden.de/srv/git/REPO",
+     *  "agsbs.gitUserEmail": "MAIL",
+     *  "agsbs.gitUserName": "NAME",
+     *  "agsbs.gitLoginName": "GITLOGIN",
+     */
+
+    private _addOnboardingSettings = async () => {
+        const gitLocalPath = vscode.workspace.getConfiguration("agsbs").get("gitLocalPath") as string;
+        const gitServerPath = vscode.workspace.getConfiguration("agsbs").get("gitServerPath") as string;
+        const gitUserEmail = vscode.workspace.getConfiguration("agsbs").get("gitUserEmail") as string;
+        const gitUserName = vscode.workspace.getConfiguration("agsbs").get("gitUserName") as string;
+        const gitLoginName = vscode.workspace.getConfiguration("agsbs").get("gitLoginName") as string;
+
+        interface Settings {
+            gitLocalPath: string;
+            gitServerPath: string;
+            gitUserEmail: string;
+            gitUserName: string;
+            gitLoginName: string;
+        }
+
+        const settings: Settings = {
+            gitLocalPath: gitLocalPath,
+            gitServerPath: gitServerPath,
+            gitUserEmail: gitUserEmail,
+            gitUserName: gitUserName,
+            gitLoginName: gitLoginName
+        };
+
+        // create a row for each setting
+        let settingsForm = `
+        <form id="inputForm">
+        `;
+        for (let i = 0; i < Object.keys(settings).length; i++) {
+            const key = Object.keys(settings)[i];
+            const value = Object.values(settings)[i];
+
+            settingsForm += `
+            <span class="label"> agsbs.${key}: </span>
+            <div class="settingsInputRowWrapper">
+            <div class="inputFieldWrapper">
+                <input id='${key}' type='text' class="inputText" name='${key}' placeholder="${value}"/>
+                <input id='${key}UndoButton' class='undoButton' type='button' title='${value}' onClick='applySetting(\"${key}\", \"${value}\")' value="${this._language.get(
+                "undoBtnText"
+            )}"/>
+            </div>
+            <input id='${key}Button' class='setButton' type='button' onClick='onSetClick(\"${key}\")' value="${this._language.get(
+                "set"
+            )}"/>
+            </div>
+            `;
+        }
+
+        settingsForm += `
+        </form>
+        `;
+
+        // set user settings on submit
+        const script = `
+        onSetClick = (setting) => {
+            const settingsKey = setting;
+            const settingsValue = document.getElementById(setting).value;
+            if(settingsValue === '' ) { return; }
+            applySetting(settingsKey, settingsValue);
+        };
+
+        applySetting = (settingsKey, settingsValue) => {
+            vscode.postMessage({
+                command: 'setSettings',
+                text: { key: settingsKey, value: settingsValue },
+            });
+            console.log('send setting: ' + settingsKey + ' ' + settingsValue)
+        }
+        `;
+
+        const css = `
+        .label {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .settingsInputRowWrapper { 
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            margin: 5px 0px 10px 0px;
+            max-width: 500px;
+        }
+
+        .inputText{
+            margin-top: 0 !important; // override default margin from sidebar.css
+        }
+
+        .setButton {
+            border-radius: 2px;
+            width: 50px;
+            height: 100%;
+            padding: 5px;
+            margin-left: 15px;
+            background-color: #0099FF;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+            outline: none;
+        }
+        .setButton:hover {
+            background-color: #0066CC;
+            box-shadow: 0 0 5px 0 #0066CC;
+        }
+        .setButton:focus {
+            outline: none;
+        }
+        .setButtonSuccess {
+            background-color: #99FF00;
+            color: black;
+        }
+        .inputFieldWrapper {
+            position: relative;
+            display: inline-block;    
+            flex: 1;
+        }
+        .undoButton {
+            cursor: pointer;
+            background: #002843;
+            border: 0;
+            border-radius: 2px;
+            color: white;
+            padding: 2px 7px;
+            position: absolute;
+            right: 5px;
+            top: 3.25px;
+            width: auto !important;
+            visibility: hidden;
+        }
+        .visible {
+            visibility: visible;
+        }
+
+        `;
+
+        this._addToHTML("FORM_START", settingsForm);
+        this._addToHTML("SCRIPT", script);
+        this._addToHTML("CSS", css);
+    };
+    private updateSettings(key: string, value: string) {
+        if (!key || !value) return;
+        const configuration = vscode.workspace.getConfiguration();
+        const target = vscode.ConfigurationTarget.Global;
+        configuration.update(`agsbs.${key}`, value, target, false);
+        showNotification({ message: `Set ${key} to ${value}` });
+
+        // find button with key in html and replace value with "Set!"
+        const html = this._panel.webview.html;
+        // find button with id=`${key}Button`
+        const button = html.match(new RegExp(`<input id='${key}Button(?=[\"\'])[^>]*?/>`));
+
+        // replace value with "Set!"
+        let newButton = button[0].replace(/value=".*?"/, `value="Set!"`);
+        // add class "setButtonSuccess" to button classes
+        newButton = newButton.replace(/class=(['"])(.*?)\1/, `class='$2 setButtonSuccess'`);
+        // replace button in html
+        let newHtml = html.replace(button[0], newButton);
+
+        // find input with id=`${key}` and replace placeholder with value and remove value
+        const input = html.match(new RegExp(`<input id='${key}'.*?/>`));
+        let newInput = input[0].replace(/placeholder=".*?"/, `placeholder="${value}"`);
+        newInput = newInput.replace(/value=".*?"/, ``);
+
+        // find undo button with id=`${key}UndoButton`
+        const undoButton = html.match(new RegExp(`<input id='${key}UndoButton(?=[\"\'])[^>]*?/>`));
+        // add visible class to undo button
+        const newUndoButton = undoButton[0].replace(/class=(['"])(.*?)\1/, `class='$2 visible'`);
+
+        // replace undo button in html
+        newHtml = newHtml.replace(undoButton[0], newUndoButton);
+
+        // replace input in html
+        newHtml = newHtml.replace(input[0], newInput);
+
+        this._panel.webview.html = newHtml;
     }
 }

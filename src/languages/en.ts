@@ -260,6 +260,8 @@ export default class En {
 
         this.d["settings"] = "Settings";
         this.d["openSettings"] = "Open AGSBS Settings";
+
+        this.d["undoBtnText"] = "Reset";
     }
 
     public get = (varname) => {
