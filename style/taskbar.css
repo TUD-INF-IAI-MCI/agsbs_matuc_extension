@@ -88,5 +88,5 @@ button:hover {
 /*# sourceMappingURL=taskbar.css.map */
 
 .taskbar-icon-inverted {
-    filter: invert(1);
+    filter: invert(1) grayscale(1);
 }
