@@ -5,6 +5,7 @@ import * as vscode from "vscode";
 import Helper from "./helper/helper";
 import EditorFunctions from "./editorFunctions";
 import ProjectToolsFunctions from "./projectToolsFunctions";
+import { ColorThemeKind } from "vscode";
 
 /**
  * Main class of the taskbar
@@ -18,6 +19,7 @@ export default class Taskbar {
     private _editorFunctions: EditorFunctions;
     private _callbacks: (() => void)[];
     private _projectToolsFunctions: ProjectToolsFunctions;
+    private _iconClass: string;
     constructor(sidebarCallback, context) {
         this._context = context;
         this._taskbarIsVisible = false;
@@ -27,10 +29,14 @@ export default class Taskbar {
         this._projectToolsFunctions = new ProjectToolsFunctions(this, this._sidebarCallback);
         this._panel = null;
         this._callbacks = [];
+        this._iconClass = "";
 
         vscode.commands.registerCommand("agsbs.focusTaskbar", () => {
             this.focus();
         });
+
+        const themeIsLight = vscode.window.activeColorTheme.kind === ColorThemeKind.Light;
+        this._iconClass = themeIsLight && "taskbar-icon-inverted";
     }
 
     /**
@@ -124,8 +130,10 @@ export default class Taskbar {
         const icon = this._helper.getWebviewResourceIconURI(iconName, this._context);
         //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
         //ToDo Button
-        const html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')"><img src="${icon}"></button>`;
-
+        const html = `
+        <button name="${name}" title="${name}" onclick="sendMessage('${id}')">
+        <img class="${this._iconClass}" src="${icon}">
+        </button>`;
         this._callbacks[id] = callback;
         newSection = "SECTION-" + newSection;
         this._addToHTML(newSection, html);
@@ -167,10 +175,14 @@ export default class Taskbar {
             const newSectionHTML = this._generateSectionHTML(section);
             this._addToHTML("PROJECTTOOLS_END", newSectionHTML);
         }
+
         const icon = this._helper.getWebviewResourceIconURI(iconName, this._context);
         //use Images as Background Mask to allow dynamic color change with css variables (allow themes)
-        const html = `<button name="${name}" title="${name}" onclick="sendMessage('${id}')"><img src="${icon}"></button>`;
-        //var html="";
+        const html = `
+        <button name="${name}" title="${name}" onclick="sendMessage('${id}')">
+        <img class=${this._iconClass} src="${icon}">
+        </button>`;
+
         this._callbacks[id] = callback;
         newSection = "SECTION-" + newSection;
         this._addToHTML(newSection, html);
