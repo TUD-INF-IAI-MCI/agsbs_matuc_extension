@@ -170,13 +170,12 @@ export default class Helper {
     public async styleSelection(delimiter1: string, delimiter2: string): Promise<void> {
         await this.focusDocument();
         const editor = vscode.window.activeTextEditor;
-        const selection = editor.document.getText(editor.selection);
+        let textToWrapOrUnwrap = "";
 
         if (editor.selection.isEmpty) {
             this.selectWordUnderCursor();
         }
-
-        let textToWrapOrUnwrap = "";
+        const selection = editor.document.getText(editor.selection);
         // check if text needs to be wrapped or unwrapped
         if (this.isSelectionWrappedWith(delimiter1, delimiter2)) {
             textToWrapOrUnwrap = selection.substring(delimiter1.length, selection.length - delimiter2.length);
