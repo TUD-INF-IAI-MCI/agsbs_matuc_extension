@@ -75,6 +75,13 @@ export default class EditorFunctions {
             "agsbs.strikethrough"
         );
         this._taskbarCallback.addButton(
+            "underline.svg",
+            this._language.get("underline"),
+            this.underline,
+            this._language.get("emphasis"),
+            "agsbs.underline"
+        );
+        this._taskbarCallback.addButton(
             "Subscript.svg",
             this._language.get("subscript"),
             this.subscript,
@@ -83,7 +90,7 @@ export default class EditorFunctions {
         );
         this._taskbarCallback.addButton(
             "Superscript.svg",
-            this._language.get("supercript"),
+            this._language.get("superscript"),
             this.superscript,
             this._language.get("emphasis"),
             "agsbs.superscript"
@@ -899,5 +906,10 @@ export default class EditorFunctions {
      */
     public superscript = async () => {
         await this._helper.styleSelection("<sup>", "</sup>");
+    };
+
+    //underlines the text
+    public underline = async () => {
+        await this._helper.styleSelection("<u>", "</u>");
     };
 }
