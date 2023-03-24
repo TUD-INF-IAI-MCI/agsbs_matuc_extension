@@ -870,14 +870,14 @@ export default class EditorFunctions {
      * Makes the current text bold.
      */
     public bold = async () => {
-            await this._helper.styleSelection("**","**");
+        await this._helper.styleSelection("**", "**");
     };
 
     /**
      * Makes the current text italic.
      */
     public italic = async () => {
-            await this._helper.styleSelection("_", "_");
+        await this._helper.styleSelection("_", "_");
     };
 
     /**
@@ -887,15 +887,17 @@ export default class EditorFunctions {
         await this._helper.styleSelection("~~", "~~");
     };
 
-    //makes the text subscript
+    /**
+     * Makes the current text subscript.
+     */
     public subscript = async () => {
         await this._helper.styleSelection("<sub>", "</sub>");
     };
 
-    //makes the text superscript
+    /**
+     * Makes the current text superscript.
+     */
     public superscript = async () => {
         await this._helper.styleSelection("<sup>", "</sup>");
-    }
+    };
 }
-
-    
