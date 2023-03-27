@@ -77,7 +77,27 @@ export default class EditorFunctions {
             this._language.get("emphasis"),
             "agsbs.strikethrough"
         );
-
+        this._taskbarCallback.addButton(
+            "underline.svg",
+            this._language.get("underline"),
+            this.underline,
+            this._language.get("emphasis"),
+            "agsbs.underline"
+        );
+        this._taskbarCallback.addButton(
+            "Subscript.svg",
+            this._language.get("subscript"),
+            this.subscript,
+            this._language.get("emphasis"),
+            "agsbs.subscript"
+        );
+        this._taskbarCallback.addButton(
+            "Superscript.svg",
+            this._language.get("superscript"),
+            this.superscript,
+            this._language.get("emphasis"),
+            "agsbs.superscript"
+        );
         this._taskbarCallback.addButton(
             "h.svg",
             this._language.get("headline"),
@@ -882,22 +902,39 @@ export default class EditorFunctions {
      * Makes the current text bold.
      */
     public bold = async () => {
-            await this._helper.styleSelection("**");
+        await this._helper.styleSelection("**", "**");
     };
 
     /**
      * Makes the current text italic.
      */
     public italic = async () => {
-            await this._helper.styleSelection("_");
+        await this._helper.styleSelection("_", "_");
     };
 
     /**
      * Makes the current text strikethrough.
      */
     public strikethrough = async () => {
-        await this._helper.styleSelection("~~");
+        await this._helper.styleSelection("~~", "~~");
+    };
+
+    /**
+     * Makes the current text subscript.
+     */
+    public subscript = async () => {
+        await this._helper.styleSelection("<sub>", "</sub>");
+    };
+
+    /**
+     * Makes the current text superscript.
+     */
+    public superscript = async () => {
+        await this._helper.styleSelection("<sup>", "</sup>");
+    };
+
+    //underlines the text
+    public underline = async () => {
+        await this._helper.styleSelection("<u>", "</u>");
     };
 }
-
-    

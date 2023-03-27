@@ -120,28 +120,31 @@ export default class Helper {
         }
         return newSelection;
     }
- 
-    public selectWordUnderCursor():void {
+
+    public selectWordUnderCursor(): void {
         const editor = vscode.window.activeTextEditor;
-        if (!editor) {
-          return;
-        }
         const selection = editor.selection;
         const cursorPosition = selection.active;
-      
+
         // Find the start and end positions of the word under the cursor
         let startPosition = cursorPosition;
         let endPosition = cursorPosition;
-        while (startPosition.character > 0 && !editor.document.lineAt(startPosition.line).text[startPosition.character - 1].match(/\s/)) {
+        while (
+            startPosition.character > 0 &&
+            !editor.document.lineAt(startPosition.line).text[startPosition.character - 1].match(/\s/)
+        ) {
             startPosition = startPosition.translate(0, -1);
         }
-        while (endPosition.character < editor.document.lineAt(endPosition.line).text.length && !editor.document.lineAt(endPosition.line).text[endPosition.character].match(/\s/)) {
+        while (
+            endPosition.character < editor.document.lineAt(endPosition.line).text.length &&
+            !editor.document.lineAt(endPosition.line).text[endPosition.character].match(/\s/)
+        ) {
             endPosition = endPosition.translate(0, 1);
         }
         // Select the word under the cursor
-        editor.selection = new vscode.Selection(startPosition, endPosition);      
-      }
-    
+        editor.selection = new vscode.Selection(startPosition, endPosition);
+    }
+
     public isSelectionEmpty() {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
@@ -152,80 +155,37 @@ export default class Helper {
 
     public getSelection(): string {
         const editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return "";
-        }
         return editor.document.getText(editor.selection);
     }
 
     //check if the selection is wrapped with a delimiter if there is no selection select the word under the cursor
-    public isSelectionWrappedWith(delimiter: string): boolean {
-        if(!vscode.window.activeTextEditor||!vscode.window.activeTextEditor.selection) {
-            return false;
-        }
+    public isSelectionWrappedWith(delimiter1: string, delimiter2: string): boolean {
         if (this.isSelectionEmpty()) {
             this.selectWordUnderCursor();
         }
         const textToWrap = this.getSelection();
-        return textToWrap.startsWith(delimiter) && textToWrap.endsWith(delimiter);
-        
+        return textToWrap.startsWith(delimiter1) && textToWrap.endsWith(delimiter2);
     }
 
-    //wraps the selection with a delimiter
-    public wrapSelectionWith(text: string): void {
+    public async styleSelection(delimiter1: string, delimiter2: string): Promise<void> {
+        await this.focusDocument();
         const editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-        }
-        const selection = editor.selection;
-        const textToWrap = this.getSelection();
-        const wrappedText = text + textToWrap + text;
-        editor.edit(editBuilder => {
-            editBuilder.replace(selection, wrappedText);
-        });
-    }
+        let textToWrapOrUnwrap = "";
 
-    //unwraps the selection if it is wrapped with a delimiter
-    public unwrapSelection(delimiter: string): void {
-        const editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
+        if (editor.selection.isEmpty) {
+            this.selectWordUnderCursor();
         }
-        const selection = editor.selection;
-        const textToUnwrap = this.getSelection();
-        const unwrappedText = textToUnwrap.substring(delimiter.length, textToUnwrap.length - delimiter.length);
-        editor.edit(editBuilder => {
-            editBuilder.replace(selection, unwrappedText);
+        const selection = editor.document.getText(editor.selection);
+        // check if text needs to be wrapped or unwrapped
+        if (this.isSelectionWrappedWith(delimiter1, delimiter2)) {
+            textToWrapOrUnwrap = selection.substring(delimiter1.length, selection.length - delimiter2.length);
+        } else {
+            textToWrapOrUnwrap = delimiter1 + selection + delimiter2;
+        }
+        // replace selection
+        editor.edit((editBuilder) => {
+            editBuilder.replace(editor.selection, textToWrapOrUnwrap);
         });
-    }
-    
-    public async styleSelection(delimiter:string): Promise<void> {
-        //selection empty and not wrapped
-        if (this.isSelectionEmpty() === true && this.isSelectionWrappedWith(delimiter) === false) {
-            this.selectWordUnderCursor();
-            this.wrapSelectionWith(delimiter);
-            await this.focusDocument();
-            return;
-        }
-        //selection empty and wrapped
-        if (this.isSelectionEmpty() === true && this.isSelectionWrappedWith(delimiter) === true) {
-            this.selectWordUnderCursor();
-            this.unwrapSelection(delimiter);
-            await this.focusDocument();
-            return;
-        } 
-        //selection not empty and not wrapped
-        if (this.isSelectionEmpty() === false && this.isSelectionWrappedWith(delimiter) === false) {
-            this.wrapSelectionWith(delimiter);
-            await this.focusDocument();
-            return;
-        }
-        //selection not empty and wrapped
-        if (this.isSelectionEmpty() === false && this.isSelectionWrappedWith(delimiter) === true) {
-            this.unwrapSelection(delimiter);
-            await this.focusDocument();
-            return;
-        }
     }
 
     /**
@@ -233,10 +193,7 @@ export default class Helper {
      * @param currentTextEditor the current text editor
      * @returns {int} number of next blank line
      */
-    public async getNextBlankLineAfterPos(currentTextEditor?: vscode.TextEditor): Promise<number> {
-        if (!currentTextEditor) {
-            currentTextEditor = await this.getCurrentTextEditor();
-        }
+    public async getNextBlankLineAfterPos(currentTextEditor: vscode.TextEditor): Promise<number> {
         const lineCount = currentTextEditor.document.lineCount;
         const currentLine = currentTextEditor.selection.active.line;
         for (let i = currentLine; i < lineCount; i++) {
@@ -330,7 +287,7 @@ export default class Helper {
             selection = new vscode.Selection(newStartPositionAtLineStart, newStartPositionAtLineStart);
         } else {
             // insert footnote after a string
-            const nextBlankLine = await this.getNextBlankLineAfterPos();
+            const nextBlankLine = await this.getNextBlankLineAfterPos(currentTextEditor);
             const newCursorPos = new vscode.Position(nextBlankLine + 1, 0);
             selection = new vscode.Selection(newCursorPos, newCursorPos);
         }
