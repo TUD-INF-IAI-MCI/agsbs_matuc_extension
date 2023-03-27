@@ -785,6 +785,7 @@ export default class EditorFunctions {
             vscode.window.showErrorMessage(this._language.get("matucNotInstalled"));
             return;
         }
+        await vscode.commands.executeCommand("workbench.action.files.saveAll");
         const thisPicturesFolderName = await this._imageHelper.getPictureFolderName();
         const thisPath = await this._helper.getCurrentDocumentFolderPath();
         const thisPicturesArray = await this._imageHelper.getAllPicturesInFolder(thisPath, thisPicturesFolderName);
