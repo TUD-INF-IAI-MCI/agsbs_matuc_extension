@@ -39,7 +39,7 @@ export default class SettingsHelper {
      * @returns value of the Setting.
      */
     public async get(settingIdentifier: string): Promise<string> {
-        const result = (await vscode.workspace.getConfiguration("agsbs").get(settingIdentifier)) as string;
+        const result = await vscode.workspace.getConfiguration("agsbs").get(settingIdentifier);
         return result;
     }
 
