@@ -8,8 +8,7 @@ import Helper from "./helper/helper";
 import Language from "./languages";
 import SettingsHelper from "./helper/settingsHelper";
 import * as path from "path";
-import { exec } from "child_process";
-import { spawn } from "child_process";
+import { exec, spawn } from "child_process";
 import { showNotification } from "./helper/notificationHelper";
 
 export default class GitCommands {
