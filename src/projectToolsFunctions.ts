@@ -333,12 +333,7 @@ export default class ProjectToolsFunctions {
             vscode.window.showErrorMessage(this._language.get("matucNotInstalled"));
             return;
         }
-        //
-        // var isInLecture = await this._matuc.checkIfFileIsWithinLecture(filePath);
-        // if (isInLecture === false) {
-        //     vscode.window.showErrorMessage(this._language.get("notInsideLecture"));
-        //     return;
-        // }
+
         const foundError = await this._matuc.checkAndSaveChanges();
         if (!foundError) {
             this._matuc.convertMaterial(true);
