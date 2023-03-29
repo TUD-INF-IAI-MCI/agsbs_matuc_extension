@@ -71,7 +71,7 @@ export default class InsertHelper {
         if (selection === undefined) {
             selection = this._helper.getWordsSelection(currentTextEditor);
         }
-        let selectionStartLine = selection.end.line;
+        const selectionStartLine = selection.end.line;
         let selectionStartsWith = await this._helper.checkIfSelectionStartsWith(
             testString,
             currentTextEditor,
@@ -86,7 +86,6 @@ export default class InsertHelper {
             const newStartPosition = new vscode.Position(i, 0);
             const newEndPosition = new vscode.Position(i, lineLength);
             const newSelection = new vscode.Selection(newStartPosition, newEndPosition);
-            selectionStartLine = selection.start.line;
             selectionStartsWith = await this._helper.checkIfSelectionStartsWith(
                 testString,
                 currentTextEditor,
