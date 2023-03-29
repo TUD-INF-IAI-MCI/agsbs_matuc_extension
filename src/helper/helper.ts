@@ -430,20 +430,18 @@ export default class Helper {
         line?: number,
         currentTextEditor?: vscode.TextEditor
     ) {
-        if (!characters) {
-            return;
-        }
-        if (!currentTextEditor) {
-            currentTextEditor = await this.getCurrentTextEditor();
-        }
+        if (!characters) return;
+
+        currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
+
         const selection = this.getWordsSelection(currentTextEditor);
-        if (!line) {
-            line = selection.start.line;
-        }
+        line = line || selection.start.line;
+
         // check for tailing whitespace
         if (characters[characters.length - 1] !== " ") {
             characters = characters + " ";
         }
+
         const lineText = currentTextEditor.document.lineAt(line).text;
         const startSubstring = lineText.substr(0, characters.length);
         if (startSubstring === characters) {
