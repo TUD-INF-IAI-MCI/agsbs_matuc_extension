@@ -964,7 +964,7 @@ export default class Helper {
      * @returns Folder/ Directory or error
      */
     public async getFolderFromFilePath(filepath: string) {
-        return (filepath = path.dirname(filepath));
+        return path.dirname(filepath);
     }
 
     /**
