@@ -335,7 +335,7 @@ export default class Helper {
         }
         await vscode.workspace.applyEdit(workSpaceEdit);
         const newStartPosition = new vscode.Position(startLine, startCharacter);
-        let newEndPosition = newStartPosition;
+        let newEndPosition;
         if (selection.start.line !== selection.end.line) {
             newEndPosition = new vscode.Position(selection.end.line + newLinesExtra, selection.end.character);
         } else {
