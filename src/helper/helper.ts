@@ -456,17 +456,6 @@ export default class Helper {
     }
     public async multiCursorsToggleCharactersAtStartAndEnd(startCharacters: string, endCharacters: string) {
         const currentTextEditor = await this.getCurrentTextEditor();
-        const newSelections = [];
-        for (let i = 0; i < currentTextEditor.selections.length; i++) {
-            newSelections.push(
-                await this.toggleCharactersAtStartAndEnd(
-                    startCharacters,
-                    endCharacters,
-                    currentTextEditor,
-                    currentTextEditor.selections[i]
-                )
-            );
-        }
 
         //set cursor to the middle of the selection
         const cursorPosition = currentTextEditor.selection.active;
