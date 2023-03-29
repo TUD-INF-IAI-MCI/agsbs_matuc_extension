@@ -23,7 +23,7 @@ export default class HeadlineHelper {
      */
     public setSpecificHeadline = async (number: number) => {
         const currentTextEditor = await this._helper.getCurrentTextEditor();
-        const selection = await this._helper.getWordsSelection(currentTextEditor);
+        const selection = this._helper.getWordsSelection(currentTextEditor);
         this.setHeadlineAtLine(number, selection.start.line);
         this._helper.focusDocument(); //Puts focus back to the text editor
     };
