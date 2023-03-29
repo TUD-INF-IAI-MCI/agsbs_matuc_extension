@@ -848,17 +848,15 @@ export default class Helper {
     ): Promise<vscode.Selection | false> {
         currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
         selection = selection | this.getWordsSelection(currentTextEditor);
-        let selectionStartLine = selection.end.line;
         let selectionStartsWith = await this.checkIfSelectionEndsWith(testString, currentTextEditor, selection);
         if (selectionStartsWith) {
             return selection;
         }
         const documentEndLine = currentTextEditor.document.lineCount;
-        for (let i = selectionStartLine; i < documentEndLine; i++) {
+        for (let i = selection.end.line; i < documentEndLine; i++) {
             const lineLength = currentTextEditor.document.lineAt(i).range.end.character;
             const newEndPosition = new vscode.Position(i, lineLength);
             const newSelection = new vscode.Selection(selection.start, newEndPosition);
-            selectionStartLine = selection.start.line;
             selectionStartsWith = await this.checkIfSelectionEndsWith(testString, currentTextEditor, newSelection);
             if (selectionStartsWith) {
                 return newSelection;
