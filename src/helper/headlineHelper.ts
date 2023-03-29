@@ -47,7 +47,7 @@ export default class HeadlineHelper {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
         }
-        const thisLine = await currentTextEditor.document.lineAt(line).text;
+        const thisLine = currentTextEditor.document.lineAt(line).text;
         const headlineRegex = /^\#{1,6}\ /; //?|\#{1,6}$
         const result = thisLine.match(headlineRegex);
         const newHeadlineMarkerString: string = new Array(headlineGrade + 1).join("#") + " ";
