@@ -968,7 +968,7 @@ export default class Helper {
         if (line >= lengthOfDocument) {
             return null;
         }
-        const content: string = await currentTextEditor.document.lineAt(line).text;
+        const content: string = currentTextEditor.document.lineAt(line).text;
         return content;
     }
 
