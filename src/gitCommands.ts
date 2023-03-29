@@ -126,7 +126,6 @@ export default class GitCommands {
                 console.error(`exec git track error: ${error}`);
                 return;
             }
-            return;
         });
     }
 
