@@ -647,7 +647,7 @@ export default class EditorFunctions {
             //Get ./generatedTable/example.csv from the comment and delete the csv
             const tableData = await this._tableHelper.loadSelectedTable(insertSelection);
             const tablePath = tableData["file"];
-            await this._tableHelper.deleteCSVFile(tablePath);
+            this._tableHelper.deleteCSVFile(tablePath);
             this._helper.replaceSelection("", insertSelection);
         }
     };
