@@ -25,7 +25,6 @@ export default class Language {
      * @param language Language to be used.
      */
     private _loadLanguageFile = async (language) => {
-        //console.log("Language: " + language);
         switch (language) {
             case "en":
                 this.languageClass = new En();
