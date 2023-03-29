@@ -808,7 +808,7 @@ export default class EditorFunctions {
         const thisPicturesFolderName = await this._imageHelper.getPictureFolderName();
         const thisPath = await this._helper.getCurrentDocumentFolderPath();
         const thisPicturesArray = await this._imageHelper.getAllPicturesInFolder(thisPath, thisPicturesFolderName);
-        const allPicturesHTMLString = await this._imageHelper.generateSelectImagesOptionsHTML(thisPicturesArray);
+        const allPicturesHTMLString = this._imageHelper.generateSelectImagesOptionsHTML(thisPicturesArray);
         let html = "";
         const script = this._snippets.get("insertImageScript");
         html +=
