@@ -462,7 +462,7 @@ export default class MatucCommands {
             await currentTextEditor.document.save();
         }
         const cmd = `matuc_js mk \"${filePath}\" `;
-        await exec(cmd, (error, stdout) => {
+        exec(cmd, (error, stdout) => {
             if (error) {
                 console.error(`exec error: ${error}`);
                 noErrorFound = false;

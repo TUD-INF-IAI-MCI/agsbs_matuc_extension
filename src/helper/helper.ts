@@ -68,8 +68,8 @@ export default class Helper {
      * @returns current Text Editor or null if it cannot be determined
      */
     public async getCurrentTextEditor(): Promise<vscode.TextEditor | null> {
-        const currentActiveTextEditor = await vscode.window.activeTextEditor;
-        const textEditors = await vscode.window.visibleTextEditors;
+        const currentActiveTextEditor = vscode.window.activeTextEditor;
+        const textEditors = vscode.window.visibleTextEditors;
         const openedTextEditor = textEditors[0];
 
         // check if markdown
@@ -456,7 +456,7 @@ export default class Helper {
                     new vscode.Position(line, 0),
                     new vscode.Position(line, characters.length)
                 );
-                await workSpaceEdit.delete(currentTextEditor.document.uri, characterSelection);
+                workSpaceEdit.delete(currentTextEditor.document.uri, characterSelection);
             }
 
             await vscode.workspace.applyEdit(workSpaceEdit);
@@ -1008,7 +1008,7 @@ export default class Helper {
      * @returns Folder/ Directory or error
      */
     public async getFolderFromFilePath(filepath: string) {
-        return (filepath = await path.dirname(filepath));
+        return (filepath = path.dirname(filepath));
     }
 
     /**

@@ -50,7 +50,7 @@ export default class SettingsHelper {
      * @param value new value of the Setting
      */
     public async update(settingsIdentifier: string, value: any) {
-        const agsbs = await vscode.workspace.getConfiguration("agsbs");
+        const agsbs = vscode.workspace.getConfiguration("agsbs");
         agsbs.update(settingsIdentifier, value, true);
     }
 
