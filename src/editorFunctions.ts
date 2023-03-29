@@ -552,7 +552,6 @@ export default class EditorFunctions {
         const projectFolder = await this._helper.getFolderFromFilePath(currentTextEditor.document.uri.fsPath);
         if (!currentSelection) {
             vscode.window.showErrorMessage(this._language.get("noTableFound"));
-            return;
         } else {
             const selectedTable = (await this._tableHelper.loadSelectedTable(currentSelection)).file;
             const lastIndex = selectedTable.lastIndexOf("\\"); // Find the last occurrence of the backslash character
