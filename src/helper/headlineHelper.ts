@@ -80,7 +80,7 @@ export default class HeadlineHelper {
         const startLineNumber: number = selection.start.line;
         for (let i = startLineNumber; i >= 0; i--) {
             //Go upwards from the current line
-            const currentLineText = await currentTextEditor.document.lineAt(i).text;
+            const currentLineText = currentTextEditor.document.lineAt(i).text;
             const headlineRegex = /^\#{1,6}\ /;
             const result = currentLineText.match(headlineRegex);
             if (result !== null && result !== undefined && result.length > 0) {
