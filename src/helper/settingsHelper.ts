@@ -101,6 +101,5 @@ export default class SettingsHelper {
             this._helper.mkDir(agsbsFolderPath);
         }
         this.update(gitLocalPathIdentifier, agsbsFolderPath);
-        return;
     }
 }
