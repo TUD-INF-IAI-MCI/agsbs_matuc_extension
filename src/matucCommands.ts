@@ -442,7 +442,6 @@ export default class MatucCommands {
             if (error) {
                 console.error(`load generate html`);
                 console.error(`exec error: ${error}`);
-                return;
             }
         });
     }
