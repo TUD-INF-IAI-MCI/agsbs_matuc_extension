@@ -55,7 +55,7 @@ export default class Sidebar {
      * Opens a Sidebar Webview
      * @return A promise that resolves to a WebviewPanel from Type vscode.WebviewPanel
      */
-    public async show(): Promise<vscode.WebviewPanel> {
+    public async show(): vscode.WebviewPanel {
         this._sidebarIsVisible = true;
         const panel = vscode.window.createWebviewPanel(
             "agsbssidebar", // Identifies the type of the webview. Used internally
