@@ -771,10 +771,10 @@ export default class Helper {
         antiString: string,
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Selection
-    ) {
+    ): Promise<boolean> {
         currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
         selection = selection | this.getWordsSelection(currentTextEditor);
-        let selectionStartLine = selection.start.line;
+        const selectionStartLine = selection.start.line;
         let selectionStartsWith = await this.checkIfSelectionStartsWith(testString, currentTextEditor, selection);
         let selectionStartsWithAntiString = await this.checkIfSelectionStartsWith(
             antiString,
@@ -804,7 +804,6 @@ export default class Helper {
         for (let i = selectionStartLine; i >= 0; i--) {
             const newStartPosition = new vscode.Position(i, 0);
             const newSelection = new vscode.Selection(newStartPosition, selection.end);
-            selectionStartLine = selection.start.line;
             selectionStartsWith = await this.checkIfSelectionStartsWith(testString, currentTextEditor, newSelection);
             selectionStartsWithAntiString = await this.checkIfSelectionStartsWith(
                 antiString,
