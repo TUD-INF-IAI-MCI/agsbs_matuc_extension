@@ -23,7 +23,7 @@ export default class ProjectHelper {
      * @returns object with all folders
      */
     public async getAllWorkspaceFolders() {
-        const folders = await vscode.workspace.workspaceFolders;
+        const folders = vscode.workspace.workspaceFolders;
         return folders;
     }
 
@@ -33,7 +33,7 @@ export default class ProjectHelper {
      * @returns HTML-String of <option> Elements of all Workspace Folders
      */
     public async getAllWorkspaceFoldersAsHTMLWithSpeciallyEscapedJSON() {
-        const folders = await vscode.workspace.workspaceFolders;
+        const folders = vscode.workspace.workspaceFolders;
         let html = "";
         if (folders === null || folders === undefined || folders.length === 0) {
             console.log("error no folders open");

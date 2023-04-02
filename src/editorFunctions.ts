@@ -552,7 +552,6 @@ export default class EditorFunctions {
         const projectFolder = await this._helper.getFolderFromFilePath(currentTextEditor.document.uri.fsPath);
         if (!currentSelection) {
             vscode.window.showErrorMessage(this._language.get("noTableFound"));
-            return;
         } else {
             const selectedTable = (await this._tableHelper.loadSelectedTable(currentSelection)).file;
             const lastIndex = selectedTable.lastIndexOf("\\"); // Find the last occurrence of the backslash character
@@ -648,7 +647,7 @@ export default class EditorFunctions {
             //Get ./generatedTable/example.csv from the comment and delete the csv
             const tableData = await this._tableHelper.loadSelectedTable(insertSelection);
             const tablePath = tableData["file"];
-            await this._tableHelper.deleteCSVFile(tablePath);
+            this._tableHelper.deleteCSVFile(tablePath);
             this._helper.replaceSelection("", insertSelection);
         }
     };
@@ -809,7 +808,7 @@ export default class EditorFunctions {
         const thisPicturesFolderName = await this._imageHelper.getPictureFolderName();
         const thisPath = await this._helper.getCurrentDocumentFolderPath();
         const thisPicturesArray = await this._imageHelper.getAllPicturesInFolder(thisPath, thisPicturesFolderName);
-        const allPicturesHTMLString = await this._imageHelper.generateSelectImagesOptionsHTML(thisPicturesArray);
+        const allPicturesHTMLString = this._imageHelper.generateSelectImagesOptionsHTML(thisPicturesArray);
         let html = "";
         const script = this._snippets.get("insertImageScript");
         html +=

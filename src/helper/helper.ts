@@ -68,8 +68,8 @@ export default class Helper {
      * @returns current Text Editor or null if it cannot be determined
      */
     public async getCurrentTextEditor(): Promise<vscode.TextEditor | null> {
-        const currentActiveTextEditor = await vscode.window.activeTextEditor;
-        const textEditors = await vscode.window.visibleTextEditors;
+        const currentActiveTextEditor = vscode.window.activeTextEditor;
+        const textEditors = vscode.window.visibleTextEditors;
         const openedTextEditor = textEditors[0];
 
         // check if markdown
@@ -214,12 +214,8 @@ export default class Helper {
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Range
     ): Promise<void> {
-        if (!currentTextEditor) {
-            currentTextEditor = await this.getCurrentTextEditor();
-        }
-        if (!selection) {
-            selection = this.getWordsSelection(currentTextEditor);
-        }
+        currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
+        selection = selection | this.getWordsSelection(currentTextEditor);
         const workSpaceEdit = new vscode.WorkspaceEdit();
         charactersToInsert = charactersToInsert.replace("images.html", "bilder.html"); //ToDo quick and dirty
         workSpaceEdit.insert(currentTextEditor.document.uri, selection.start, charactersToInsert);
@@ -237,12 +233,8 @@ export default class Helper {
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Range
     ): Promise<void> {
-        if (!currentTextEditor) {
-            currentTextEditor = await this.getCurrentTextEditor();
-        }
-        if (!selection) {
-            selection = this.getWordsSelection(currentTextEditor);
-        }
+        currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
+        selection = selection | this.getWordsSelection(currentTextEditor);
         if (!charactersToInsert) {
             charactersToInsert = 0;
         }
@@ -275,12 +267,8 @@ export default class Helper {
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Range
     ) {
-        if (!currentTextEditor) {
-            currentTextEditor = await this.getCurrentTextEditor();
-        }
-        if (!selection) {
-            selection = this.getWordsSelection(currentTextEditor);
-        }
+        currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
+        selection = selection | this.getWordsSelection(currentTextEditor);
         const workSpaceEdit = new vscode.WorkspaceEdit();
         if (selection.start.character !== 0) {
             const newStartPositionAtLineStart = new vscode.Position(selection.start.line, 0);
@@ -306,12 +294,8 @@ export default class Helper {
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Selection
     ) {
-        if (!currentTextEditor) {
-            currentTextEditor = await this.getCurrentTextEditor();
-        }
-        if (!selection) {
-            selection = this.getWordsSelection(currentTextEditor);
-        }
+        currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
+        selection = selection | this.getWordsSelection(currentTextEditor);
         const lineLength = currentTextEditor.document.lineAt(selection.end.line).range.end.character;
 
         if (lineLength === 0) {
@@ -351,7 +335,7 @@ export default class Helper {
         }
         await vscode.workspace.applyEdit(workSpaceEdit);
         const newStartPosition = new vscode.Position(startLine, startCharacter);
-        let newEndPosition = newStartPosition;
+        let newEndPosition;
         if (selection.start.line !== selection.end.line) {
             newEndPosition = new vscode.Position(selection.end.line + newLinesExtra, selection.end.character);
         } else {
@@ -430,20 +414,18 @@ export default class Helper {
         line?: number,
         currentTextEditor?: vscode.TextEditor
     ) {
-        if (!characters) {
-            return;
-        }
-        if (!currentTextEditor) {
-            currentTextEditor = await this.getCurrentTextEditor();
-        }
+        if (!characters) return;
+
+        currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
+
         const selection = this.getWordsSelection(currentTextEditor);
-        if (!line) {
-            line = selection.start.line;
-        }
+        line = line || selection.start.line;
+
         // check for tailing whitespace
         if (characters[characters.length - 1] !== " ") {
             characters = characters + " ";
         }
+
         const lineText = currentTextEditor.document.lineAt(line).text;
         const startSubstring = lineText.substr(0, characters.length);
         if (startSubstring === characters) {
@@ -456,7 +438,7 @@ export default class Helper {
                     new vscode.Position(line, 0),
                     new vscode.Position(line, characters.length)
                 );
-                await workSpaceEdit.delete(currentTextEditor.document.uri, characterSelection);
+                workSpaceEdit.delete(currentTextEditor.document.uri, characterSelection);
             }
 
             await vscode.workspace.applyEdit(workSpaceEdit);
@@ -474,17 +456,6 @@ export default class Helper {
     }
     public async multiCursorsToggleCharactersAtStartAndEnd(startCharacters: string, endCharacters: string) {
         const currentTextEditor = await this.getCurrentTextEditor();
-        const newSelections = [];
-        for (let i = 0; i < currentTextEditor.selections.length; i++) {
-            newSelections.push(
-                await this.toggleCharactersAtStartAndEnd(
-                    startCharacters,
-                    endCharacters,
-                    currentTextEditor,
-                    currentTextEditor.selections[i]
-                )
-            );
-        }
 
         //set cursor to the middle of the selection
         const cursorPosition = currentTextEditor.selection.active;
@@ -508,12 +479,8 @@ export default class Helper {
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Range
     ): Promise<vscode.Range | boolean> {
-        if (!currentTextEditor) {
-            currentTextEditor = await this.getCurrentTextEditor();
-        }
-        if (!selection) {
-            selection = this.getWordsSelection(currentTextEditor);
-        }
+        currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
+        selection = selection || this.getWordsSelection(currentTextEditor);
         if (startCharacters.length === 0) {
             return false;
         }
@@ -804,14 +771,10 @@ export default class Helper {
         antiString: string,
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Selection
-    ) {
-        if (!currentTextEditor) {
-            currentTextEditor = await this.getCurrentTextEditor();
-        }
-        if (!selection) {
-            selection = this.getWordsSelection(currentTextEditor);
-        }
-        let selectionStartLine = selection.start.line;
+    ): Promise<boolean> {
+        currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
+        selection = selection | this.getWordsSelection(currentTextEditor);
+        const selectionStartLine = selection.start.line;
         let selectionStartsWith = await this.checkIfSelectionStartsWith(testString, currentTextEditor, selection);
         let selectionStartsWithAntiString = await this.checkIfSelectionStartsWith(
             antiString,
@@ -841,7 +804,6 @@ export default class Helper {
         for (let i = selectionStartLine; i >= 0; i--) {
             const newStartPosition = new vscode.Position(i, 0);
             const newSelection = new vscode.Selection(newStartPosition, selection.end);
-            selectionStartLine = selection.start.line;
             selectionStartsWith = await this.checkIfSelectionStartsWith(testString, currentTextEditor, newSelection);
             selectionStartsWithAntiString = await this.checkIfSelectionStartsWith(
                 antiString,
@@ -884,23 +846,17 @@ export default class Helper {
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Selection
     ): Promise<vscode.Selection | false> {
-        if (!currentTextEditor) {
-            currentTextEditor = await this.getCurrentTextEditor();
-        }
-        if (!selection) {
-            selection = this.getWordsSelection(currentTextEditor);
-        }
-        let selectionStartLine = selection.end.line;
+        currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
+        selection = selection | this.getWordsSelection(currentTextEditor);
         let selectionStartsWith = await this.checkIfSelectionEndsWith(testString, currentTextEditor, selection);
         if (selectionStartsWith) {
             return selection;
         }
         const documentEndLine = currentTextEditor.document.lineCount;
-        for (let i = selectionStartLine; i < documentEndLine; i++) {
+        for (let i = selection.end.line; i < documentEndLine; i++) {
             const lineLength = currentTextEditor.document.lineAt(i).range.end.character;
             const newEndPosition = new vscode.Position(i, lineLength);
             const newSelection = new vscode.Selection(selection.start, newEndPosition);
-            selectionStartLine = selection.start.line;
             selectionStartsWith = await this.checkIfSelectionEndsWith(testString, currentTextEditor, newSelection);
             if (selectionStartsWith) {
                 return newSelection;
@@ -998,7 +954,7 @@ export default class Helper {
         if (line >= lengthOfDocument) {
             return null;
         }
-        const content: string = await currentTextEditor.document.lineAt(line).text;
+        const content: string = currentTextEditor.document.lineAt(line).text;
         return content;
     }
 
@@ -1008,7 +964,7 @@ export default class Helper {
      * @returns Folder/ Directory or error
      */
     public async getFolderFromFilePath(filepath: string) {
-        return (filepath = await path.dirname(filepath));
+        return path.dirname(filepath);
     }
 
     /**

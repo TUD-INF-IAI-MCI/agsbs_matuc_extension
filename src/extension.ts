@@ -99,8 +99,8 @@ export class ExtensionController {
         }
         if (editor.document.languageId === "markdown" || editor.document.languageId === "multimarkdown") {
             if (!this._sidebar.isVisible() || !this._taskbar.isVisible()) {
-                this._sidebarPanel = await this._sidebar.show();
-                this._taskbarPanel = await this._taskbar.show();
+                this._sidebarPanel = this._sidebar.show();
+                this._taskbarPanel = this._taskbar.show();
                 await this._helper.setEditorLayout(this._layout);
             }
             if (!this._sidebar.isVisible() && this._taskbar.isVisible()) {

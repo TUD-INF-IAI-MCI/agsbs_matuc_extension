@@ -39,7 +39,7 @@ export default class SettingsHelper {
      * @returns value of the Setting.
      */
     public async get(settingIdentifier: string): Promise<string> {
-        const result = (await vscode.workspace.getConfiguration("agsbs").get(settingIdentifier)) as string;
+        const result = vscode.workspace.getConfiguration("agsbs").get(settingIdentifier);
         return result;
     }
 
@@ -50,7 +50,7 @@ export default class SettingsHelper {
      * @param value new value of the Setting
      */
     public async update(settingsIdentifier: string, value: any) {
-        const agsbs = await vscode.workspace.getConfiguration("agsbs");
+        const agsbs = vscode.workspace.getConfiguration("agsbs");
         agsbs.update(settingsIdentifier, value, true);
     }
 
@@ -101,6 +101,5 @@ export default class SettingsHelper {
             this._helper.mkDir(agsbsFolderPath);
         }
         this.update(gitLocalPathIdentifier, agsbsFolderPath);
-        return;
     }
 }

@@ -492,7 +492,7 @@ export default class TableHelper {
         const thisPath = path.resolve(thisRelPath); //For cross Platform compatibility, makes absolute path from possibly relative one
         const pathExists = await fs.existsSync(fileBasePath);
         if (!pathExists) {
-            await this._helper.mkDir(fileBasePath);
+            this._helper.mkDir(fileBasePath);
         }
         const fd = fs.openSync(thisPath, "w+"); //Open in "add"-Mode
         content = content.replace(/\\/g, "\\\\");

@@ -23,7 +23,7 @@ export default class HeadlineHelper {
      */
     public setSpecificHeadline = async (number: number) => {
         const currentTextEditor = await this._helper.getCurrentTextEditor();
-        const selection = await this._helper.getWordsSelection(currentTextEditor);
+        const selection = this._helper.getWordsSelection(currentTextEditor);
         this.setHeadlineAtLine(number, selection.start.line);
         this._helper.focusDocument(); //Puts focus back to the text editor
     };
@@ -47,7 +47,7 @@ export default class HeadlineHelper {
         if (currentTextEditor === undefined) {
             currentTextEditor = await this._helper.getCurrentTextEditor();
         }
-        const thisLine = await currentTextEditor.document.lineAt(line).text;
+        const thisLine = currentTextEditor.document.lineAt(line).text;
         const headlineRegex = /^\#{1,6}\ /; //?|\#{1,6}$
         const result = thisLine.match(headlineRegex);
         const newHeadlineMarkerString: string = new Array(headlineGrade + 1).join("#") + " ";
@@ -80,7 +80,7 @@ export default class HeadlineHelper {
         const startLineNumber: number = selection.start.line;
         for (let i = startLineNumber; i >= 0; i--) {
             //Go upwards from the current line
-            const currentLineText = await currentTextEditor.document.lineAt(i).text;
+            const currentLineText = currentTextEditor.document.lineAt(i).text;
             const headlineRegex = /^\#{1,6}\ /;
             const result = currentLineText.match(headlineRegex);
             if (result !== null && result !== undefined && result.length > 0) {
