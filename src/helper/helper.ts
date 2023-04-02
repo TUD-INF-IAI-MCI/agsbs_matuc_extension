@@ -480,7 +480,7 @@ export default class Helper {
         selection?: vscode.Range
     ): Promise<vscode.Range | boolean> {
         currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
-        selection = selection | this.getWordsSelection(currentTextEditor);
+        selection = selection || this.getWordsSelection(currentTextEditor);
         if (startCharacters.length === 0) {
             return false;
         }
