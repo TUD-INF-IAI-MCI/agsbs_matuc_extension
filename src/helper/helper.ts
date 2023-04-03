@@ -771,7 +771,7 @@ export default class Helper {
         antiString: string,
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Selection
-    ): Promise<boolean> {
+    ): Promise<false | vscode.Selection> {
         currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
         selection = selection || this.getWordsSelection(currentTextEditor);
         const selectionStartLine = selection.start.line;
