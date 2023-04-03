@@ -215,7 +215,7 @@ export default class Helper {
         selection?: vscode.Range
     ): Promise<void> {
         currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
-        selection = selection | this.getWordsSelection(currentTextEditor);
+        selection = selection || this.getWordsSelection(currentTextEditor);
         const workSpaceEdit = new vscode.WorkspaceEdit();
         charactersToInsert = charactersToInsert.replace("images.html", "bilder.html"); //ToDo quick and dirty
         workSpaceEdit.insert(currentTextEditor.document.uri, selection.start, charactersToInsert);
@@ -234,7 +234,7 @@ export default class Helper {
         selection?: vscode.Range
     ): Promise<void> {
         currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
-        selection = selection | this.getWordsSelection(currentTextEditor);
+        selection = selection || this.getWordsSelection(currentTextEditor);
         if (!charactersToInsert) {
             charactersToInsert = 0;
         }
@@ -268,7 +268,7 @@ export default class Helper {
         selection?: vscode.Range
     ) {
         currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
-        selection = selection | this.getWordsSelection(currentTextEditor);
+        selection = selection || this.getWordsSelection(currentTextEditor);
         const workSpaceEdit = new vscode.WorkspaceEdit();
         if (selection.start.character !== 0) {
             const newStartPositionAtLineStart = new vscode.Position(selection.start.line, 0);
@@ -295,7 +295,7 @@ export default class Helper {
         selection?: vscode.Selection
     ) {
         currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
-        selection = selection | this.getWordsSelection(currentTextEditor);
+        selection = selection || this.getWordsSelection(currentTextEditor);
         const lineLength = currentTextEditor.document.lineAt(selection.end.line).range.end.character;
 
         if (lineLength === 0) {
@@ -771,9 +771,9 @@ export default class Helper {
         antiString: string,
         currentTextEditor?: vscode.TextEditor,
         selection?: vscode.Selection
-    ): Promise<boolean> {
+    ): Promise<false | vscode.Selection> {
         currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
-        selection = selection | this.getWordsSelection(currentTextEditor);
+        selection = selection || this.getWordsSelection(currentTextEditor);
         const selectionStartLine = selection.start.line;
         let selectionStartsWith = await this.checkIfSelectionStartsWith(testString, currentTextEditor, selection);
         let selectionStartsWithAntiString = await this.checkIfSelectionStartsWith(
@@ -847,7 +847,7 @@ export default class Helper {
         selection?: vscode.Selection
     ): Promise<vscode.Selection | false> {
         currentTextEditor = currentTextEditor || (await this.getCurrentTextEditor());
-        selection = selection | this.getWordsSelection(currentTextEditor);
+        selection = selection || this.getWordsSelection(currentTextEditor);
         let selectionStartsWith = await this.checkIfSelectionEndsWith(testString, currentTextEditor, selection);
         if (selectionStartsWith) {
             return selection;
