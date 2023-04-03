@@ -273,7 +273,6 @@ export default class EditorFunctions {
     public headline = async () => {
         const result = await this._headlineHelper.getNextHeadlineString();
         const headlineGrade: number = (result.match(/\#/g) || []).length;
-        showNotification({ message: this._language.get("headlineInsertedWithGrade") + headlineGrade });
         this._headlineHelper.setSpecificHeadline(headlineGrade);
     };
 
