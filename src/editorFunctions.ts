@@ -273,7 +273,6 @@ export default class EditorFunctions {
     public headline = async () => {
         const result = await this._headlineHelper.getNextHeadlineString();
         const headlineGrade: number = (result.match(/\#/g) || []).length;
-        showNotification({ message: this._language.get("headlineInsertedWithGrade") + headlineGrade });
         this._headlineHelper.setSpecificHeadline(headlineGrade);
     };
 
@@ -281,42 +280,42 @@ export default class EditorFunctions {
      * Inserts a headline with grade 1
      */
     public h1 = async () => {
-        this._headlineHelper.setSpecificHeadline(1);
+        this._helper.styleSelection("# ", "");
     };
 
     /**
      * Inserts a headline with grade 2
      */
     public h2 = async () => {
-        this._headlineHelper.setSpecificHeadline(2);
+        this._helper.styleSelection("## ", "");
     };
 
     /**
      * Inserts a headline with grade 3
      */
     public h3 = async () => {
-        this._headlineHelper.setSpecificHeadline(3);
+        this._helper.styleSelection("### ", "");
     };
 
     /**
      * Inserts a headline with grade 4
      */
     public h4 = async () => {
-        this._headlineHelper.setSpecificHeadline(4);
+        this._helper.styleSelection("#### ", "");
     };
 
     /**
      * Inserts a headline with grade 5
      */
     public h5 = async () => {
-        this._headlineHelper.setSpecificHeadline(5);
+        this._helper.styleSelection("##### ", "");
     };
 
     /**
      * Inserts a headline with grade 6
      */
     public h6 = async () => {
-        this._headlineHelper.setSpecificHeadline(6);
+        this._helper.styleSelection("###### ", "");
     };
 
     /**
@@ -740,13 +739,13 @@ export default class EditorFunctions {
 
                 await this._tableHelper.replaceTable(file, currentTextEditor, currentSelection);
                 const csvFilename = file.slice(lastIndex + 1);
-                    //save md file
-                    await currentTextEditor.document.save();
-                    //add csv to commit
-                    await this._gitCommands.addFile(projectFolder, file);
-                    //add md to commit
-                    await this._gitCommands.addFile(projectFolder, currentTextEditor.document.uri.fsPath);
-                    await this._gitCommands.commit(this._language.get("tableCreateCommit") + csvFilename, projectFolder);
+                //save md file
+                await currentTextEditor.document.save();
+                //add csv to commit
+                await this._gitCommands.addFile(projectFolder, file);
+                //add md to commit
+                await this._gitCommands.addFile(projectFolder, currentTextEditor.document.uri.fsPath);
+                await this._gitCommands.commit(this._language.get("tableCreateCommit") + csvFilename, projectFolder);
                 // close edit csv extension and csv file
                 await vscode.commands.executeCommand("edit-csv.goto-source");
                 await vscode.commands.executeCommand("workbench.action.closeActiveEditor");

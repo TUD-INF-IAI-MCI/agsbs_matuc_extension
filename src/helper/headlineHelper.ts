@@ -60,7 +60,7 @@ export default class HeadlineHelper {
             workSpaceEdit.replace(currentTextEditor.document.uri, range, newHeadlineMarkerString);
             await vscode.workspace.applyEdit(workSpaceEdit);
         } else {
-            this._helper.insertStringAtStartOfLine(newHeadlineMarkerString);
+            this._helper.styleSelection(newHeadlineMarkerString, "");
         }
     }
 
