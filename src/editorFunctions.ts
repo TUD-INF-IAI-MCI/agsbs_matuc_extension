@@ -489,7 +489,7 @@ export default class EditorFunctions {
      * Adds a quote identifier at the start of the current line.
      */
     public blockquote = async () => {
-        await this._helper.toggleCharactersAtBeginningOfLine("> ");
+        await this._helper.styleSelection("> ", "");
         this._helper.focusDocument(); //Puts focus back to the text editor
     };
 
@@ -505,7 +505,7 @@ export default class EditorFunctions {
             startInsertText = "\n" + startInsertText + "\n";
             endInsertText = "\n" + endInsertText;
         }
-        await this._helper.multiCursorsToggleCharactersAtStartAndEnd(startInsertText, endInsertText);
+        await this._helper.styleSelection(startInsertText, endInsertText);
         this._helper.focusDocument(); //Puts focus back to the text editor
     };
 
@@ -513,7 +513,7 @@ export default class EditorFunctions {
      * Toggles the current selection as a inline formula
      */
     public inlineFormula = async () => {
-        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("$", "$");
+        await this._helper.styleSelection("$", "$");
         this._helper.focusDocument(); //Puts focus back to the text editor
     };
 
@@ -521,7 +521,7 @@ export default class EditorFunctions {
      * Toggles the current selection as a formula
      */
     public formula = async () => {
-        await this._helper.multiCursorsToggleCharactersAtStartAndEnd("$$ ", " $$");
+        await this._helper.styleSelection("$$ ", " $$");
         this._helper.focusDocument(); //Puts focus back to the text editor
     };
 
